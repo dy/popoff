@@ -14,5 +14,10 @@ Generic popup thing, a base for dropdown, tooltip an any other popupping stuff.
 
 ##TODO
 
-* Move anim-durations out to CSS
+* + Move anim-durations out to CSS
 * Create repo: popupr or popover?
+* Queue animations, wait till previous finish and then launch next, not rudely abrupt.
+
+##Notes
+
+* This thing is settable through css or options

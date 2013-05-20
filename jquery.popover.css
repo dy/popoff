@@ -7,19 +7,20 @@
 	top: 0;
 	left: 0;
 	color: white;
+	padding: 4px 6px;
+
+	-webkit-animation-duration: .25s;
+	-khtml-animation-duration: .25s;
+	-moz-animation-duration: .25s;
+	-o-animation-duration: .25s;
+	animation-duration: .25s
 }
 
 
 /* Specific containers */
 .popover-dropdown{
-	-webkit-animation-duration: .25s,
-	-khtml-animation-duration: .25s,
-	-moz-animation-duration: .25s,
-	-o-animation-duration: .25s,
-	animation-duration: .25s
 }
 .popover-tooltip{
-
 }
 .popover-dialog{
 

@@ -1,4 +1,4 @@
-;(function ($){
+(function ($){
 	var pluginName = "popover",
 		$doc = $(document),
 		$body = $(document.body)
@@ -14,7 +14,7 @@
 	//Static thing
 	$.extend(Popover, {
 		defaults: {
-			animDuration: 250, //TODO: move to css
+			animDuration: null,
 			animInClass: "in",
 			animOutClass: "out",
 			animClass: "animated",
@@ -32,24 +32,22 @@
 					"mouseenter target 200": "show",
 					"mouseleave target 200": "hide"
 				},
-				popover: {
-					
-						"mouseenter target 50": "show",
-						"click target 0": "show",
-						"mouseenter container 0": "show",
-						"mouseleave target 200": "hide",
-						"mouseleave container 200": "hide"
-					
+				popover: {					
+					"mouseenter target 50": "show",
+					"click target 0": "show",
+					"mouseenter container 0": "show",
+					"mouseleave target 200": "hide",
+					"mouseleave container 200": "hide"					
 				},
 				overlay: {					
-						"click target 0": "show",
-						"click overlay 0": "hide",
-						"click close 0": "hide"
-					
+					"click target 0": "show",
+					"click outside": "hide",
+					"click close 0": "hide"					
 				},
 				dropdown: {
 					"mouseenter container 0": "show",
 					"click target 0": "trigger",
+					"click outside": "hide",
 					"mouseleave container 1000": "hide",
 					"mouseleave target 1000": "hide"
 				}
@@ -80,6 +78,10 @@
 			var self = this,
 				o = self.options = $.extend({}, Popover.defaults, opts);
 
+			self.timeouts = {};
+
+			self.hideOnClickOutside = false;
+
 			//Initial content comprehension
 			o.content = o.content.trim();
 			if (o.content[0] == '.' || o.content[0] == '#') {
@@ -90,19 +92,18 @@
 			self.container = $(self.containerTpl({
 				name: pluginName
 			}))
+			.append(o.content)
 			.attr('hidden', true)
 			.addClass([pluginName] + "-" + o.type)
-			.append(o.content)
 			.appendTo(o.container);
 
-			self.setAnimDuration(o.animDuration);
+			if (o.animDuration){ //set duration through options
+				self.setAnimDuration(o.animDuration);
+			} else { //get duration from css
+				o.animDuration = self.getAnimDuration();
+			}
 
 			self.bindEvents();
-
-			//Cache of timeouts
-			self.timeouts = {
-
-			}
 
 			return self;
 		},
@@ -125,14 +126,14 @@
 				evt = props[0], selector = props[1], delay = props[2];
 
 			switch (selector) {
+				case "outside": //only click outside supported
+					self.hideOnClickOutside = true;
+					return;
 				case "target":
 					selector = self.target;
 					break;
 				case "container":
 					selector = self.container;
-					break;
-				case "outside":
-					throw "Do outside selector"
 					break;
 				case "close":
 					selector = $("." + pluginName + "-close", self.container);
@@ -171,41 +172,84 @@
 			return self;
 		},
 
+		getAnimDuration: function(){
+			var self = this, o = self.options;
+
+			var dur = self.container.css("animation-duration") ||
+			self.container.css("-webkit-animation-duration") ||
+			self.container.css("-moz-animation-duration") ||
+			self.container.css("-o-animation-duration") ||
+			self.container.css("-khtml-animation-duration");
+
+			var unit = dur.slice(-2);
+			if (unit == "ms"){
+				dur = parseInt(dur)
+			} else {
+				dur = parseFloat(dur) * 1000
+			}
+			console.log(dur)
+			return dur;
+		},
+
 		//API
 		show: function(){
 			var self = this, o = self.options;
 
-			self.move();
-
-			self.target.addClass(o.activeClass);
+			if (self.target.hasClass(o.activeClass) && !self.container.hasClass(o.animOutClass)){
+				return self;
+			}
 
 			self.container
 			.removeAttr('hidden')
-			.addClass(o.animClass + " " + o.animInClass);
+			.addClass(o.animClass + " " + o.animInClass)
+			.removeClass(o.animOutClass);
+
+			self.move();
 
 			self.delayedCall(function(){
 				self.container.removeClass(o.animClass + " " + o.animInClass);
 			}, o.animDuration, "anim");
+			
+			self.target.addClass(o.activeClass);
+
+			//Handle outside click
+			if (self.hideOnClickOutside){
+				$doc.on("click.outside."+pluginName, function(e) {
+					if (e.target === self.container[0] || e.target === self.target[0]) {
+						return;
+					}
+					self.hide();
+				});
+			}
 
 			console.log("show")
-
-
 
 			return self;
 		},
 
 		hide: function(){
 			var self = this, o = self.options;
-			self.container
-			.addClass(o.animClass + " " + o.animOutClass);
 
-			self.target.removeClass(o.activeClass);
+			if (!self.target.hasClass(o.activeClass) && !self.container.hasClass(o.animInClass)){
+				return self;
+			}
+
+			self.container
+			.addClass(o.animClass + " " + o.animOutClass)
+			.removeClass(o.animInClass);
+
 
 			self.delayedCall(function(){
 				self.container
 				.removeClass(o.animClass + " " + o.animOutClass)
 				.attr('hidden', true);
 			}, o.animDuration, "anim");
+
+			self.target.removeClass(o.activeClass);
+
+			if (self.hideOnClickOutside) $doc.off("click.outside."+pluginName)
+
+			//console.log("hide")
 
 			return self;
 		},
@@ -230,7 +274,7 @@
 
 			self.container.css({
 				'left':pos.left + 'px',
-				'top':pos.top - self.target.height() + 'px'
+				'top':pos.top - self.container.height() + 'px'
 			});
 
 			return self;
