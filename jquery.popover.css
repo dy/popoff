@@ -1,0 +1,42 @@
+.popover-container [hidden]{
+	display: none;
+}
+.popover-container{
+	position: absolute;
+	background: black;
+	top: 0;
+	left: 0;
+	color: white;
+}
+
+
+/* Specific containers */
+.popover-dropdown{
+	-webkit-animation-duration: .25s,
+	-khtml-animation-duration: .25s,
+	-moz-animation-duration: .25s,
+	-o-animation-duration: .25s,
+	animation-duration: .25s
+}
+.popover-tooltip{
+
+}
+.popover-dialog{
+
+}
+.popover-lightbox{
+
+}
+.popover-overlay{
+
+}
+
+
+
+/* Elements */
+.popover-tip{
+	background: gray;
+}
+.popover-close{
+
+}
