@@ -1,23 +1,8 @@
-Generic popup thing, a base for dropdown, tooltip an any other popupping stuff.
-
-* Zones to avoid when place
-* Vertical/Horizontal placing strategy
-* + Multiple or single tooltips (number of tooltips)
-	* Container for every target element otherwise it’s fuck onerous.
-* Optional tip(triangle) with a color
-* Escape-keystroke handling
-* Event to show it up on
-* + Preinit, post-init
-* Animations throught anim-3d.less.
-* Event callbacks
-* Lightbox, dropdown, tooltip, balloon, dialog and popup in one.
-
-##TODO
-
-* + Move anim-durations out to CSS
-* Create repo: popupr or popover?
-* Queue animations, wait till previous finish and then launch next, not rudely abrupt.
+#jQuery.popupr: [docs & demo](http://dfcreative.github.io/projects/popupr/)
+Generic popup, a base for dropdown, tooltip an any other popupping stuff.
 
 ##Notes
+* Some options are settable through css or options
 
-* This thing is settable through css or options
+##Plugins that use popupr
+* [Cpickr](https://github.com/dfcreative/cpickr) — alternative color picker

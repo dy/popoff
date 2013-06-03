@@ -1,13 +1,15 @@
-.popover-container [hidden]{
+.popupr-container [hidden]{
 	display: none;
 }
-.popover-container{
+.popupr-container{
 	position: absolute;
 	background: black;
 	top: 0;
 	left: 0;
 	color: white;
 	padding: 4px 6px;
+
+	z-index: 999;
 
 	-webkit-animation-duration: .25s;
 	-khtml-animation-duration: .25s;
@@ -18,26 +20,26 @@
 
 
 /* Specific containers */
-.popover-dropdown{
+.popupr-dropdown{
 }
-.popover-tooltip{
+.popupr-tooltip{
 }
-.popover-dialog{
+.popupr-dialog{
 
 }
-.popover-lightbox{
+.popupr-lightbox{
 
 }
-.popover-overlay{
+.popupr-overlay{
 
 }
 
 
 
 /* Elements */
-.popover-tip{
+.popupr-tip{
 	background: gray;
 }
-.popover-close{
+.popupr-close{
 
 }

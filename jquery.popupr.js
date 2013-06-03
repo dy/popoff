@@ -1,18 +1,19 @@
-(function ($){
-	var pluginName = "popover",
+;(function ($){
+	var pluginName = "popupr",
 		$doc = $(document),
-		$body = $(document.body)
+		$body = $(document.body),
+		$wnd = $(window)
 
 
-	//Popover class
-	var Popover = function (el, opts){
+	//Popup class
+	$[pluginName] = function (el, opts){
 		this.target = $(el);
 		this.create(opts)
 	}
 
 
-	//Static thing
-	$.extend(Popover, {
+	//Static
+	$.extend($[pluginName], {
 		defaults: {
 			animDuration: null,
 			animInClass: "in",
@@ -29,27 +30,39 @@
 			types: {
 				//some_type: { "event [target|container|close|outside|selector] delay": show }
 				tooltip: {
-					"mouseenter target 200": "show",
-					"mouseleave target 200": "hide"
+					position: "top",
+					bind: {
+						"mouseenter target 200": "show",
+						"mouseleave target 200": "hide"
+					}
 				},
-				popover: {					
-					"mouseenter target 50": "show",
-					"click target 0": "show",
-					"mouseenter container 0": "show",
-					"mouseleave target 200": "hide",
-					"mouseleave container 200": "hide"					
+				popover: {
+					position: "top",
+					bind: {				
+						"mouseenter target 50": "show",
+						"click target 0": "show",
+						"mouseenter container 0": "show",
+						"mouseleave target 200": "hide",
+						"mouseleave container 200": "hide"
+					}				
 				},
-				overlay: {					
-					"click target 0": "show",
-					"click outside": "hide",
-					"click close 0": "hide"					
+				overlay: {
+					position: "center",
+					bind: {
+						"click target 0": "show",
+						"click outside": "hide",
+						"click close 0": "hide"
+					}			
 				},
 				dropdown: {
-					"mouseenter container 0": "show",
-					"click target 0": "trigger",
-					"click outside": "hide",
-					"mouseleave container 1000": "hide",
-					"mouseleave target 1000": "hide"
+					position: "bottom",
+					bind: {
+						"mouseenter container 0": "show",
+						"click target 0": "trigger",
+						"click outside": "hide",
+						"mouseleave container 1500": "hide",
+						"mouseleave target 1500": "hide"
+					}
 				}
 			},
 
@@ -58,10 +71,11 @@
 
 			overlay: false,
 
-			placing: "horizontal",
+			position: "top", //top, left, bottom, right, center (for overlays)
 			tip: true,
 
 			avoid: null, //selector of elements to avoid overlapping with
+			single: true, //instantly close other dropdowns when one shows
 
 			//Callbacks
 			show: undefined,
@@ -72,11 +86,11 @@
 	})
 
 
-	//Instance thing
-	$.extend(Popover.prototype, {
+	//Instance
+	$.extend($[pluginName].prototype, {
 		create: function (opts) {
 			var self = this,
-				o = self.options = $.extend({}, Popover.defaults, opts);
+				o = self.options = $.extend({}, $[pluginName].defaults, opts);
 
 			self.timeouts = {};
 
@@ -87,6 +101,8 @@
 			if (o.content[0] == '.' || o.content[0] == '#') {
 				o.content = $(o.content);
 			}
+
+			o.position = o.types[o.type] && o.types[o.type].position || o.posiiton;
 
 			self.target.addClass(pluginName + "-target");
 			self.container = $(self.containerTpl({
@@ -110,8 +126,12 @@
 
 		bindEvents: function(){
 			var self = this, o = self.options;
-			if (!o.types[o.type]) return console.log("Not existing type of popover: " + o.type)
-			var bindings = o.types[o.type];
+			if (!o.types[o.type]) return console.log("Not existing type of " + pluginName + ": " + o.type)
+			var bindings = o.types[o.type].bind;
+
+			self.target.click(function(e){
+				e.preventDefault();
+			})
 
 			for (var bindStr in bindings){
 				self.bindString(bindStr, self[bindings[bindStr]])
@@ -187,7 +207,6 @@
 			} else {
 				dur = parseFloat(dur) * 1000
 			}
-			console.log(dur)
 			return dur;
 		},
 
@@ -195,16 +214,21 @@
 		show: function(){
 			var self = this, o = self.options;
 
-			if (self.target.hasClass(o.activeClass) && !self.container.hasClass(o.animOutClass)){
+			if (self.target.hasClass(o.activeClass) || self.container.hasClass(o.animClass)){
 				return self;
 			}
 
-			self.container
-			.removeAttr('hidden')
-			.addClass(o.animClass + " " + o.animInClass)
-			.removeClass(o.animOutClass);
+			self.container.removeAttr('hidden');
+
+			if (o.single) {
+				//TODO
+				//$("." + [pluginName] + "-targte").not(self.target).data([pluginName]).hide();
+			}
 
 			self.move();
+
+			self.container.addClass(o.animClass + " " + o.animInClass)
+			.removeClass(o.animOutClass);
 
 			self.delayedCall(function(){
 				self.container.removeClass(o.animClass + " " + o.animInClass);
@@ -222,8 +246,6 @@
 				});
 			}
 
-			console.log("show")
-
 			return self;
 		},
 
@@ -238,18 +260,15 @@
 			.addClass(o.animClass + " " + o.animOutClass)
 			.removeClass(o.animInClass);
 
-
 			self.delayedCall(function(){
 				self.container
 				.removeClass(o.animClass + " " + o.animOutClass)
 				.attr('hidden', true);
+
+				self.target.removeClass(o.activeClass);
 			}, o.animDuration, "anim");
 
-			self.target.removeClass(o.activeClass);
-
 			if (self.hideOnClickOutside) $doc.off("click.outside."+pluginName)
-
-			//console.log("hide")
 
 			return self;
 		},
@@ -268,14 +287,42 @@
 
 
 		move: function(){
-			var self = this, o = self.options;
+			var self = this, o = self.options,
+				left = 0, top = 0;
 
-			var pos = self.target.position();
+			var pos = self.target.offset(),
+				ch = self.container.outerHeight(true),
+				cw = self.container.outerWidth(true),
+				dw = $doc.width(),
+				dh = $doc.height(),
+				tw = self.target.outerWidth(true),
+				th = self.target.outerHeight(true);
+				//TODO: count on tip size: tip = self.tip.
 
-			self.container.css({
-				'left':pos.left + 'px',
-				'top':pos.top - self.container.height() + 'px'
-			});
+			pos.bottom = pos.top + th;
+			pos.right = pos.left + tw;
+
+			if (o.position == "top" || o.position == "bottom"){
+				left = Math.max(Math.min(dw - cw, pos.left), 0);				
+			} else if (o.position == "left" || o.position == "right") {
+				top = Math.max(Math.min(pos.top, dh - ch), 0);
+			}
+
+			if (o.position == "top" || (o.position == "bottom" && pos.bottom + ch > dh)){
+				top = Math.min(pos.top - ch, dh);
+			} else if (o.position == "bottom" || (o.position == "top" && pos.top - ch < 0)) {
+				top = Math.max(pos.bottom, 0);
+			}
+
+			if (o.position == "left" || (o.position == "right" && pos.right + cw > dw)){
+				left = Math.min(pos.left - cw, dw - cw);
+			} else if (o.position == "right" || (o.position == "left" && pos.left - cw < 0)) {
+				left = Math.max(pos.left, 0);
+			}
+
+			//NOTE: ZEPTO fucks up animations if set style through css.
+			self.container[0].style.left = left + 'px';
+			self.container[0].style.top = top + 'px';
 
 			return self;
 		},
@@ -296,7 +343,7 @@
 			})
 		} else {//Init this
 			return $(this).each(function (i, el) {
-				var po = new Popover(el, arg);
+				var po = new $[pluginName](el, arg);
 				if (!$(el).data(pluginName)) $(el).data(pluginName, po);
 			})			
 		}
@@ -323,6 +370,7 @@
 		}
 	}
 
+
 	//Autolaunch
 	//Possible options location: preinit [Popover] object of the window, data-attributes, passed options.
 	$(function () {
@@ -333,5 +381,30 @@
 			$e[pluginName](opts);
 		});
 	});
+
+
+	//Zepto crutches
+	var outerH = $.fn.outerHeight;
+	$.fn.outerHeight = function(){
+		if (outerH) {
+			return outerH.apply(this, arguments)
+		} else {
+			var h = $.fn.height.apply(this),
+				pt = parseInt($.fn.css.apply(this, ["padding-top"])),
+				pb = parseInt($.fn.css.apply(this, ["padding-bottom"]));
+			return (h + pt + pb);
+		}
+	}
+	var outerW = $.fn.outerWidth;
+	$.fn.outerWidth = function(){
+		if (outerW) {
+			return outerW.apply(this, arguments)
+		} else {
+			var h = $.fn.width.apply(this),
+				pl = parseInt($.fn.css.apply(this, ["padding-left"])),
+				pr = parseInt($.fn.css.apply(this, ["padding-right"]));
+			return (h + pl + pr);
+		}
+	}
 
 })(window.jQuery || window.Zepto);
