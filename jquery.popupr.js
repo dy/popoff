@@ -89,8 +89,10 @@
 	//Instance
 	$.extend($[pluginName].prototype, {
 		create: function (opts) {
-			var self = this,
-				o = self.options = $.extend({}, $[pluginName].defaults, opts);
+			var self = this;
+
+			self.options = $.extend({}, $[pluginName].defaults);
+			var o = self.options = $.extend(self.options, opts);
 
 			self.timeouts = {};
 
@@ -102,7 +104,7 @@
 				o.content = $(o.content);
 			}
 
-			o.position = o.types[o.type] && o.types[o.type].position || o.posiiton;
+			o.position = opts.position || o.types[o.type] && o.types[o.type].position || o.position;
 
 			self.target.addClass(pluginName + "-target");
 			self.container = $(self.containerTpl({
@@ -317,7 +319,7 @@
 			if (o.position == "left" || (o.position == "right" && pos.right + cw > dw)){
 				left = Math.min(pos.left - cw, dw - cw);
 			} else if (o.position == "right" || (o.position == "left" && pos.left - cw < 0)) {
-				left = Math.max(pos.left, 0);
+				left = Math.max(pos.right, 0);
 			}
 
 			//NOTE: ZEPTO fucks up animations if set style through css.
