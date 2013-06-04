@@ -8,7 +8,7 @@
 	//Popup class
 	$[pluginName] = function (el, opts){
 		this.target = $(el);
-		this.create(opts)
+		this.create(opts);
 	}
 
 
@@ -22,9 +22,10 @@
 
 			activeClass: "active",
 
-			content: 'None', //Element, jquery-object, html-string, function atc			
-			container: $body, //Where to place in
+			content: null, //Selector, element, jquery-object, html-string, function atc			
+			container: $body, //Where to place in popupped content-container
 			targets: null, //selector, array of objects etc. Synonims of current target
+			cloneContent: false, //Whether to clone or replace content element
 
 			type: "tooltip", //tooltip, popover, overlay, dropdown, custom
 			types: {
@@ -98,10 +99,23 @@
 
 			self.hideOnClickOutside = false;
 
+			//Remove title from target
+			self.title = self.target.attr("title");
+			self.target.removeAttr("title");
+
 			//Initial content comprehension
-			o.content = o.content.trim();
-			if (o.content[0] == '.' || o.content[0] == '#') {
-				o.content = $(o.content);
+			if (!o.content){
+				if (self.title) o.content = self.title;				
+			} else {
+				o.content = o.content.trim();
+				if (o.content[0] == '.' || o.content[0] == '#') {
+					if (o.cloneContent){
+						//TODO: how to fully clone nodes
+						o.content = $(o.content).clone(true, true);
+					} else {
+						o.content = $(o.content).detach();
+					}
+				}
 			}
 
 			o.position = opts.position || o.types[o.type] && o.types[o.type].position || o.position;
@@ -167,7 +181,7 @@
 			if (!delay) {
 				selector.on(evt, meth.bind(self) );
 			} else {
-				selector.on(evt, function() { self.delayedCall(meth.bind(self), delay) } );
+				selector.on(evt, function(){ self.delayedCall(meth.bind(self), delay) } );
 			}
 		},
 
@@ -379,7 +393,7 @@
 		var name = window[pluginName] && window[pluginName].defaultClass || pluginName;
 		$("." + pluginName).each(function (i, e){
 			var $e = $(e),
-				opts = $.extend(window[pluginName] || {}, $.parseDataAttributes(e));
+				opts = $.extend({}, window[pluginName], $.parseDataAttributes(e));
 			$e[pluginName](opts);
 		});
 	});

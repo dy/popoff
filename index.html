@@ -15,17 +15,29 @@ header, section{
 	text-align: center;
 }
 
-.target{
+.circle{
 	background: gray;
 	border-radius: 50%;
 	display: inline-block;
-	width: 50px;
-	height: 50px;
-	line-height: 50px;
+	vertical-align: top;
+	width: 120px;
+	height: 120px;
+	line-height: 15px;
 	color: white;
 	text-align: center;
 	font-weight: bolder;
 	font-size: 20px;
+}
+.circle h3{
+	font-size: 24px;
+	font-weight: bolder;
+	padding: 30px 0;
+	margin: 0;
+}
+.circle label{
+	font-size: 12px;
+	font-weight: normal;
+	line-height: 15px;
 }
 </style>
 
@@ -44,37 +56,51 @@ window.popupr = {
 	<p class="intro">Generic popup thing, a base for any popupping stuff:</p>
 </header>
 
+<div id="test-menu">Test menue for tooltips</div>
+
 
 <section id="demo">
 	<h2 id="tooltip-demo"><a href="#tooltip-demo">tooltip,</code></a></h2>
-	<div class="popupr target" data-type="tooltip">↑</div>
-	<div class="popupr target" data-type="tooltip">→</div>
-	<div class="popupr target" data-type="tooltip">↓</div>
-	<div class="popupr target" data-type="tooltip">←</div>
+	<div class="popupr circle" id="tooltip-title" data-type="tooltip" data-position="top" title="Top tooltip title">
+		<h3>↑</h3>
+		<label for="tooltip-title">Title tooltip</label>
+	</div>
+	<div class="popupr circle" id="tooltip-own-content" data-type="tooltip" data-position="right" data-content="Content of data-content attribute">
+		<h3>→</h3>
+		<label for="tooltip-own-content">Own content</label>
+	</div>
+	<div class="popupr circle" id="tooltip-clone-content" data-type="tooltip" data-position="bottom" data-content="#test-menu" data-clone-content="true">
+		<h3>↓</h3>
+		<label for="tooltip-clone-content">External cloned content</label>
+	</div>
+	<div class="popupr circle" data-type="tooltip" data-position="left" data-content="#test-menu">
+		<h3>←</h3>
+		<label for="tooltip-">External replaced content</label>
+	</div>
 
 	<h2 id="popupr-demo"><a href="#popupr-demo">popupr,</code></a></h2>
-	<div class="popupr target" data-type="popover">↑</div>
-	<div class="popupr target" data-type="popover">→</div>
-	<div class="popupr target" data-type="popover">↓</div>
-	<div class="popupr target" data-type="popover">←</div>
+	<div class="" data-type="popover">↑</div>
+	<div class="" data-type="popover">→</div>
+	<div class="" data-type="popover">↓</div>
+	<div class="" data-type="popover">←</div>
 
 	<h2 id="dropdown-demo"><a href="#dropdown-demo">dropdown,</code></a></h2>
-	<div class="popupr target" data-type="dropdown" data-position="top">↑</div>
-	<div class="popupr target" data-type="dropdown" data-position="right">→</div>
-	<div class="popupr target" data-type="dropdown" data-position="bottom">↓</div>
-	<div class="popupr target" data-type="dropdown" data-position="left">←</div>
+	<div class="" data-type="dropdown" data-position="top" data-content="#menu1">#menu1</div>
+	<div class="" data-type="dropdown" data-position="right" data-content="#menu1">#menu1</div>
+	<div class="" data-type="dropdown" data-position="bottom" >custom content</div>
+	<div class="" data-type="dropdown" data-position="left">←</div>
 
 	<h2 id="balloon-demo"><a href="#balloon-demo">balloon,</code></a></h2>
-	<div class="popupr target" data-type="balloon">↑</div>
-	<div class="popupr target" data-type="balloon">→</div>
-	<div class="popupr target" data-type="balloon">↓</div>
-	<div class="popupr target" data-type="balloon">←</div>
+	<div class="" data-type="balloon">↑</div>
+	<div class="" data-type="balloon">→</div>
+	<div class="" data-type="balloon">↓</div>
+	<div class="" data-type="balloon">←</div>
 
 	<h2 id="overlay-demo"><a href="#overlay-demo">overlay,</code></a></h2>
-	<div class="popupr target" data-type="overlay">↑</div>
-	<div class="popupr target" data-type="overlay">→</div>
-	<div class="popupr target" data-type="overlay">↓</div>
-	<div class="popupr target" data-type="overlay">←</div>
+	<div class="" data-type="overlay">Iframe</div>
+	<div class="" data-type="overlay">Custom content</div>
+	<div class="" data-type="overlay">Image zoomer</div>
+	<div class="" data-type="overlay">Image gallery</div>
 
 	<h2 id="etc"><a href="#etc">etc.</code></a></h2>
 </section>
