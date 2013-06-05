@@ -1,7 +1,7 @@
-.popupr-container [hidden]{
+.popuppee [hidden]{
 	display: none;
 }
-.popupr-container{
+.popuppee {
 	position: absolute;
 	background: black;
 	top: 0;
@@ -20,26 +20,26 @@
 
 
 /* Specific containers */
-.popupr-dropdown{
+.popuppee-dropdown{
 }
-.popupr-tooltip{
+.popuppee-tooltip{
 }
-.popupr-dialog{
+.popuppee-dialog{
 
 }
-.popupr-lightbox{
+.popuppee-lightbox{
 
 }
-.popupr-overlay{
+.popuppee-overlay{
 
 }
 
 
 
 /* Elements */
-.popupr-tip{
+.popuppee-tip{
 	background: gray;
 }
-.popupr-close{
+.popuppee-close{
 
 }

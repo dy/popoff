@@ -1,5 +1,6 @@
 ;(function ($){
-	var pluginName = "popupr",
+	var pluginName = "popupper",
+		containerClass = "popuppee",
 		$doc = $(document),
 		$body = $(document.body),
 		$wnd = $(window)
@@ -24,7 +25,7 @@
 
 			content: null, //Selector, element, jquery-object, html-string, function atc			
 			container: $body, //Where to place in popupped content-container
-			targets: null, //selector, array of objects etc. Synonims of current target
+			targets: null, //selector, array of objects etc. Synonims of current target. Each target shares container
 			cloneContent: false, //Whether to clone or replace content element
 
 			type: "tooltip", //tooltip, popover, overlay, dropdown, custom
@@ -97,7 +98,7 @@
 
 			self.timeouts = {};
 
-			self.hideOnClickOutside = false;
+			self.hideOnClickOutside = false; //for dropdowns
 
 			//Remove title from target
 			self.title = self.target.attr("title");
@@ -110,10 +111,16 @@
 				o.content = o.content.trim();
 				if (o.content[0] == '.' || o.content[0] == '#') {
 					if (o.cloneContent){
-						//TODO: how to fully clone nodes
 						o.content = $(o.content).clone(true, true);
 					} else {
-						o.content = $(o.content).detach();
+						o.content = $(o.content);
+						if (o.content.parent().hasClass(containerClass)){
+							self.container = o.content.parent();
+							//o.targets = ;
+							//o.single = true;
+						} else {
+							o.content.detach();
+						}
 					}
 				}
 			}
@@ -121,13 +128,14 @@
 			o.position = opts.position || o.types[o.type] && o.types[o.type].position || o.position;
 
 			self.target.addClass(pluginName + "-target");
-			self.container = $(self.containerTpl({
-				name: pluginName
-			}))
-			.append(o.content)
-			.attr('hidden', true)
-			.addClass([pluginName] + "-" + o.type)
-			.appendTo(o.container);
+
+			if (!self.container) {
+				self.container = $(self.containerTpl())
+				.append(o.content)
+				.attr('hidden', true)
+				.addClass(containerClass + "-" + o.type)
+				.appendTo(o.container);
+			}
 
 			if (o.animDuration){ //set duration through options
 				self.setAnimDuration(o.animDuration);
@@ -189,7 +197,7 @@
 		delayedCall: function(fn, delay, key){
 			var self = this;
 			key == null && (key = 'none')
-			clearTimeout(self.timeouts[key])
+			clearTimeout(self.timeouts[key]);
 			self.timeouts[key] = setTimeout(fn, delay)
 		},
 
@@ -255,7 +263,9 @@
 			//Handle outside click
 			if (self.hideOnClickOutside){
 				$doc.on("click.outside."+pluginName, function(e) {
-					if (e.target === self.container[0] || e.target === self.target[0]) {
+					if (e.target === self.container[0]
+						|| e.target === self.target[0]
+						|| self.isInside(e.clientX, e.clientY, self.container)) {
 						return;
 					}
 					self.hide();
@@ -263,6 +273,11 @@
 			}
 
 			return self;
+		},
+
+		isInside: function(x, y, el){
+			var rect = $(el)[0].getBoundingClientRect();
+			return x > rect.left && x < rect.right && y > rect.top && y < rect.bottom;
 		},
 
 		hide: function(){
@@ -345,8 +360,8 @@
 
 		//Rendering
 		containerTpl: function (opts) {
-			opts == null && (opts = {name: pluginName})
-			return '<div class="' + opts.name + '-container"/>'
+			opts == null && (opts = {"class": containerClass})
+			return '<div class="' + opts.class + '"/>'
 		}
 	})
 
@@ -369,9 +384,19 @@
 	//Simple options parser. The same as $.fn.data(), or element.dataset but for zepto	
 	if (!$.parseDataAttributes) {		
 		$.parseDataAttributes = function(el) {
-			var data = {};
+			var data = {}, v;
 			if (el.dataset) {
-				$.extend(data, el.dataset);
+				for (var prop in el.dataset) {
+					if (el.dataset[prop] === "true") {
+						data[prop] = true;
+					} else if (el.dataset[prop] === "false") {
+						data[prop] = false;
+					} else if (v = parseInt(el.dataset[prop])) {
+						data[prop] = v;
+					} else {
+						data[prop] = el.dataset[prop];
+					}
+				}
 			} else {
 				[].forEach.call(el.attributes, function(attr) {
 					if (/^data-/.test(attr.name)) {

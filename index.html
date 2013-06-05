@@ -1,6 +1,6 @@
 ﻿<link rel="stylesheet" type="text/css" href="ext/ui-kit.css">
 <link rel="stylesheet" type="text/css" href="ext/animate.css">
-<link rel="stylesheet" type="text/css" href="jquery.popupr.css">
+<link rel="stylesheet" type="text/css" href="jquery.popupper.css">
 
 <style type="text/css">
 body{
@@ -13,6 +13,12 @@ h1, h2, h3, h4, h5, h6 {
 
 header, section{
 	text-align: center;
+	width: 960px;
+	margin: 0 auto;
+}
+
+section{
+	border-top: 2px solid #eee;
 }
 
 .circle{
@@ -39,20 +45,26 @@ header, section{
 	font-weight: normal;
 	line-height: 15px;
 }
+
+.calendar{
+	width: 200px;
+	height: 200px;
+}
+
 </style>
 
 <script>
 //Hook to use animate.css
-window.popupr = {
+window.popupper = {
 	animInClass: "fadeInDown",
 	animClass: "animated",
 	animOutClass: "fadeOutUp",
-	animDuration: 800
+	animDuration: 250
 }
 </script>
 
 <header>
-	<h1>jQuery.popupr: <small>documented demo</small></h1>
+	<h1>jQuery.popup:<small><a href="#demo">demo</a> & <a href="">documentation</a></small></h1>
 	<p class="intro">Generic popup thing, a base for any popupping stuff:</p>
 </header>
 
@@ -61,24 +73,24 @@ window.popupr = {
 
 <section id="demo">
 	<h2 id="tooltip-demo"><a href="#tooltip-demo">tooltip,</code></a></h2>
-	<div class="popupr circle" id="tooltip-title" data-type="tooltip" data-position="top" title="Top tooltip title">
+	<div class="popupper circle" id="tooltip-title" data-type="tooltip" data-position="top" title="Top tooltip title">
 		<h3>↑</h3>
 		<label for="tooltip-title">Title tooltip</label>
 	</div>
-	<div class="popupr circle" id="tooltip-own-content" data-type="tooltip" data-position="right" data-content="Content of data-content attribute">
+	<div class="popupper circle" id="tooltip-own-content" data-type="tooltip" data-position="right" data-content="Content of data-content attribute">
 		<h3>→</h3>
 		<label for="tooltip-own-content">Own content</label>
 	</div>
-	<div class="popupr circle" id="tooltip-clone-content" data-type="tooltip" data-position="bottom" data-content="#test-menu" data-clone-content="true">
+	<div class="popupper circle" id="tooltip-clone-content" data-type="tooltip" data-position="bottom" data-content="#test-menu" data-clone-content="false">
 		<h3>↓</h3>
 		<label for="tooltip-clone-content">External cloned content</label>
 	</div>
-	<div class="popupr circle" data-type="tooltip" data-position="left" data-content="#test-menu">
+	<div class="popupper circle" data-type="tooltip" data-position="left" data-content="#test-menu" data-clone-content="false">
 		<h3>←</h3>
 		<label for="tooltip-">External replaced content</label>
 	</div>
 
-	<h2 id="popupr-demo"><a href="#popupr-demo">popupr,</code></a></h2>
+	<h2 id="popupper-demo"><a href="#popupper-demo">popupper,</code></a></h2>
 	<div class="" data-type="popover">↑</div>
 	<div class="" data-type="popover">→</div>
 	<div class="" data-type="popover">↓</div>
@@ -111,15 +123,23 @@ window.popupr = {
 	<p>Include script and add class</p>
 </section>
 
-
-<section>
-	<h2></h2>
+<section id="options">
+	<h2><a href="#use-cases">#</a> Options</h2>	
 </section>
 
 
-<div id="container-1" class="">
+<section id="use-cases">
+	<h2><a href="#use-cases">#</a> Use-cases</h2>
+	<input class="popupper" placeholder="Choose date..." data-content="#calendar" data-type="dropdown"/>
+	<div class="calendar" id="calendar"></div>
+</section>
+
+
+<div id="container-1" class="calendar">
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="ext/zepto.js"><\/script>')</script>
 
-<script src="jquery.popupr.js"></script>
+<script src="ext/moment.js"></script>
+<script src="jquery.calendar.js"></script>
+<script src="jquery.popupper.js"></script>
