@@ -30,7 +30,7 @@ Depends on moment.js
 	    	next: 'MMMM [&rarr;]',
 	    	current: 'MMMM YYYY',
 	    	format: 'format to out',
-	    	title: 'LLLL', //simple display titles format
+	    	title: 'LL', //simple display titles format
 	    	isLink: true,
 	    	href: '[?data=]YYYY-MM-dd',
 
@@ -110,7 +110,9 @@ Depends on moment.js
 			}
 			table += ('</table>');
 
-			self.table.replaceWith(table);
+			var newTable = $(table);
+			self.table.replaceWith(newTable);
+			self.table = newTable;
 
 			//headers
 			self.prev.html(moment(self.date).subtract("months", 1).format(o.prev));
@@ -120,7 +122,7 @@ Depends on moment.js
 
 		dayTpl: function(data){
 			var self = this, o = self.options;
-			return 	'<td class="' + (data.isOtherMonth ? 'other-month' : 'current-month') + '" title="' + data.date.format(o.format) + '">' +
+			return 	'<td class="' + (data.isOtherMonth ? 'other-month' : 'current-month') + '" title="' + data.date.format(o.title) + '">' +
 						(o.isLink ? ('<a class="day" href="' + data.date.format(o.href) + '">' + data.date.date() + '</a>') : data.date.date()) +
 					'</td>';
 		}
@@ -170,14 +172,14 @@ Depends on moment.js
 	//Autolaunch
 	//Possible options location: preinit [Popover] object of the window, data-attributes, passed options.
 	$(function () {
-		var name = window[pluginName] && window[pluginName].defaultClass || pluginName;
+		//var name = window[pluginName] && window[pluginName].defaultClass || pluginName;
 		$("." + pluginName).each(function (i, e){
 			var $e = $(e),
-				opts = $.extend({}, window[pluginName], $.parseDataAttributes(e));
+				opts = $.extend({}, $.parseDataAttributes(e));
 			$e[pluginName](opts);
 		});
 	});
 
 
 
-})(jQuery || Zepto, moment);
+})(window.jQuery || window.Zepto, moment);

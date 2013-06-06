@@ -1,3 +1,5 @@
+
+
 ;(function ($){
 	var pluginName = "popupper",
 		containerClass = "popuppee",
@@ -15,6 +17,7 @@
 
 	//Static
 	$.extend($[pluginName], {
+		nextTargetId: 0,
 		defaults: {
 			animDuration: null,
 			animInClass: "in",
@@ -34,8 +37,8 @@
 				tooltip: {
 					position: "top",
 					bind: {
-						"mouseenter target 200": "show",
-						"mouseleave target 200": "hide"
+						"mouseenter target 400": "show",
+						"mouseleave target 400": "hide"
 					}
 				},
 				popover: {
@@ -80,10 +83,24 @@
 			single: true, //instantly close other dropdowns when one shows
 
 			//Callbacks
-			show: undefined,
-			hide: undefined,
-			beforeShow: undefined,
-			beforeHide: undefined
+			show: null, //before show
+			hide: null //after hide
+		},
+
+		//Just generates unique id
+		getTargetId: function(target){
+			return ++$[pluginName].nextTargetId;
+		},
+
+		//Cache of targets: id → popupper-controller
+		targets: {},
+
+		//Calls method of target
+		//TODO: make arguments support
+		targetMethod: function(targetId, methName){
+			console.log("targetMethCalled: " + methName)
+			var target = $[pluginName].targets[targetId];
+			target[methName].apply(target, []);
 		}
 	})
 
@@ -115,9 +132,9 @@
 					} else {
 						o.content = $(o.content);
 						if (o.content.parent().hasClass(containerClass)){
-							self.container = o.content.parent();
+							self.container = $(o.content[0].parentNode);
 							//o.targets = ;
-							//o.single = true;
+							self.container.addClass(containerClass+"-shared");
 						} else {
 							o.content.detach();
 						}
@@ -128,6 +145,10 @@
 			o.position = opts.position || o.types[o.type] && o.types[o.type].position || o.position;
 
 			self.target.addClass(pluginName + "-target");
+			self.targetId = $[pluginName].getTargetId(self.target);
+			self.target.addClass(pluginName + "-target-" + self.targetId); //make unique id for each target
+
+			$[pluginName].targets[self.targetId] = self; //keep cache of created targets
 
 			if (!self.container) {
 				self.container = $(self.containerTpl())
@@ -187,9 +208,13 @@
 			}
 
 			if (!delay) {
-				selector.on(evt, meth.bind(self) );
+				selector.on(evt, function(){
+					meth.bind(self)()
+				});
 			} else {
-				selector.on(evt, function(){ self.delayedCall(meth.bind(self), delay) } );
+				selector.on(evt, function(){
+					self.delayedCall(meth.bind(self), delay)
+				} );
 			}
 		},
 
@@ -234,31 +259,80 @@
 			return dur;
 		},
 
+		//Intent action: make it next after the current action
+		clearIntents: function(){
+			this.clearShowIntent();
+			this.clearHideIntent();
+		},
+
+		clearShowIntent: function(){
+			this.container.off("hide." + containerClass);
+		},
+
+		clearHideIntent: function(){
+			this.container.off("afterShow." + containerClass);
+		},
+
+		//Show after hide
+		intentShow: function(){
+			var self = this, o = self.options;
+			self.clearIntents();
+
+			self.container.one("hide." + containerClass, self.show.bind(self));
+
+			return self;
+		},
+
+		//Hide after showed
+		intentHide: function(){
+			var self = this, o = self.options;
+			self.clearIntents();
+
+			self.container.one("afterShow." + containerClass, self.hide.bind(self))
+
+			return self;
+		},
+
 		//API
 		show: function(){
 			var self = this, o = self.options;
 
-			if (self.target.hasClass(o.activeClass) || self.container.hasClass(o.animClass)){
+			//TODO: detecting state isn’t task of API action. It should straightly show.
+
+			//Is fading in on other target - intent hide, move, show
+			if (self.container.hasClass(o.animClass) && self.container.data('target-id') != self.targetId) {
+				console.log("this target: " + self.targetId + " other target: " + self.container.data("target-id") )
+				//$[pluginName].targetMethod(self.container.data('target-id'), "hide");
+				//self.container.on("hide."+containerClass, self.show.bind(self));
+				//return self;
+			}
+
+			self.container.data("target-id", self.targetId);
+
+			//Already visible - clear any intents (won’t work in constans state)
+			if (self.target.hasClass(o.activeClass)/* || self.container.hasClass(o.animClass)*/){
+				self.clearIntents()
 				return self;
+			}
+
+			//Is fading out — intent show
+			if (self.container.hasClass(o.animOutClass)){
+				return self.intentShow();
 			}
 
 			self.container.removeAttr('hidden');
 
-			if (o.single) {
-				//TODO
-				//$("." + [pluginName] + "-targte").not(self.target).data([pluginName]).hide();
-			}
-
 			self.move();
 
-			self.container.addClass(o.animClass + " " + o.animInClass)
-			.removeClass(o.animOutClass);
+			self.container.removeClass(o.animOutClass).addClass(o.animClass + " " + o.animInClass);
 
 			self.delayedCall(function(){
 				self.container.removeClass(o.animClass + " " + o.animInClass);
+				self.target.addClass(o.activeClass);
+
+				self.container.trigger("afterShow." + containerClass);			
+				self.target.trigger("afterShow." + pluginName);
 			}, o.animDuration, "anim");
-			
-			self.target.addClass(o.activeClass);
 
 			//Handle outside click
 			if (self.hideOnClickOutside){
@@ -272,6 +346,11 @@
 				});
 			}
 
+			//evts & callbacks
+			self.target.trigger("show." + pluginName);
+			self.container.trigger("show." + containerClass);
+			o.show && o.show();
+
 			return self;
 		},
 
@@ -283,8 +362,16 @@
 		hide: function(){
 			var self = this, o = self.options;
 
-			if (!self.target.hasClass(o.activeClass) && !self.container.hasClass(o.animInClass)){
+			//Already hidden - clear hide intents
+			if (self.container.attr("hidden")/* || self.container.hasClass(o.animClass)*/){
+				//console.log("fuseHide")
+				self.clearIntents();
 				return self;
+			}
+
+			//Is fading in — intent show
+			if (self.container.hasClass(o.animInClass)){
+				return self.intentHide();
 			}
 
 			self.container
@@ -296,10 +383,21 @@
 				.removeClass(o.animClass + " " + o.animOutClass)
 				.attr('hidden', true);
 
-				self.target.removeClass(o.activeClass);
+				//evts & callbacks
+				self.target.trigger("hide." + pluginName);
+				self.container.trigger("hide." + containerClass);
+				o.hide && o.hide();
+
 			}, o.animDuration, "anim");
 
-			if (self.hideOnClickOutside) $doc.off("click.outside."+pluginName)
+			//Remove active class at once
+			self.target.removeClass(o.activeClass);
+
+			if (self.hideOnClickOutside) $doc.off("click.outside."+pluginName);
+
+			//evts & callbacks
+			self.target.trigger("beforeHide." + pluginName);
+			self.container.trigger("beforeHide." + containerClass);
 
 			return self;
 		},

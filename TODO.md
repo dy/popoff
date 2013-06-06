@@ -1,3 +1,8 @@
+* Fix different targets hide bug
+* handle case when the container is outside the viewport
+
+
+
 * Zones to avoid when place
 * Vertical/Horizontal placing strategy
 * + Multiple or single tooltips (number of tooltips)
