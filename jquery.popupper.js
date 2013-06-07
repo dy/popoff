@@ -1,5 +1,3 @@
-
-
 ;(function ($){
 	var pluginName = "popupper",
 		containerClass = "popuppee",
@@ -142,6 +140,8 @@
 				}
 			}
 
+			o.content.removeAttr("hidden");
+
 			o.position = opts.position || o.types[o.type] && o.types[o.type].position || o.position;
 
 			self.target.addClass(pluginName + "-target");
@@ -158,7 +158,7 @@
 				.appendTo(o.container);
 			}
 
-			if (o.animDuration){ //set duration through options
+			if (o.animDuration || o.animDuration === 0){ //set duration through options
 				self.setAnimDuration(o.animDuration);
 			} else { //get duration from css
 				o.animDuration = self.getAnimDuration();
@@ -339,7 +339,8 @@
 				$doc.on("click.outside."+pluginName, function(e) {
 					if (e.target === self.container[0]
 						|| e.target === self.target[0]
-						|| self.isInside(e.clientX, e.clientY, self.container)) {
+						|| self.isInside(e.clientX, e.clientY, self.container)
+						|| self.isInside(e.clientX, e.clientY, self.target)) {
 						return;
 					}
 					self.hide();

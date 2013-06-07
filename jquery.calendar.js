@@ -4,9 +4,10 @@ Rewrite of http://eisabainyo.net/demo/jquery.calendar-widget.php
 Depends on moment.js
 */
 
+//TODO: fix autolaunch (launches twice)
+
 (function($, moment) {
 	var pluginName = "calendar",
-		now = moment(),
 		ln = moment.langData();
 
 	//Class
@@ -18,9 +19,7 @@ Depends on moment.js
 	//Static
 	$.extend($[pluginName], {
 		defaults: {
-			day: now.date(),
-			month: now.month(),
-			year: now.year(),
+			date: moment(), //date to show
 			today: 'Сегодня',
 			clear: 'Очистить',
 			monthSelector: false,
@@ -30,9 +29,10 @@ Depends on moment.js
 	    	next: 'MMMM [&rarr;]',
 	    	current: 'MMMM YYYY',
 	    	format: 'format to out',
-	    	title: 'LL', //simple display titles format
+	    	title: 'LL', //titles format
 	    	isLink: true,
-	    	href: '[?data=]YYYY-MM-dd',
+	    	href: '[?data=]YYYY-MM-DD',
+	    	day: 'D', //day format
 
 	    	//evts
 	    	select: null
@@ -48,7 +48,9 @@ Depends on moment.js
 			self.options = $.extend({}, $[pluginName].defaults);
 			var o = self.options = $.extend(self.options, opts);
 
-			self.date = moment([o.year, o.month]).startOf("month");
+			self.date = moment(o.date);
+			if (!self.date.isValid()) self.date = moment();
+			self.selected = moment(self.date).startOf("day");
 
 			//Render initial
 			self.prev = $('<div class="prev"></div>').appendTo(el);
@@ -67,7 +69,9 @@ Depends on moment.js
 			}).on("click", ".next", function(e){
 				self.nextMonth(e);
 			}).on("click", ".day", function(e){
-			});
+			}).on("selectstart", function(e){
+				return false;
+			})
 		},
 
 		nextMonth: function(){
@@ -122,8 +126,8 @@ Depends on moment.js
 
 		dayTpl: function(data){
 			var self = this, o = self.options;
-			return 	'<td class="' + (data.isOtherMonth ? 'other-month' : 'current-month') + '" title="' + data.date.format(o.title) + '">' +
-						(o.isLink ? ('<a class="day" href="' + data.date.format(o.href) + '">' + data.date.date() + '</a>') : data.date.date()) +
+			return 	'<td class="' + (data.isOtherMonth ? 'other-month' : 'current-month') + (data.date.isSame(self.selected,"day") ?' today':'') + '" title="' + data.date.format(o.title) + '">' +
+						(o.isLink ? ('<a class="day" href="' + data.date.format(o.href) + '">' + data.date.format(o.day) + '</a>') : data.date.format(o.day)) +
 					'</td>';
 		}
 	});
@@ -132,6 +136,7 @@ Depends on moment.js
 	$.fn[pluginName] = function (opts) {
 		//Init this
 		return $(this).each(function (i, el) {
+			opts = $.extend({}, $.parseDataAttributes(el), opts);
 			var po = new $[pluginName](el, opts);
 			if (!$(el).data(pluginName)) $(el).data(pluginName, po);
 		})
@@ -168,17 +173,17 @@ Depends on moment.js
 		}
 	}
 
-
+	//TODO: fix multiple launch on one lement
 	//Autolaunch
 	//Possible options location: preinit [Popover] object of the window, data-attributes, passed options.
-	$(function () {
+	/*$(function () {
 		//var name = window[pluginName] && window[pluginName].defaultClass || pluginName;
 		$("." + pluginName).each(function (i, e){
 			var $e = $(e),
 				opts = $.extend({}, $.parseDataAttributes(e));
 			$e[pluginName](opts);
 		});
-	});
+	});*/
 
 
 
