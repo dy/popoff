@@ -135,7 +135,7 @@
 
 			self.blockEvents = false; //when true, any behavioural events are being ignored
 
-			self.outsideDelay = null; //for dropdowns
+			self.outsideDelays = {}; //for dropdowns
 
 			//Remove title from target
 			self.title = self.target.attr("title");
@@ -230,7 +230,7 @@
 					//only click outside supported
 					//special case that blocks any other events while it lasts 
 					//e.g. do not return dropdown on hover if clicked outside
-					self.outsideDelay = delay || 0;
+					self.outsideDelays[methName] = delay || 0;
 					return;
 				case "target":
 					selector = self.target;
@@ -374,8 +374,8 @@
 			}, o.animDuration, "anim");
 
 			//Handle outside click
-			if (self.outsideDelay || self.outsideDelay === 0){
-				$doc.on("click.outside."+pluginName, self.callOnClickOutside(self.hide.bind(self), self.outsideDelay));
+			if (self.outsideDelays.hide || self.outsideDelays.hide === 0){
+				$doc.on("click.outside."+pluginName, self.callOnClickOutside(self.hide.bind(self), self.outsideDelays.hide));
 			}
 
 			//evts & callbacks
@@ -398,7 +398,7 @@
 
 			self.delayedCall(function(){
 				self.container.removeClass(o.animClass + " " + o.animOutClass).attr('hidden', true);
-				
+
 				self.blockEvents = false;
 				//evts & callbacks
 				self.target.trigger("hide." + pluginName);
@@ -430,7 +430,6 @@
 					|| self.isInside(e.clientX, e.clientY, self.target)) {
 					return;
 				}
-				//console.log(delay)
 				//clicked outside — ignore everything till @method finishes
 				self.delayedCall(method, delay);
 				self.blockEvents = true;
@@ -502,8 +501,8 @@
 			}, o.animDuration, "animOverlay");
 
 			//Handle outside click
-			if (self.outsideDelay || self.outsideDelay === 0){
-				$doc.on("click.outside."+pluginName, self.callOnClickOutside(self.hideOverlay.bind(self), self.outsideDelay));
+			if (self.outsideDelays.hideOverlay || self.outsideDelays.hideOverlay === 0){
+				$doc.on("click.outside."+pluginName, self.callOnClickOutside(self.hideOverlay.bind(self), self.outsideDelays.hideOverlay));
 			}
 
 			return self;
