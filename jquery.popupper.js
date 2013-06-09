@@ -22,6 +22,9 @@
 			animOutClass: "out",
 			animClass: "animated",
 
+			overlayInClass: "in",
+			overlayOutClass: "out",
+
 			activeClass: "active",
 
 			content: null, //Selector, element, jquery-object, html-string, function atc			
@@ -41,7 +44,7 @@
 				},
 				popover: {
 					position: "top",
-					bind: {				
+					bind: {		
 						"mouseenter target 50": "show",
 						"click target 0": "show",
 						"mouseenter container 0": "show",
@@ -52,9 +55,9 @@
 				overlay: {
 					position: "center",
 					bind: {
-						"click target 0": "show",
+						"click target": "show",
 						"click outside": "hide",
-						"click close 0": "hide"
+						"click close": "hide"
 					}			
 				},
 				dropdown: {
@@ -499,16 +502,17 @@
 	})
 
 
-	//Plugin. 
+	//Plugin
 	$.fn[pluginName] = function (arg, arg2) {
 		if (typeof arg == "string") {//Call API method
 			return $(this).each(function (i, el) {
-				$(el).data(pluginName)[arg](arg2);
+				//$(el).data(pluginName)[arg](arg2);
+				$[pluginName].targetMethod($(el).data('target-id'), arg2)
 			})
 		} else {//Init this
 			return $(this).each(function (i, el) {
-				var po = new $[pluginName](el, arg);
-				if (!$(el).data(pluginName)) $(el).data(pluginName, po);
+				var instance = new $[pluginName](el, $.extend(arg, $.parseDataAttributes(el)));
+				if (!$(el).data(pluginName)) $(el).data(pluginName, instance);
 			})			
 		}
 	}
@@ -549,9 +553,21 @@
 	//Possible options location: preinit [Popover] object of the window, data-attributes, passed options.
 	$(function () {
 		var name = window[pluginName] && window[pluginName].defaultClass || pluginName;
-		$("." + pluginName).each(function (i, e){
+		$("[class*=" + pluginName + "]").each(function (i, e){
+			var type;
+
+			//TODO: parse type from the class
+			for (var i = e.classList.length; i--; ){
+				var className = e.classList[i];
+				var match = className.match(new RegExp("popupper\\-([a-z]+)", "i"));
+				if (match && match[1]) {
+					type = match[1];
+					break;
+				}
+			}
+
 			var $e = $(e),
-				opts = $.extend({}, window[pluginName], $.parseDataAttributes(e));
+				opts = $.extend({}, window[pluginName], {type: type});
 			$e[pluginName](opts);
 		});
 	});

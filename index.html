@@ -58,7 +58,10 @@ window.popupper = {
 	animInClass: "fadeInDown",
 	animClass: "animated",
 	animOutClass: "fadeOutUp",
-	animDuration: 1250
+	animDuration: 850,
+
+	overlayInClass: "fadeIn",
+	overlayOutClass: "fadeOut"
 }
 </script>
 
@@ -72,11 +75,11 @@ window.popupper = {
 
 <section id="demo">
 	<h2 id="tooltip-demo"><a href="#tooltip-demo">tooltip,</code></a></h2>
-	<div class="popupper circle" id="tooltip-title" data-type="tooltip" data-position="top" title="Top tooltip title">
+	<div class="popupper-tooltip circle" id="tooltip-title" data-position="top" title="Top tooltip title">
 		<h3>↑</h3>
 		<label for="tooltip-title">Title tooltip</label>
 	</div>
-	<div class="popupper circle" id="tooltip-own-content" data-type="tooltip" data-position="right" data-content="Content of data-content attribute">
+	<div class="popupper-tooltip circle" id="tooltip-own-content" data-position="right" data-content="Content of data-content attribute">
 		<h3>→</h3>
 		<label for="tooltip-own-content">Own content</label>
 	</div>
@@ -108,8 +111,8 @@ window.popupper = {
 	<div class="" data-type="balloon">←</div>
 
 	<h2 id="overlay-demo"><a href="#overlay-demo">overlay,</code></a></h2>
-	<div class="" data-type="overlay">Iframe</div>
-	<div class="" data-type="overlay">Custom content</div>
+	<div class="popupper-overlay">Iframe</div>
+	<div class="popupper-overlay" data-content="Some custom content for overlay popup">Custom content</div>
 	<div class="" data-type="overlay">Image zoomer</div>
 	<div class="" data-type="overlay">Image gallery</div>
 

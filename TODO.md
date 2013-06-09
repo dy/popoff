@@ -1,9 +1,10 @@
-* GET UPDATED POPUPR AND CALENDAR FROM WORK
-
-* Fix different targets hide bug
 * handle case when the container is outside the viewport
 
+* zepto shared content bug
 
+* position: center
+
+* Tooltip centrized relative to target position (not as dropdown)
 
 * Zones to avoid when place
 * Vertical/Horizontal placing strategy
@@ -17,13 +18,6 @@
 * Event callbacks
 * Lightbox, dropdown, tooltip, balloon, dialog and popup in one.
 
-##TODO
-
-* + Move anim-durations out to CSS
-* Create repo: popupr or popover?
-* Queue animations, wait till previous finish and then launch next, not rudely abrupt.
 * Handle out-of-screen, out-of-size
 
 * Count tip size when placing
-* Make central position
-* Single mode do
