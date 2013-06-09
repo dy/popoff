@@ -1,3 +1,6 @@
+* Handle bug with dropdown (disappearing dropdown)
+* Handle overlay
+
 * handle case when the container is outside the viewport
 
 * zepto shared content bug
@@ -21,3 +24,9 @@
 * Handle out-of-screen, out-of-size
 
 * Count tip size when placing
+
+* Aside-menu-popup (like on phones)
+
+* Test custom behaviour (custom type)
+
+* Test calling methods from outside, like $(thing).popupper("method");

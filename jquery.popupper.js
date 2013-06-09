@@ -16,6 +16,58 @@
 	//Static
 	$.extend($[pluginName], {
 		nextTargetId: 0,
+		types: {
+			//some_type: { "event [target|container|close|outside|selector] delay": method [+|-[method]] }
+			tooltip: {
+				position: "top",
+				behavior: {
+					"mouseenter target 400": "show", //TODO: handle "show -hide" and "show -"
+					"mouseleave target 400": "hide"
+				}
+			},
+			popover: {
+				position: "top",
+				behavior: {		
+					"mouseenter target 50": "show",
+					"click target 0": "show",
+					"mouseenter container 0": "show",
+					"mouseleave target 200": "hide",
+					"mouseleave container 200": "hide"
+				}				
+			},
+			overlay: {
+				position: "center",
+				close: "✕",
+				overlay: true,
+				behavior: {
+					"click target 1000": "show",
+					"click target 0": "showOverlay +",
+					"click outside 0": "hide",
+					"click outside 1000": "hideOverlay +",
+					"click close 0": "hide",
+					"click close 1000": "hideOverlay +"
+				}			
+			},
+			dropdown: {
+				position: "bottom",
+				behavior: {
+					"mouseenter container": "show",
+					"click target": "trigger",
+					"click outside": "hide",
+					"mouseleave container 1500": "hide",
+					"mouseleave target 1500": "hide"
+				}
+			},
+			sideMenu: {
+				//TODO
+			},
+			dialog: {
+				//TODO
+			},
+			modal: {
+				//TODO
+			}
+		},
 		defaults: {
 			animDuration: null,
 			animInClass: "in",
@@ -33,49 +85,10 @@
 			cloneContent: false, //Whether to clone or replace content element
 
 			type: "tooltip", //tooltip, popover, overlay, dropdown, custom
-			types: {
-				//some_type: { "event [target|container|close|outside|selector] delay": show }
-				tooltip: {
-					position: "top",
-					bind: {
-						"mouseenter target 400": "show",
-						"mouseleave target 400": "hide"
-					}
-				},
-				popover: {
-					position: "top",
-					bind: {		
-						"mouseenter target 50": "show",
-						"click target 0": "show",
-						"mouseenter container 0": "show",
-						"mouseleave target 200": "hide",
-						"mouseleave container 200": "hide"
-					}				
-				},
-				overlay: {
-					position: "center",
-					bind: {
-						"click target": "show",
-						"click outside": "hide",
-						"click close": "hide"
-					}			
-				},
-				dropdown: {
-					position: "bottom",
-					bind: {
-						"mouseenter container 0": "show",
-						"click target 0": "trigger",
-						"click outside": "hide",
-						"mouseleave container 1500": "hide",
-						"mouseleave target 1500": "hide"
-					}
-				}
-			},
+			behavior: null, //custom behaviour could be redefined
 
-			close: false,
-			closeText: "x",
-
-			overlay: false,
+			close: false, //false (don’t show close) or string with text
+			overlay: false, //Just indicates need to create overlay
 
 			position: "top", //top, left, bottom, right, center (for overlays)
 			tip: true,
@@ -111,13 +124,16 @@
 			var self = this;
 
 			self.options = $.extend({}, $[pluginName].defaults);
-			var o = self.options = $.extend(self.options, opts);
+			$.extend(self.options, $[pluginName].types[opts.type || self.options.type]);
+			$.extend(self.options, opts);
+
+			var o = self.options;
 
 			self.timeouts = {};
 
 			self.active = false;
 
-			self.hideOnClickOutside = false; //for dropdowns
+			self.outsideDelay = null; //for dropdowns
 
 			//Remove title from target
 			self.title = self.target.attr("title");
@@ -128,6 +144,8 @@
 				if (self.title) o.content = self.title;				
 			} else {
 				o.content = o.content.trim();
+
+				//Is content a selector?
 				if (o.content[0] == '.' || o.content[0] == '#') {
 					if (o.cloneContent){
 						o.content = $(o.content).clone(true, true);
@@ -145,8 +163,6 @@
 				}
 			}
 
-			o.position = opts.position || o.types[o.type] && o.types[o.type].position || o.position;
-
 			self.target.addClass(pluginName + "-target");
 			self.targetId = $[pluginName].getTargetId(self.target);
 			self.target.addClass(pluginName + "-target-" + self.targetId); //make unique id for each target
@@ -156,9 +172,14 @@
 			if (!self.container) {
 				self.container = $(self.containerTpl())
 				.append(o.content)
-				.attr('hidden', true)
-				.addClass(containerClass + "-" + o.type)
 				.appendTo(o.container);
+			}
+
+			if (o.overlay){
+				if (!$[pluginName].overlay) {
+					$[pluginName].overlay = $('<div class="' + pluginName + '-overlay-blind" hidden/>').appendTo($body)
+				}
+				self.overlay = $[pluginName].overlay;
 			}
 
 			if (o.animDuration || o.animDuration === 0){ //set duration through options
@@ -174,28 +195,37 @@
 
 		bindEvents: function(){
 			var self = this, o = self.options;
-			if (!o.types[o.type]) return console.log("Not existing type of " + pluginName + ": " + o.type)
-			var bindings = o.types[o.type].bind;
+
+			var bindings = o.behavior;
 
 			self.target.click(function(e){
 				e.preventDefault();
 			})
 
 			for (var bindStr in bindings){
-				self.bindString(bindStr, self[bindings[bindStr]])
+				self.bindString(bindStr, bindings[bindStr])
 			}
 
 			return self;
 		},
 
-		bindString: function(bindStr, meth){
+		bindString: function(bindStr, methName){
 			var self = this, o = self.options;
 			var props = bindStr.split(" "),
-				evt = props[0], selector = props[1], delay = props[2];
+				evt = props[0], selector = props[1], delay = parseInt(props[2]), meth;
+
+			//non-blocking methods via "+"
+			var blocking = true;
+			if (methName[methName.length-1] == '+') { 
+				methName = methName.slice(0, -1).trim();
+				blocking = false;
+			}
+
+			meth = self[methName].bind(self);
 
 			switch (selector) {
 				case "outside": //only click outside supported
-					self.hideOnClickOutside = true;
+					self.outsideDelay = delay || 0;
 					return;
 				case "target":
 					selector = self.target;
@@ -204,29 +234,43 @@
 					selector = self.container;
 					break;
 				case "close":
-					selector = $("." + pluginName + "-close", self.container);
+					selector = $("." + containerClass + "-close", self.container);
 					break;
 				default:
 					selector = $(selector);
 			}
 
-			if (!delay) {
-				selector.on(evt, function(){
-					meth.bind(self)()
-				});
+			selector.on(evt, function(e){
+				self.delayedCall( function() {meth(e)}, delay, "events", blocking)
+			});
+		},
+
+		//Call method after @delay ms. If needed to block any other delayed calls, pass @blocking true
+		delayedCall: function(fn, delay, key, blocking){
+			var self = this;
+			key == null && (key = 'none')
+			if (blocking) self.clearDelayedCalls(key);
+			if (delay) {
+				self.timeouts[key] = setTimeout(fn, delay)
 			} else {
-				selector.on(evt, function(){
-					self.delayedCall(meth.bind(self), delay)
-				} );
+				fn();
 			}
 		},
 
-		//Call method after @delay ms.
-		delayedCall: function(fn, delay, key){
+		//Clears delayed calls
+		clearDelayedCalls: function(key){
 			var self = this;
-			key == null && (key = 'none')
-			clearTimeout(self.timeouts[key]);
-			self.timeouts[key] = setTimeout(fn, delay)
+			if (typeof key == "string"){
+				clearInterval(self.timeouts[key]);
+			} else if (key instanceof Array) {
+				for (var i = key.length; i--;){
+					clearInterval(self.timeouts[key[i]]);	
+				}
+			} else {
+				for (var k in self.timeouts){
+					clearInterval(self.timeouts[k]);
+				}
+			}
 		},
 
 		setAnimDuration: function(dur){
@@ -298,7 +342,6 @@
 		show: function(){
 			var self = this, o = self.options;
 
-			//TODO: detecting state isn’t task of API action. It should straightly show.
 			if (!self.checkShowConditions()) {
 				return self;
 			}
@@ -310,42 +353,28 @@
 			//Active class used for styles
 			//shows whether element is showing/intending to show or hiding/intending to hide.
 			self.target.addClass(o.activeClass);
-
-			self.container.removeClass(o.animOutClass).addClass(o.animClass + " " + o.animInClass);
-
+			self.container.removeClass(o.animOutClass).addClass(o.animClass + " " + o.animInClass);			
+			
 			self.delayedCall(function(){
 				self.container.removeClass(o.animClass + " " + o.animInClass);
 
 				self.active = true; //only period of complete visibility
 
-				self.container.trigger("afterShow." + containerClass);			
-				self.target.trigger("afterShow." + pluginName);
+				self.container.trigger("afterShow");			
+				self.target.trigger("afterShow");
 			}, o.animDuration, "anim");
 
 			//Handle outside click
-			if (self.hideOnClickOutside){
-				$doc.on("click.outside."+pluginName, function(e) {
-					if (e.target === self.container[0]
-						|| e.target === self.target[0]
-						|| self.isInside(e.clientX, e.clientY, self.container)
-						|| self.isInside(e.clientX, e.clientY, self.target)) {
-						return;
-					}
-					self.hide();
-				});
+			if (self.outsideDelay || self.outsideDelay === 0){
+				$doc.on("click.outside."+pluginName, self.callOnClickOutside(self.hide.bind(self), self.outsideDelay));
 			}
 
 			//evts & callbacks
-			self.target.trigger("show." + pluginName);
-			self.container.trigger("show." + containerClass);
+			self.target.trigger("show");
+			self.container.trigger("show");
 			o.show && o.show();
 
 			return self;
-		},
-
-		isInside: function(x, y, el){
-			var rect = $(el)[0].getBoundingClientRect();
-			return x > rect.left && x < rect.right && y > rect.top && y < rect.bottom;
 		},
 
 		hide: function(){
@@ -355,20 +384,16 @@
 				return self;
 			}
 
+			self.container.addClass(o.animClass + " " + o.animOutClass).removeClass(o.animInClass);	
+
 			self.active = false;
 
-			self.container
-			.addClass(o.animClass + " " + o.animOutClass)
-			.removeClass(o.animInClass);
-
 			self.delayedCall(function(){
-				self.container
-				.removeClass(o.animClass + " " + o.animOutClass)
-				.attr('hidden', true);
+				self.container.removeClass(o.animClass + " " + o.animOutClass).attr('hidden', true);
 
 				//evts & callbacks
-				self.target.trigger("hide." + pluginName);
-				self.container.trigger("hide." + containerClass);
+				self.target.trigger("hide");
+				self.container.trigger("hide");
 				o.hide && o.hide();
 
 			}, o.animDuration, "anim");
@@ -376,16 +401,31 @@
 			//Remove active class at once
 			self.target.removeClass(o.activeClass);
 
-			if (self.hideOnClickOutside) $doc.off("click.outside."+pluginName);
+			//Off outside clicks
+			$doc.off("click.outside." + pluginName);
 
 			//evts & callbacks
-			self.target.trigger("beforeHide." + pluginName);
-			self.container.trigger("beforeHide." + containerClass);
+			self.target.trigger("beforeHide");
+			self.container.trigger("beforeHide");
 
 			return self;
 		},
 
-		//Is show needed now and if not put off show 
+		//Helping event that detects if click happened outside container and target
+		callOnClickOutside: function(method, delay){			
+			var self = this;
+			return function(e){
+				if (e.target === self.container[0]
+					|| e.target === self.target[0]
+					|| self.isInside(e.clientX, e.clientY, self.container)
+					|| self.isInside(e.clientX, e.clientY, self.target)) {
+					return;
+				}
+				self.delayedCall(method, delay);
+			}.bind(self)
+		},
+
+		//Is show possible right now and if not arrange show 
 		checkShowConditions: function(){
 			var self = this, o = self.options;
 
@@ -399,14 +439,13 @@
 			self.container.data("target-id", self.targetId);
 
 			//Already visible - clear any intents (won’t work in constans state)
-			if (self.active){
+			if (self.target.hasClass(o.activeClass)){
 				self.clearIntents();
 				return false;
 			}
 
 			//Is fading out — intent show
 			if (self.container.hasClass(o.animOutClass)){
-				self.clearIntents();
 				self.showAfterHide();
 				return false;
 			}
@@ -414,7 +453,7 @@
 			return true;
 		},
 
-		//Is hide needed now and if not appoint hide.
+		//Is hide possible right now and if not arrange hide
 		checkHideConditions: function(){
 			var self = this, o = self.options;
 
@@ -440,6 +479,38 @@
 			return true;
 		},
 
+		showOverlay: function(){
+			var self = this, o = self.options;
+
+			self.overlay.removeAttr('hidden');
+			self.overlay.removeClass(o.overlayOutClass).addClass(o.animClass + " " + o.overlayInClass);
+
+			self.delayedCall(function(){
+				self.overlay.removeClass(o.animClass + " " + o.overlayInClass);
+			}, o.animDuration, "animOverlay");
+
+			//Handle outside click
+			if (self.outsideDelay || self.outsideDelay === 0){
+				$doc.on("click.outside."+pluginName, self.callOnClickOutside(self.hideOverlay.bind(self), self.outsideDelay));
+			}
+
+			return self;
+		},
+
+		hideOverlay: function(){
+			var self = this, o = self.options;
+
+			self.overlay.addClass(o.animClass + " " + o.overlayOutClass).removeClass(o.overlayInClass);
+
+			self.delayedCall(function(){
+				self.overlay.removeClass(o.animClass + " " + o.overlayOutClass).attr('hidden', true);
+			}, o.animDuration, "animOverlay");
+
+			$doc.off("click.outside."+pluginName)
+
+			return self;
+		},
+
 		trigger: function(){
 			var self = this, o = self.options;
 
@@ -450,6 +521,11 @@
 			}
 
 			return self;
+		},
+
+		isInside: function(x, y, el){
+			var rect = $(el)[0].getBoundingClientRect();
+			return x > rect.left && x < rect.right && y > rect.top && y < rect.bottom;
 		},
 
 
@@ -487,17 +563,38 @@
 				left = Math.max(pos.right, 0);
 			}
 
-			//NOTE: ZEPTO fucks up animations if set style through css.
+			if (o.position == "center") {
+				if (self.container.css("position") == "fixed"){
+					left = $wnd.width()/2 - cw/2
+					top = $wnd.height()/2 - ch/2
+				} else {
+					left = dw/2 - cw/2
+					top = dh/2 - ch/2
+				}
+			}
+
+			//NOTE: ZEPTO fucks up animations if set style through css().
 			self.container[0].style.left = left + 'px';
 			self.container[0].style.top = top + 'px';
+			/*self.container.css({
+				left: left,
+				top: top
+			})*/
 
 			return self;
 		},
 
 		//Rendering
-		containerTpl: function (opts) {
-			opts == null && (opts = {"class": containerClass})
-			return '<div class="' + opts.class + '"/>'
+		containerTpl: function () {
+			var self = this, o = self.options;
+			
+			var result = '<div class="' + containerClass + ' ' + containerClass + '-' + o.type + '" hidden>';
+
+			if (o.close) result += '<div class="' + containerClass + '-close">' + o.close + '</div>';
+
+			result += '</div>';
+
+			return result;
 		}
 	})
 
