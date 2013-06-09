@@ -1,11 +1,6 @@
-* Handle bug with dropdown (disappearing dropdown)
-* Handle overlay
-
 * handle case when the container is outside the viewport
 
 * zepto shared content bug
-
-* position: center
 
 * Tooltip centrized relative to target position (not as dropdown)
 
@@ -30,3 +25,5 @@
 * Test custom behaviour (custom type)
 
 * Test calling methods from outside, like $(thing).popupper("method");
+
+* Test position:center when the position is absolute, not fixed

@@ -40,12 +40,12 @@
 				close: "✕",
 				overlay: true,
 				behavior: {
-					"click target 1000": "show",
+					"click target 250": "show",
 					"click target 0": "showOverlay +",
 					"click outside 0": "hide",
-					"click outside 1000": "hideOverlay +",
+					"click outside 250": "hideOverlay +",
 					"click close 0": "hide",
-					"click close 1000": "hideOverlay +"
+					"click close 250": "hideOverlay +"
 				}			
 			},
 			dropdown: {
