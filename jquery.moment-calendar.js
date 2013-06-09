@@ -7,7 +7,7 @@ Depends on moment.js
 //TODO: fix autolaunch (launches twice)
 
 (function($, moment) {
-	var pluginName = "calendar",
+	var pluginName = "moment-calendar",
 		ln = moment.langData();
 
 	//Class
@@ -176,14 +176,14 @@ Depends on moment.js
 	//TODO: fix multiple launch on one lement
 	//Autolaunch
 	//Possible options location: preinit [Popover] object of the window, data-attributes, passed options.
-	/*$(function () {
+	$(function () {
 		//var name = window[pluginName] && window[pluginName].defaultClass || pluginName;
 		$("." + pluginName).each(function (i, e){
 			var $e = $(e),
 				opts = $.extend({}, $.parseDataAttributes(e));
 			$e[pluginName](opts);
 		});
-	});*/
+	});
 
 
 
