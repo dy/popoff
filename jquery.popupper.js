@@ -96,7 +96,6 @@
 		//Calls method of target
 		//TODO: make arguments support
 		targetMethod: function(targetId, methName){
-			console.log("targetMethCalled: " + methName)
 			var target = $[pluginName].targets[targetId];
 			target[methName].apply(target, []);
 		}
@@ -112,6 +111,8 @@
 			var o = self.options = $.extend(self.options, opts);
 
 			self.timeouts = {};
+
+			self.active = false;
 
 			self.hideOnClickOutside = false; //for dropdowns
 
@@ -137,10 +138,9 @@
 							o.content.detach();
 						}
 					}
+					o.content.removeAttr("hidden");
 				}
 			}
-
-			o.content.removeAttr("hidden");
 
 			o.position = opts.position || o.types[o.type] && o.types[o.type].position || o.position;
 
@@ -273,8 +273,7 @@
 			this.container.off("afterShow." + containerClass);
 		},
 
-		//Show after hide
-		intentShow: function(){
+		showAfterHide: function(){
 			var self = this, o = self.options;
 			self.clearIntents();
 
@@ -283,8 +282,7 @@
 			return self;
 		},
 
-		//Hide after showed
-		intentHide: function(){
+		hideAfterShow: function(){
 			var self = this, o = self.options;
 			self.clearIntents();
 
@@ -298,37 +296,24 @@
 			var self = this, o = self.options;
 
 			//TODO: detecting state isn’t task of API action. It should straightly show.
-
-			//Is fading in on other target - intent hide, move, show
-			if (self.container.hasClass(o.animClass) && self.container.data('target-id') != self.targetId) {
-				console.log("this target: " + self.targetId + " other target: " + self.container.data("target-id") )
-				//$[pluginName].targetMethod(self.container.data('target-id'), "hide");
-				//self.container.on("hide."+containerClass, self.show.bind(self));
-				//return self;
-			}
-
-			self.container.data("target-id", self.targetId);
-
-			//Already visible - clear any intents (won’t work in constans state)
-			if (self.target.hasClass(o.activeClass)/* || self.container.hasClass(o.animClass)*/){
-				self.clearIntents()
+			if (!self.checkShowConditions()) {
 				return self;
-			}
-
-			//Is fading out — intent show
-			if (self.container.hasClass(o.animOutClass)){
-				return self.intentShow();
 			}
 
 			self.container.removeAttr('hidden');
 
 			self.move();
 
+			//Active class used for styles
+			//shows whether element is showing/intending to show or hiding/intending to hide.
+			self.target.addClass(o.activeClass);
+
 			self.container.removeClass(o.animOutClass).addClass(o.animClass + " " + o.animInClass);
 
 			self.delayedCall(function(){
 				self.container.removeClass(o.animClass + " " + o.animInClass);
-				self.target.addClass(o.activeClass);
+
+				self.active = true; //only period of complete visibility
 
 				self.container.trigger("afterShow." + containerClass);			
 				self.target.trigger("afterShow." + pluginName);
@@ -363,17 +348,11 @@
 		hide: function(){
 			var self = this, o = self.options;
 
-			//Already hidden - clear hide intents
-			if (self.container.attr("hidden")/* || self.container.hasClass(o.animClass)*/){
-				//console.log("fuseHide")
-				self.clearIntents();
+			if (!self.checkHideConditions()){
 				return self;
 			}
 
-			//Is fading in — intent show
-			if (self.container.hasClass(o.animInClass)){
-				return self.intentHide();
-			}
+			self.active = false;
 
 			self.container
 			.addClass(o.animClass + " " + o.animOutClass)
@@ -401,6 +380,61 @@
 			self.container.trigger("beforeHide." + containerClass);
 
 			return self;
+		},
+
+		//Is show needed now and if not put off show 
+		checkShowConditions: function(){
+			var self = this, o = self.options;
+
+			//Is fading in on other target - intent hide, move, show
+			if (self.container.hasClass(o.animInClass) && self.container.data('target-id') != self.targetId) {
+				$[pluginName].targetMethod(self.container.data('target-id'), "hideAfterShow");
+				self.container.on("hide."+containerClass, self.show.bind(self));
+				return false;
+			}
+
+			self.container.data("target-id", self.targetId);
+
+			//Already visible - clear any intents (won’t work in constans state)
+			if (self.active){
+				self.clearIntents();
+				return false;
+			}
+
+			//Is fading out — intent show
+			if (self.container.hasClass(o.animOutClass)){
+				self.clearIntents();
+				self.showAfterHide();
+				return false;
+			}
+
+			return true;
+		},
+
+		//Is hide needed now and if not appoint hide.
+		checkHideConditions: function(){
+			var self = this, o = self.options;
+
+			//Is hiding on other(any) target - clear any intents, let it hide
+			if (self.container.hasClass(o.animOutClass)) {
+				self.clearIntents();
+				$[pluginName].targetMethod(self.container.data('target-id'), "clearIntents");
+				return false;
+			}
+
+			//Already hidden - clear hide intents
+			if (self.container.attr("hidden")){
+				self.clearIntents();
+				return false;
+			}
+
+			//Is fading in — intent show
+			if (self.container.hasClass(o.animInClass)){
+				self.hideAfterShow();
+				return false;
+			}
+
+			return true;
 		},
 
 		trigger: function(){
