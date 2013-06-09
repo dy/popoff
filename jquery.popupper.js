@@ -133,6 +133,8 @@
 
 			self.active = false;
 
+			self.blockEvents = false; //when true, any behavioural events are being ignored
+
 			self.outsideDelay = null; //for dropdowns
 
 			//Remove title from target
@@ -224,7 +226,10 @@
 			meth = self[methName].bind(self);
 
 			switch (selector) {
-				case "outside": //only click outside supported
+				case "outside":
+					//only click outside supported
+					//special case that blocks any other events while it lasts 
+					//e.g. do not return dropdown on hover if clicked outside
 					self.outsideDelay = delay || 0;
 					return;
 				case "target":
@@ -241,15 +246,19 @@
 			}
 
 			selector.on(evt, function(e){
-				self.delayedCall( function() {meth(e)}, delay, "events", blocking)
+				if (!self.blockEvents) {
+					self.delayedCall( function() {meth(e)}, delay, "events", blocking)
+				}
 			});
 		},
 
-		//Call method after @delay ms. If needed to block any other delayed calls, pass @blocking true
+		//Call method after @delay ms. If needed to stop any other delayed calls, pass @blocking true
 		delayedCall: function(fn, delay, key, blocking){
 			var self = this;
-			key == null && (key = 'none')
+
+			key == null && (key = 'none');
 			if (blocking) self.clearDelayedCalls(key);
+
 			if (delay) {
 				self.timeouts[key] = setTimeout(fn, delay)
 			} else {
@@ -341,7 +350,7 @@
 		//API
 		show: function(){
 			var self = this, o = self.options;
-
+			
 			if (!self.checkShowConditions()) {
 				return self;
 			}
@@ -360,8 +369,8 @@
 
 				self.active = true; //only period of complete visibility
 
-				self.container.trigger("afterShow");			
-				self.target.trigger("afterShow");
+				self.target.trigger("afterShow." + pluginName);
+				self.container.trigger("afterShow." + containerClass);
 			}, o.animDuration, "anim");
 
 			//Handle outside click
@@ -370,8 +379,8 @@
 			}
 
 			//evts & callbacks
-			self.target.trigger("show");
-			self.container.trigger("show");
+			self.target.trigger("show." + pluginName);
+			self.container.trigger("show." + containerClass);
 			o.show && o.show();
 
 			return self;
@@ -379,7 +388,6 @@
 
 		hide: function(){
 			var self = this, o = self.options;
-
 			if (!self.checkHideConditions()){
 				return self;
 			}
@@ -390,10 +398,11 @@
 
 			self.delayedCall(function(){
 				self.container.removeClass(o.animClass + " " + o.animOutClass).attr('hidden', true);
-
+				
+				self.blockEvents = false;
 				//evts & callbacks
-				self.target.trigger("hide");
-				self.container.trigger("hide");
+				self.target.trigger("hide." + pluginName);
+				self.container.trigger("hide." + containerClass);
 				o.hide && o.hide();
 
 			}, o.animDuration, "anim");
@@ -405,8 +414,8 @@
 			$doc.off("click.outside." + pluginName);
 
 			//evts & callbacks
-			self.target.trigger("beforeHide");
-			self.container.trigger("beforeHide");
+			self.target.trigger("beforeHide." + pluginName);
+			self.container.trigger("beforeHide." + containerClass);
 
 			return self;
 		},
@@ -421,7 +430,10 @@
 					|| self.isInside(e.clientX, e.clientY, self.target)) {
 					return;
 				}
+				//console.log(delay)
+				//clicked outside — ignore everything till @method finishes
 				self.delayedCall(method, delay);
+				self.blockEvents = true;
 			}.bind(self)
 		},
 
@@ -432,7 +444,7 @@
 			//Is fading in on other target - intent hide, move, show
 			if (self.container.hasClass(o.animInClass) && self.container.data('target-id') != self.targetId) {
 				$[pluginName].targetMethod(self.container.data('target-id'), "hideAfterShow");
-				self.container.on("hide."+containerClass, self.show.bind(self));
+				self.container.on("hide." + containerClass, self.show.bind(self));
 				return false;
 			}
 
