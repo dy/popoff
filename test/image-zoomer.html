@@ -1,0 +1,64 @@
+<!doctype html>
+
+<link rel="stylesheet" type="text/css" href="../ext/ui-kit.css">
+<link rel="stylesheet" type="text/css" href="../ext/animate.css">
+<link rel="stylesheet" type="text/css" href="../jquery.popupper.css">
+
+<style type="text/css">
+body{
+	font-family: sans-serif;	
+}
+.target{
+	display: inline-block;
+	padding: 5px 10px;
+}
+</style>
+
+<script>
+//Hook to use animate.css
+window.popupper = {
+	animInClass: "fadeInDown",
+	animClass: "animated",
+	animOutClass: "fadeOutUp",
+	animDuration: 850,
+
+	overlayInClass: "fadeIn",
+	overlayOutClass: "fadeOut"
+}
+</script>
+
+<header>
+	<h1>Image-zoomer popupper test</h1>
+</header>
+
+<section id="shared-content-case" class="case">
+	<h2>Shared content overlays</h2>
+	<div id="shared-content">Shared content element for overlays</div>
+
+	<img src="./img/1.jpg" class="popupper-zoomer" title="self-zoomer"></img>
+	<img src="./img/1.jpg" class="popupper-zoomer" title="self-zoomer-shared"></img>
+	<img src="./img/2.jpg" class="popupper-zoomer" data-content="<img src='2-big.jpg'>" title="external-zoomer"></img>
+	<img src="./img/2.jpg" class="popupper-zoomer" data-content="<img src='2-big.jpg'>" data-lazy="true" title="external-zoomer-lazy-init"></img>
+	<a href="./img/3-big.jpg" class="popupper-zoomer"><img src="./img/3.jpg"/></a>
+
+</section>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../ext/zepto.js"><\/script>')</script>
+
+<script src="../jquery.popupper.js"></script>
+
+<script type="text/javascript">
+	$(function(){
+		$(".overlay").popupper();
+		$(".overlay-instant").popupper({
+			type: "overlay",
+			content: $("#shared-content")
+		});
+		setTimeout(function(){
+			$(".overlay-deferred").popupper({
+				type: "overlay"
+			})
+		}, 500)
+	})
+</script>

@@ -1,4 +1,22 @@
+* ? Overlays fucks up on shared content
+
+* ? Overlay fucks up when closed through outside click
+
+* Make external hrefs  handling
+	* Fonts
+	* Images
+	* Iframes
+	* Documents
+
+* Handle https as content
+
+* Fix doc height
+
+* Make default styles
+
 * handle case when the container is outside the viewport
+
+* Find bug on shared content popups. Sometimes it stops to hide.
 
 * zepto shared content bug
 

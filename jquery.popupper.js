@@ -1,4 +1,4 @@
-;(function ($){
+﻿;(function ($){
 	var pluginName = "popupper",
 		containerClass = "popuppee",
 		$doc = $(document),
@@ -66,6 +66,18 @@
 			},
 			modal: {
 				//TODO
+			},
+			zoomer: {
+				//TODO
+			},
+			imageZoomer: {
+				//TODO
+				position: "over",
+				behavior: {
+					"click target": "show",
+					"click container": "hide",
+					"mouseleave container 2500": "hide"
+				}
 			}
 		},
 		defaults: {
@@ -78,11 +90,13 @@
 			overlayOutClass: "out",
 
 			activeClass: "active",
+			containerClass: "", //TODO: additional container class
 
 			content: null, //Selector, element, jquery-object, html-string, function atc			
 			container: $body, //Where to place in popupped content-container
 			targets: null, //selector, array of objects etc. Synonims of current target. Each target shares container
 			cloneContent: false, //Whether to clone or replace content element
+			lazyContent: false, //defer loading of content
 
 			type: "tooltip", //tooltip, popover, overlay, dropdown, custom
 			behavior: null, //custom behaviour could be redefined
@@ -94,7 +108,7 @@
 			tip: true,
 
 			avoid: null, //selector of elements to avoid overlapping with
-			single: true, //instantly close other dropdowns when one shows
+			single: false, //instantly close other dropdowns when one shows
 
 			//Callbacks
 			show: null, //before show
@@ -129,6 +143,8 @@
 
 			var o = self.options;
 
+			if (o.off) return; //TODO: fix to work correctly
+
 			self.timeouts = {};
 
 			self.active = false;
@@ -141,25 +157,35 @@
 			self.title = self.target.attr("title");
 			self.target.removeAttr("title");
 
+			//Hook href as content, if possible
+			var href = self.target.attr("href");
+			if (!o.content && href){
+				if (href[0] === "#") {
+					o.content = $(self.target.attr("href"));
+				} else {
+					//TODO: test if img
+					//TODO: test if external document
+					//TODO: test if font?
+				}
+			}
+
 			//Initial content comprehension
 			if (!o.content){
 				if (self.title) o.content = self.title;				
 			} else {
-				o.content = o.content.trim();
-
 				//Is content a selector?
 				if (o.content[0] == '.' || o.content[0] == '#') {
-					if (o.cloneContent){
-						o.content = $(o.content).clone(true, true);
+					o.content = $(o.content)
+				}
+				if (o.cloneContent){
+					o.content = o.content.clone(true, true);
+				} else if (typeof o.content !== "string") {
+					if (o.content.parent().hasClass(containerClass)){
+						self.container = $(o.content[0].parentNode);
+						//o.targets = ;
+						self.container.addClass(containerClass+"-shared");
 					} else {
-						o.content = $(o.content);
-						if (o.content.parent().hasClass(containerClass)){
-							self.container = $(o.content[0].parentNode);
-							//o.targets = ;
-							self.container.addClass(containerClass+"-shared");
-						} else {
-							o.content.detach();
-						}
+						o.content.detach();
 					}
 					o.content.removeAttr("hidden");
 				}
@@ -355,6 +381,10 @@
 				return self;
 			}
 
+			if (o.single) {
+				self.closeSiblings();
+			}
+
 			self.container.removeAttr('hidden');
 
 			self.move();
@@ -368,9 +398,8 @@
 				self.container.removeClass(o.animClass + " " + o.animInClass);
 
 				self.active = true; //only period of complete visibility
-
-				self.target.trigger("afterShow." + pluginName);
-				self.container.trigger("afterShow." + containerClass);
+				self.target.trigger("afterShow");
+				self.container.trigger("afterShow");
 			}, o.animDuration, "anim");
 
 			//Handle outside click
@@ -379,8 +408,8 @@
 			}
 
 			//evts & callbacks
-			self.target.trigger("show." + pluginName);
-			self.container.trigger("show." + containerClass);
+			self.target.trigger("show");
+			self.container.trigger("show");
 			o.show && o.show();
 
 			return self;
@@ -400,9 +429,12 @@
 				self.container.removeClass(o.animClass + " " + o.animOutClass).attr('hidden', true);
 
 				self.blockEvents = false;
+
+				self.target.removeClass(o.activeClass); //TODO: bad hack to avoid unknown bug on shared contents. (fix later)
+
 				//evts & callbacks
-				self.target.trigger("hide." + pluginName);
-				self.container.trigger("hide." + containerClass);
+				self.target.trigger("hide");
+				self.container.trigger("hide");
 				o.hide && o.hide();
 
 			}, o.animDuration, "anim");
@@ -414,8 +446,8 @@
 			$doc.off("click.outside." + pluginName);
 
 			//evts & callbacks
-			self.target.trigger("beforeHide." + pluginName);
-			self.container.trigger("beforeHide." + containerClass);
+			self.target.trigger("beforeHide");
+			self.container.trigger("beforeHide");
 
 			return self;
 		},
@@ -575,13 +607,8 @@
 			}
 
 			if (o.position == "center") {
-				if (self.container.css("position") == "fixed"){
-					left = $wnd.width()/2 - cw/2
-					top = $wnd.height()/2 - ch/2
-				} else {
-					left = dw/2 - cw/2
-					top = dh/2 - ch/2
-				}
+				left = $wnd.width()/2 - cw/2
+				top = $wnd.height()/2 - ch/2
 			}
 
 			//NOTE: ZEPTO fucks up animations if set style through css().
@@ -592,6 +619,17 @@
 				top: top
 			})*/
 
+			return self;
+		},
+
+		//closes all the popuppers except this one
+		closeSiblings: function() {
+			var self = this, o = self.options;
+			for (var id in $[pluginName].targets){
+				if (id == self.targetId) continue;
+				var instance = $[pluginName].targets[id];
+				instance.hide();
+			}
 			return self;
 		},
 
@@ -619,7 +657,7 @@
 			})
 		} else {//Init this
 			return $(this).each(function (i, el) {
-				var instance = new $[pluginName](el, $.extend(arg, $.parseDataAttributes(el)));
+				var instance = new $[pluginName](el, $.extend(arg || {}, $.parseDataAttributes(el)));
 				if (!$(el).data(pluginName)) $(el).data(pluginName, instance);
 			})			
 		}
