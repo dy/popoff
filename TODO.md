@@ -1,6 +1,21 @@
+* The thing is in multiple container controllers. Need to avoid bindind single container to the multiple targets.
+	* First way - creating container controller class.
+	* Second way - avoiding shared containers.
+
+
+
+* Fix closing problem (outside click after close click fails)
+
 * ? Overlays fucks up on shared content
 
 * ? Overlay fucks up when closed through outside click
+
+* Make window popupper
+
+* Make autolaunched popupper
+
+* Fix up tests
+* Fix up component.json, package.json and other meta-stuff
 
 * Make external hrefs  handling
 	* Fonts

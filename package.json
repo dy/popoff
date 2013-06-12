@@ -1,0 +1,35 @@
+{
+"name": "graphics",
+"version": "0.0.1",
+"description": "A set of basic graphics classes.",
+"homepage": "http://github.com/dfcreative/graphics.js",
+"keywords": ["color", "gradient", "css"],
+"author": {
+	"name": "Dmitry",
+	"email": "df.creative@gmail.com",
+	"url": "http://dmitry-ivanov.com/"
+},
+"licenses": [{
+	"type":"MIT",
+	"url":"http://github.com/tstone/gradient-js/blog/master/MIT.LICENSE"
+}],
+"repository": {
+	"type": "git",
+	"url": "http://github.com/dfcreative/graphics.js.git",
+	"web": "http://github.com/dfcreative/graphics.js"
+},
+"dependencies": {
+},
+"devDependencies": {
+	"grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.1.1",
+    "grunt-contrib-nodeunit": "~0.1.2"
+},
+"main": "graphics",
+"engines": [ "node >= 0.4"],
+
+"scripts": {
+	"test": "vows"
+}
+
+}
