@@ -1,27 +1,11 @@
-* The thing is in multiple container controllers. Need to avoid bindind single container to the multiple targets.
-	* First way - creating container controller class.
-	* Second way - avoiding shared containers.
-	* If we have container of different types — should we bind events twice or create different containers?
-		* In the ideal world we should have different lightweight containers for each target due to different target types and behaviour
-		* If we have shared content, we should wait till one container fully frees. So there’s sense to make indicator of bisyness and bind events on freeing event.
-	* So the only way is to busy content by targets 
-
-
-
-* Fix closing problem (outside click after close click fails)
-
-* ? Overlays fucks up on shared content
-
-* ? Overlay fucks up when closed through outside click
-
 * Make window popupper
 
-* Make autolaunched popupper
+* Make autolaunched classic popupper (like biglion)
 
 * Fix up tests
 * Fix up component.json, package.json and other meta-stuff
 
-* Make external hrefs  handling
+* Make external hrefs handling
 	* Fonts
 	* Images
 	* Iframes

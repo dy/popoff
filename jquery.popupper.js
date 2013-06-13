@@ -362,7 +362,7 @@
 
 		showAfterHide: function(){
 			var self = this, o = self.options;
-			console.log("showAfterHide")
+			//console.log("showAfterHide")
 			self.clearIntents();
 
 			self.container.one("hide." + containerClass, self.show.bind(self));
@@ -372,7 +372,7 @@
 
 		hideAfterShow: function(){
 			var self = this, o = self.options;
-			console.log("hideAfterShow")
+			//console.log("hideAfterShow")
 			self.clearIntents();
 
 			self.container.one("afterShow." + containerClass, self.hide.bind(self))
@@ -383,7 +383,7 @@
 		//API
 		show: function(){
 			var self = this, o = self.options;
-			console.log("show")
+			//console.log("show")
 			if (!self.checkShowConditions()) {
 				return self;
 			}
@@ -424,7 +424,7 @@
 
 		hide: function(){
 			var self = this, o = self.options;
-			console.log("hide")
+			//console.log("hide")
 			if (!self.checkHideConditions()){
 				return self;
 			}
@@ -464,7 +464,7 @@
 		//Helping event that detects if click happened outside container and target
 		callOnClickOutside: function(method, delay){			
 			var self = this;
-			console.log("callOnClickOutside")
+			//console.log("callOnClickOutside")
 			return function(e){
 				if (e.target === self.container[0]
 					|| e.target === self.target[0]
@@ -481,7 +481,7 @@
 		//Is show possible right now and if not arrange show 
 		checkShowConditions: function(){
 			var self = this, o = self.options;
-			console.log("showConditions")
+			//console.log("showConditions")
 			//If content is busy — appoint show after hide
 			if (self.container.hasClass(o.animInClass) &&
 				self.targetId != self.container.data("content-busy-by")) {
@@ -493,7 +493,7 @@
 			//TODO: bind this to the target container
 			//Busy content by itself
 			if (self.sharedContent) {
-				console.log("shared content moved")
+				//console.log("shared content moved")
 				self.container.append(o.content)
 			}
 			self.container.data("content-busy-by", self.targetId);
@@ -516,7 +516,7 @@
 		//Is hide possible right now and if not arrange hide
 		checkHideConditions: function(){
 			var self = this, o = self.options;
-			console.log("hideConditions")
+			//console.log("hideConditions")
 			//Is hiding on other(any) target - clear any intents, let it hide
 			if (self.container.hasClass(o.animOutClass)) {
 				self.clearIntents();
@@ -541,7 +541,7 @@
 
 		showOverlay: function(){
 			var self = this, o = self.options;
-			console.log("showOverlay")
+			//console.log("showOverlay")
 			self.overlay.removeAttr('hidden');
 			self.overlay.removeClass(o.overlayOutClass).addClass(o.animClass + " " + o.overlayInClass);
 
@@ -559,7 +559,7 @@
 
 		hideOverlay: function(){
 			var self = this, o = self.options;
-			console.log("hideOverlay")
+			//console.log("hideOverlay")
 			self.overlay.addClass(o.animClass + " " + o.overlayOutClass).removeClass(o.overlayInClass);
 
 			self.delayedCall(function(){
@@ -723,7 +723,11 @@
 	//Autolaunch
 	//Possible options location: preinit [Popover] object of the window, data-attributes, passed options.
 	$(function () {
-		var name = window[pluginName] && window[pluginName].defaultClass || pluginName;
+		//Override defaults
+		if (window[pluginName]) {
+			$.extend($[pluginName].defaults, window[pluginName]);
+		}
+
 		$("[class*=" + pluginName + "]").each(function (i, e){
 			var type;
 
@@ -738,7 +742,7 @@
 			}
 
 			var $e = $(e),
-				opts = $.extend({}, window[pluginName], {type: type});
+				opts = $.extend({}, {type: type});
 			$e[pluginName](opts);
 		});
 	});

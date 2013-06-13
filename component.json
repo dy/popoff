@@ -1,14 +1,13 @@
 {
-  "name": "color",
-  "repo": "component/tip",
-  "description": "Tip component",
+  "name": "jquery.popupper",
+  "repo": "dfcreative/popupper",
+  "description": "Makes any popups: dropdowns, overlays, tooltips etc",
   "version": "0.0.1",
-  "keywords": ["tooltip", "tip", "ui"],
+  "keywords": ["tooltip", "overlay", "popup", "dropdown"],
   "dependencies": {
-    "component/emitter": "*",
     "component/jquery": "*"
   },
-  "scripts": ["index.js", "template.js"],
-  "styles": ["tip.css"],
+  "scripts": ["jquery.popupper.js"],
+  "styles": ["jquery.popupper.css"],
   "license": "MIT"
 }
