@@ -6,23 +6,16 @@
 		$wnd = $(window)
 
 
-	//Popupper (target) class
+	//Popupper class
 	$[pluginName] = function (el, opts){
 		this.target = $(el);
 		this.create(opts);
 	}
 
-	//Popuppee (container) class
-	$[containerClass] = function (el, opts){
-		this.element = $(el);
-		this.create(opts)
-	}
 
-
-	//Target static
+	//Static
 	$.extend($[pluginName], {
 		nextTargetId: 0,
-
 		types: {
 			//some_type: { "event [target|container|close|outside|selector] delay": method [+|-[method]] }
 			tooltip: {
@@ -49,8 +42,8 @@
 				behavior: {
 					"click target 250": "show",
 					"click target 0": "showOverlay +",
-					//"click outside 0": "hide",
-					//"click outside 250": "hideOverlay +",
+					"click outside 0": "hide",
+					"click outside 250": "hideOverlay +",
 					"click close 0": "hide",
 					"click close 250": "hideOverlay +"
 				}			
@@ -87,7 +80,6 @@
 				}
 			}
 		},
-
 		defaults: {
 			animDuration: null,
 			animInClass: "in",
@@ -128,11 +120,8 @@
 			return ++$[pluginName].nextTargetId;
 		},
 
-		//Cache of targets → id: popupper-controller
+		//Cache of targets: id → popupper-controller
 		targets: {},
-
-		//Cache of containers → id: popupper-container 
-		containers: {},
 
 		//Calls method of target
 		//TODO: make arguments support
@@ -143,7 +132,7 @@
 	})
 
 
-	//Target instance
+	//Instance
 	$.extend($[pluginName].prototype, {
 		create: function (opts) {
 			var self = this;
@@ -180,6 +169,10 @@
 				}
 			}
 
+			self.target.addClass(pluginName + "-target");
+			self.targetId = $[pluginName].getTargetId(self.target);
+			self.target.addClass(pluginName + "-target-" + self.targetId); //make unique id for each target
+
 			//Initial content comprehension
 			if (!o.content){
 				if (self.title) o.content = self.title;				
@@ -191,11 +184,15 @@
 				if (o.cloneContent){
 					o.content = o.content.clone(true, true);
 				} else if (typeof o.content !== "string") {
-					//Shared content?
+					//If content is already taken — share it
 					if (o.content.parent().hasClass(containerClass)){
-						self.containerId = $(o.content[0].parentNode).data("container-id")
-						self.container = $[pluginName].containers[containerId];
-						self.container.addClass(containerClass+"-shared");
+						self.sharedContent = true;
+						//Notify first target about sharing content
+						var p = o.content.parent();
+						if (!p.hasClass(containerClass + "-shared")) {
+							p.addClass(containerClass + "-shared");
+							$[pluginName].targets[p.data("target-id")].sharedContent = true;
+						}
 					} else {
 						o.content.detach();
 					}
@@ -203,21 +200,14 @@
 				}
 			}
 
-			//Ensure container controller is up
-			if (!self.container) {
-				self.container = new $[containerClass]({
-					content: o.content,
-					container: o.container
-				})
-			}
-
-			//Register itself
-			self.target.addClass(pluginName + "-target");
-			self.targetId = $[pluginName].getTargetId(self.target);
-			self.target.addClass(pluginName + "-target-" + self.targetId); //make unique id for each target
 			$[pluginName].targets[self.targetId] = self; //keep cache of created targets
 
-			//Make overlay if needed
+			if (!self.container) {
+				self.container = $(self.containerTpl())
+				.append(o.content)
+				.appendTo(o.container);
+			}
+
 			if (o.overlay){
 				if (!$[pluginName].overlay) {
 					$[pluginName].overlay = $('<div class="' + pluginName + '-overlay-blind" hidden/>').appendTo($body)
@@ -225,7 +215,6 @@
 				self.overlay = $[pluginName].overlay;
 			}
 
-			//Ensure anim duration
 			if (o.animDuration || o.animDuration === 0){ //set duration through options
 				self.setAnimDuration(o.animDuration);
 			} else { //get duration from css
@@ -242,7 +231,6 @@
 
 			var bindings = o.behavior;
 
-			//Prevent <a> clicks
 			self.target.click(function(e){
 				e.preventDefault();
 			})
@@ -279,8 +267,7 @@
 					selector = self.target;
 					break;
 				case "container":
-					//TODO: get rid of double container-events
-					selector = self.container.element;
+					selector = self.container;
 					break;
 				case "close":
 					selector = $("." + containerClass + "-close", self.container);
@@ -405,7 +392,6 @@
 				self.closeSiblings();
 			}
 
-
 			self.container.removeAttr('hidden');
 
 			self.move();
@@ -413,11 +399,15 @@
 			//Active class used for styles
 			//shows whether element is showing/intending to show or hiding/intending to hide.
 			self.target.addClass(o.activeClass);
+			self.container.removeClass(o.animOutClass).addClass(o.animClass + " " + o.animInClass);			
 			
-			sefl.container.show(function(){
+			self.delayedCall(function(){
+				self.container.removeClass(o.animClass + " " + o.animInClass);
+
 				self.active = true; //only period of complete visibility
 				self.target.trigger("afterShow");
-			});
+				self.container.trigger("afterShow");
+			}, o.animDuration, "anim");
 
 			//Handle outside click
 			if (self.outsideDelays.hide || self.outsideDelays.hide === 0){
@@ -448,6 +438,7 @@
 
 				self.blockEvents = false;
 
+				self.container.data('content-busy-by', false)
 				//self.target.removeClass(o.activeClass); //TODO: bad hack to avoid unknown bug on shared contents. (fix later)
 
 				//evts & callbacks
@@ -491,14 +482,21 @@
 		checkShowConditions: function(){
 			var self = this, o = self.options;
 			console.log("showConditions")
-			//Is fading in on other target - intent hide, move, show
-			if (self.container.hasClass(o.animInClass) && self.container.data('target-id') != self.targetId) {
-				$[pluginName].targetMethod(self.container.data('target-id'), "hideAfterShow");
+			//If content is busy — appoint show after hide
+			if (self.container.hasClass(o.animInClass) &&
+				self.targetId != self.container.data("content-busy-by")) {
+				$[pluginName].targetMethod(self.container.data('content-busy-by'), "hideAfterShow");
 				self.container.on("hide." + containerClass, self.show.bind(self));
 				return false;
 			}
 
-			self.container.data("target-id", self.targetId);
+			//TODO: bind this to the target container
+			//Busy content by itself
+			if (self.sharedContent) {
+				console.log("shared content moved")
+				self.container.append(o.content)
+			}
+			self.container.data("content-busy-by", self.targetId);
 
 			//Already visible - clear any intents (won’t work in constans state)
 			if (self.target.hasClass(o.activeClass)){
@@ -522,7 +520,7 @@
 			//Is hiding on other(any) target - clear any intents, let it hide
 			if (self.container.hasClass(o.animOutClass)) {
 				self.clearIntents();
-				$[pluginName].targetMethod(self.container.data('target-id'), "clearIntents");
+				$[pluginName].targetMethod(self.container.data('content-busy-by'), "clearIntents");
 				return false;
 			}
 
@@ -590,63 +588,6 @@
 			return x > rect.left && x < rect.right && y > rect.top && y < rect.bottom;
 		},
 
-		//closes all the popuppers except this one
-		closeSiblings: function() {
-			var self = this, o = self.options;
-			for (var id in $[pluginName].targets){
-				if (id == self.targetId) continue;
-				var instance = $[pluginName].targets[id];
-				instance.hide();
-			}
-			return self;
-		},
-	})
-
-
-	//Container static
-	$.extend($[containerClass], {
-		defaults: {
-			container: $body, //where to place itself
-			content: null,
-
-			close: false, //whether to show close
-			type: "" //type of container: overlay, dropdown, tooltip, balloon, etc (from popupper)
-		}
-	});
-
-
-	//Container instance
-	$.extend($[containerClass].prototype, {
-		create: function (opts) {
-			var self = this, o = self.options;
-
-			self.element = $(self.tpl()).append(o.content).appendTo(o.container);
-
-			return self;
-		},
-
-		hide: function(){
-			var self = this, o = self.options;
-
-			return self;
-		},
-
-		show: function(cb){
-			var self = this, o = self.options, el = self.element;
-
-			el.removeClass(o.animOutClass).addClass(o.animClass + " " + o.animInClass);			
-			
-			delayedCall(function(){
-				el.removeClass(o.animClass + " " + o.animInClass);
-
-				//evts
-				self.container.trigger("afterShow");
-				cb && cb();
-			}, o.animDuration, "anim");
-
-			return self;
-		},
-
 
 		move: function(){
 			var self = this, o = self.options,
@@ -686,7 +627,7 @@
 				if (self.container.css("position") === "fixed"){
 					left = $wnd.width()/2 - cw/2
 					top = $wnd.height()/2 - ch/2
-				} else {					
+				} else {		
 					left = $wnd.width()/2 - cw/2 + $doc.scrollLeft()
 					top = $wnd.height()/2 - ch/2 + $doc.scrollTop()
 				}
@@ -703,11 +644,25 @@
 			return self;
 		},
 
+		//closes all the popuppers except this one
+		closeSiblings: function() {
+			var self = this, o = self.options;
+			for (var id in $[pluginName].targets){
+				if (id == self.targetId) continue;
+				var instance = $[pluginName].targets[id];
+				instance.hide();
+			}
+			return self;
+		},
+
 		//Rendering
-		tpl: function () {
+		containerTpl: function () {
 			var self = this, o = self.options;
 			
-			var result = '<div class="' + containerClass + ' ' + containerClass + '-' + o.type + '" hidden>';
+			var result = '<div class="' + containerClass + ' ' + containerClass + '-' + o.type +
+			(self.sharedContent ? (" " + containerClass + '-shared') : '') +
+			'" data-target-id="' + self.targetId +
+			'" hidden>';
 
 			if (o.close) result += '<div class="' + containerClass + '-close">' + o.close + '</div>';
 
@@ -715,12 +670,9 @@
 
 			return result;
 		}
-
-
 	})
 
-	
-	//================================ jQuery things
+
 	//Plugin
 	$.fn[pluginName] = function (arg, arg2) {
 		if (typeof arg == "string") {//Call API method
