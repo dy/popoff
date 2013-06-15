@@ -1,4 +1,8 @@
-* Keep links clickable if it’s tooltip or balloon
+* Autolaunch for zepto (instanceof Zepto) 
+
+* Test href along with title on a
+
+* Make order of popups to show, like tutorial
 
 * Get rid of non-blocking notation (+): there’s no sense in that, cause you cant call hide not stopping show
 

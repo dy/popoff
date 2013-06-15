@@ -7,15 +7,16 @@
 
 
 	//Popupper class
-	$[pluginName] = function (el, opts){
+	var P = $[pluginName] = function (el, opts){
 		this.target = $(el);
 		this.create(opts);
 	}
 
 
 	//Static
-	$.extend($[pluginName], {
+	$.extend(P, {
 		nextTargetId: 0,
+
 		types: {
 			//some_type: { "event [target|container|close|outside|selector] delay": method [+|-[method]] }
 			tooltip: {
@@ -44,6 +45,7 @@
 				close: "✕",
 				overlay: true,
 				tip: false,
+				autolaunch: true,
 				behavior: {
 					"click target 250": "show",
 					"click target 0": "showOverlay +",
@@ -87,6 +89,7 @@
 				}
 			}
 		},
+
 		defaults: {
 			animDuration: null,
 			animInClass: "in",
@@ -114,8 +117,9 @@
 			overlay: false, //Just indicates need to create overlay
 
 			position: "top", //top, left, bottom, right, center (for overlays), over (hiding element)
+			align: "center", //0 - by left, 1 - by right, .5 - by center, "left", "top", "right", "bottom", "center"
 			tip: true,
-			tipPosition: .5,
+			tipAlign: "center",
 
 			avoid: null, //selector of elements to avoid overlapping with
 			single: false, //instantly close other dropdowns when one shows
@@ -125,9 +129,16 @@
 			hide: null //after hide
 		},
 
+		CENTER: 0,
+		TOP: 1,
+		RIGHT: 2,
+		BOTTOM: 3,
+		LEFT: 4,
+		OVER: 5,
+
 		//Just generates unique id
 		getTargetId: function(target){
-			return ++$[pluginName].nextTargetId;
+			return ++P.nextTargetId;
 		},
 
 		//Cache of targets: id → popupper-controller
@@ -136,32 +147,34 @@
 		//Calls method of target
 		//TODO: make arguments support
 		targetMethod: function(targetId, methName){
-			var target = $[pluginName].targets[targetId];
+			var target = P.targets[targetId];
 			target[methName].apply(target, []);
 		}
 	})
 
 
 	//Instance
-	$.extend($[pluginName].prototype, {
+	$.extend(P.prototype, {
 		create: function (opts) {
 			var self = this;
 
-			self.options = $.extend({}, $[pluginName].defaults);
-			$.extend(self.options, $[pluginName].types[opts.type || self.options.type]);
+			self.options = $.extend({}, P.defaults);
+			$.extend(self.options, P.types[opts.type || self.options.type]);
 			$.extend(self.options, opts);
 
 			var o = self.options;
 
 			if (o.off) return; //TODO: fix to work correctly
 
-			self.timeouts = {};
+			self.timeouts = {}; //Cache of keyed timeouts of delayed functions
 
-			self.active = false;
+			self.active = false; //true only when visible and no any animations are in progress. Not the same as activeClass
 
 			self.blockEvents = false; //when true, any behavioural events are being ignored
 
-			self.outsideDelays = {}; //for dropdowns
+			self.outsideDelays = {}; //for dropdowns (list of delays for outside click)
+
+			self.position = P.TOP; //current position of container
 
 			//Remove title from target
 			self.title = self.target.attr("title");
@@ -180,7 +193,7 @@
 			}
 
 			self.target.addClass(pluginName + "-target");
-			self.targetId = $[pluginName].getTargetId(self.target);
+			self.targetId = P.getTargetId(self.target);
 			self.target.addClass(pluginName + "-target-" + self.targetId); //make unique id for each target
 
 			//Initial content comprehension
@@ -205,7 +218,7 @@
 						//Notify first target about sharing content
 						if (!p.hasClass(containerClass + "-shared")) {
 							p.addClass(containerClass + "-shared");
-							$[pluginName].targets[p.data("target-id")].sharedContent = true;
+							P.targets[p.data("target-id")].sharedContent = true;
 						}
 					} else {
 						o.content.detach();
@@ -214,7 +227,7 @@
 				}
 			}
 
-			$[pluginName].targets[self.targetId] = self; //keep cache of created targets
+			P.targets[self.targetId] = self; //keep cache of created targets
 
 			if (!self.container) {
 				self.container = $(self.containerTpl()).appendTo(o.container);
@@ -224,10 +237,10 @@
 			}
 
 			if (o.overlay){
-				if (!$[pluginName].overlay) {
-					$[pluginName].overlay = $('<div class="' + pluginName + '-overlay-blind" hidden/>').appendTo($body)
+				if (!P.overlay) {
+					P.overlay = $('<div class="' + pluginName + '-overlay-blind" hidden/>').appendTo($body)
 				}
-				self.overlay = $[pluginName].overlay;
+				self.overlay = P.overlay;
 			}
 
 			if (o.tip) {
@@ -244,11 +257,11 @@
 			self.bindEvents();
 
 			//Make autostart, if needed
-			//TODO: detect is jquery object
+			//TODO: detect is zepto object
 			if (o.autolaunch
-				&& o.content instanceof jQuery
+				&& o.content instanceof $.fn.constructor
 				&& window.location.hash == "#" + o.content.attr("id") 
-				&& !$[pluginName].activeTargetId){
+				&& !P.activeTargetId){
 				self.show();
 				o.overlay && self.showOverlay();
 			}
@@ -468,7 +481,7 @@
 
 				self.blockEvents = false;
 
-				$[pluginName].activeTargetId = null;
+				P.activeTargetId = null;
 				//self.target.removeClass(o.activeClass); //TODO: bad hack to avoid unknown bug on shared contents. (fix later)
 
 				//evts & callbacks
@@ -514,8 +527,8 @@
 			//console.log("showConditions")
 			//If content is busy — appoint show after hide
 			if (self.container.hasClass(o.animInClass) &&
-				self.targetId != $[pluginName].activeTargetId) {
-				$[pluginName].targetMethod($[pluginName].activeTargetId, "hideAfterShow");
+				self.targetId != P.activeTargetId) {
+				P.targetMethod(P.activeTargetId, "hideAfterShow");
 				self.container.on("hide." + containerClass, self.show.bind(self));
 				return false;
 			}
@@ -526,7 +539,7 @@
 				//console.log("shared content moved")
 				self.container.append(o.content)
 			}
-			$[pluginName].activeTargetId = self.targetId;
+			P.activeTargetId = self.targetId;
 
 			//Already visible - clear any intents (won’t work in constans state)
 			if (self.target.hasClass(o.activeClass)){
@@ -550,7 +563,7 @@
 			//Is hiding on other(any) target - clear any intents, let it hide
 			if (self.container.hasClass(o.animOutClass)) {
 				self.clearIntents();
-				$[pluginName].targetMethod($[pluginName].activeTargetId, "clearIntents");
+				P.targetMethod(P.activeTargetId, "clearIntents");
 				return false;
 			}
 
@@ -622,55 +635,107 @@
 			var self = this, o = self.options,
 				left = 0, top = 0;
 
-			var pos = self.target.offset(),
-				ch = self.container.outerHeight(true),
-				cw = self.container.outerWidth(true),
-				dw = $doc.width(),
-				dh = $doc.height(),
-				tw = self.target.outerWidth(true),
-				th = self.target.outerHeight(true);
+			var c = {
+					height: self.container.outerHeight(true),
+					width: self.container.outerWidth(true)
+				},
+				d = {
+					width: $doc.width(),
+					height: $doc.height()
+				},
+				//target
+				t = self.target.offset(), //relative to the doc, not viewport
+				//viewport
+				v = {
+					width: $wnd.width(),
+					height: $wnd.height(),
+					top: $doc.scrollTop(),
+					left: $doc.scrollLeft()
+				},
 				//TODO: count on tip size: tip = self.tip.
+				tip = self.tip ? self.tip.height() : 0;
 
-			pos.bottom = pos.top + th;
-			pos.right = pos.left + tw;
+				t.width = self.target.outerWidth(true);
+				t.height = self.target.outerHeight(true);
+				t.bottom = t.top + t.height;
+				t.right = t.left + t.width;
 
-			if (o.position == "top" || o.position == "bottom"){
-				left = Math.max(Math.min(dw - cw, pos.left), 0);
-			} else if (o.position == "left" || o.position == "right") {
-				top = Math.max(Math.min(pos.top, dh - ch), 0);
+			//Decide where to place popup
+			switch (o.position){
+				case "top":
+					if (t.top - c.height - tip < v.left) {
+						self.position = P.BOTTOM;
+					} else {
+						self.position = P.TOP;
+					}
+					break;
+				case "bottom":
+					if (t.bottom + c.height + tip > v.height + v.top) {
+						self.position = P.TOP;
+					} else {
+						self.position = P.BOTTOM;
+					}
+					break;
+				case "left":
+					if (t.left - c.width - tip < v.left) {
+						self.position = P.RIGHT;
+					} else {
+						self.position = P.LEFT;
+					}
+					break;
+				case "right":
+					if (t.right + c.width + tip > v.width + v.left) {
+						self.position = P.LEFT;
+					} else {
+						self.position = P.RIGHT;
+					}
+					break;
+				case "center":
+					self.position = P.CENTER;
+					break;
+				case "over":
+					self.position = P.OVER;
+					throw("position over: unimplemented")
+					break;
+				default:
+					self.position = P.TOP;
+					throw("Unknown position: `" + o.position + "`. Casted to top.");
 			}
 
-			if (o.position == "top" || (o.position == "bottom" && pos.bottom + ch > dh)){
-				top = Math.min(pos.top - ch, dh);
-			} else if (o.position == "bottom" || (o.position == "top" && pos.top - ch < 0)) {
-				top = Math.max(pos.bottom, 0);
+			//Count position
+			//TODO: count positioning based on alignment (now just left)
+			if (self.position == P.TOP || self.position == P.BOTTOM){					
+				left = Math.max(Math.min(t.left, v.width + v.left - c.width),0);
+			} else 	if (self.position == P.LEFT || self.position == P.RIGHT){
+				top = Math.max(Math.min(t.top, v.height + v.top - c.height),0);
 			}
 
-			if (o.position == "left" || (o.position == "right" && pos.right + cw > dw)){
-				left = Math.min(pos.left - cw, dw - cw);
-			} else if (o.position == "right" || (o.position == "left" && pos.left - cw < 0)) {
-				left = Math.max(pos.right, 0);
-			}
-
-			if (o.position == "center") {
+			if (self.position == P.TOP){
+				top = t.top - c.height - tip;
+			} else if (self.position == P.BOTTOM){
+				top = t.bottom + tip;
+			} else if (self.position == P.RIGHT){
+				left = t.right + tip
+			} else if (self.position == P.LEFT){
+				left = t.left - c.width - tip;
+			} else if (self.position == P.CENTER){
 				if (self.container.css("position") === "fixed"){
-					left = $wnd.width()/2 - cw/2
-					top = $wnd.height()/2 - ch/2
+					left = v.width/2 - c.width/2
+					top = v.height/2 - c.height/2
 				} else {		
-					left = $wnd.width()/2 - cw/2 + $doc.scrollLeft()
-					top = $wnd.height()/2 - ch/2 + $doc.scrollTop()
+					left = v.width/2 - c.width/2 + v.left
+					top = v.height/2 - c.height/2 + v.top
 				}
+			} else {
+				//TODO
+				throw("Position OVER is unimplemented")
 			}
 
 			//self.setTip();
 
-			//NOTE: ZEPTO fucks up animations if set style through css().
+			//NOTE: ZEPTO fucks up animations when style set through css().
 			self.container[0].style.left = left + 'px';
 			self.container[0].style.top = top + 'px';
-			/*self.container.css({
-				left: left,
-				top: top
-			})*/
 
 			return self;
 		},
@@ -724,9 +789,9 @@
 		//closes all the popuppers except this one
 		closeSiblings: function() {
 			var self = this, o = self.options;
-			for (var id in $[pluginName].targets){
+			for (var id in P.targets){
 				if (id == self.targetId) continue;
-				var instance = $[pluginName].targets[id];
+				var instance = P.targets[id];
 				instance.hide();
 			}
 			return self;
@@ -754,11 +819,11 @@
 		if (typeof arg == "string") {//Call API method
 			return $(this).each(function (i, el) {
 				//$(el).data(pluginName)[arg](arg2);
-				$[pluginName].targetMethod($(el).data('target-id'), arg2)
+				P.targetMethod($(el).data('target-id'), arg2)
 			})
 		} else {//Init this
 			return $(this).each(function (i, el) {
-				var instance = new $[pluginName](el, $.extend(arg || {}, $.parseDataAttributes(el)));
+				var instance = new P(el, $.extend(arg || {}, $.parseDataAttributes(el)));
 				if (!$(el).data(pluginName)) $(el).data(pluginName, instance);
 			})
 		}
@@ -801,7 +866,7 @@
 	$(function () {
 		//Override defaults
 		if (window[pluginName]) {
-			$.extend($[pluginName].defaults, window[pluginName]);
+			$.extend(P.defaults, window[pluginName]);
 		}
 
 		$("[class*=" + pluginName + "]").each(function (i, e){
