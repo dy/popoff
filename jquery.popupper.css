@@ -1,3 +1,7 @@
+.popupper-target{
+	cursor:pointer;
+}
+
 .popuppee [hidden], .popupper-overlay-blind[hidden]{
 	display: none;
 }
@@ -22,6 +26,9 @@
 .popuppee-dropdown{
 }
 .popuppee-tooltip{
+	box-shadow: 0 0 0 10px gray;
+	padding: 10px;
+	border-radius: 10px;
 }
 .popuppee-dialog{
 
@@ -38,14 +45,49 @@
 
 
 /* Elements */
-.popuppee-tip{
-	background: gray;
+.popuppee-tip-container{
+	position: absolute;
+	top: -40px;
+	left: 20px;
+	width: 40px;
+	height: 40px;
+	overflow: hidden;
+	text-align: center;
 }
+.popuppee-tip{
+	box-shadow: 0 0 0 10px gray;
+	border-top-left-radius: 1px;
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	top: 10px;
+	left: 10px;
+	background: black;
+	-webkit-transform: rotate(45deg);
+}
+.popuppee-tip[data-tip=top]{
+	margin-top: 50%;
+}
+.popuppee-tip[data-tip=right]{
+	margin-right: 50%;
+}
+.popuppee-tip[data-tip=bottom]{
+	margin-bottom: 50%;
+}
+.popuppee-tip[data-tip=left]{
+	margin-left: 50%;
+}
+
 .popuppee-close{
 	color: white;
 	position: absolute;
 	right: 0;
 	top: 0;
+	width: 40px;
+	height: 40px;
+	cursor: pointer;
+	line-height: 40px;
+	text-align: center;
 }
 
 .popupper-overlay-blind{

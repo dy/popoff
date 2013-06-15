@@ -1,6 +1,16 @@
-* Make window popupper
+* Keep links clickable if it’s tooltip or balloon
 
-* Make autolaunched classic popupper (like biglion)
+* Get rid of non-blocking notation (+): there’s no sense in that, cause you cant call hide not stopping show
+
+* Optional tip(triangle) with a color
+	* Tip could be any: svg, border, rotated square. 
+	* My goal is only to place tip relative to the target, rest is due to css settings.
+
+* Notify if content passed is null, like 0-selector
+
+* Think how to avoid dropdown triggering when tried to hide
+
+* Make window popupper: assign popupper to the body
 
 * Fix up tests
 * Fix up component.json, package.json and other meta-stuff
@@ -29,7 +39,6 @@
 * Vertical/Horizontal placing strategy
 * + Multiple or single tooltips (number of tooltips)
 	* Container for every target element otherwise it’s fuck onerous.
-* Optional tip(triangle) with a color
 * Escape-keystroke handling
 * Event to show it up on
 * + Preinit, post-init

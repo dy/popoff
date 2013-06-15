@@ -20,14 +20,18 @@
 			//some_type: { "event [target|container|close|outside|selector] delay": method [+|-[method]] }
 			tooltip: {
 				position: "top",
+				tip: true,
+				tipPosition: .5,
 				behavior: {
-					"mouseenter target 400": "show", //TODO: handle "show -hide" and "show -"
-					"mouseleave target 400": "hide"
+					"mouseenter target 1000": "show", //TODO: handle "show -hide" and "show -"
+					"mouseleave target 1000": "hide"
 				}
 			},
 			popover: {
 				position: "top",
-				behavior: {		
+				tip: true,
+				tipPosition: .2,
+				behavior: {
 					"mouseenter target 50": "show",
 					"click target 0": "show",
 					"mouseenter container 0": "show",
@@ -39,6 +43,7 @@
 				position: "center",
 				close: "✕",
 				overlay: true,
+				tip: false,
 				behavior: {
 					"click target 250": "show",
 					"click target 0": "showOverlay +",
@@ -50,6 +55,8 @@
 			},
 			dropdown: {
 				position: "bottom",
+				tip: true,
+				tipPosition: .2,
 				behavior: {
 					"mouseenter container": "show",
 					"click target": "trigger",
@@ -98,14 +105,17 @@
 			cloneContent: false, //Whether to clone or replace content element
 			lazyContent: false, //defer loading of content
 
+			autolaunch: false, //whether to start on init
+
 			type: "tooltip", //tooltip, popover, overlay, dropdown, custom
 			behavior: null, //custom behaviour could be redefined
 
 			close: false, //false (don’t show close) or string with text
 			overlay: false, //Just indicates need to create overlay
 
-			position: "top", //top, left, bottom, right, center (for overlays)
+			position: "top", //top, left, bottom, right, center (for overlays), over (hiding element)
 			tip: true,
+			tipPosition: .5,
 
 			avoid: null, //selector of elements to avoid overlapping with
 			single: false, //instantly close other dropdowns when one shows
@@ -175,7 +185,11 @@
 
 			//Initial content comprehension
 			if (!o.content){
-				if (self.title) o.content = self.title;				
+				if (self.title) {
+					o.content = self.title;
+				} else {
+					o.content = "No content defined for target " + self.targetId
+				}
 			} else {
 				//Is content a selector?
 				if (o.content[0] == '.' || o.content[0] == '#') {
@@ -187,8 +201,8 @@
 					//If content is already taken — share it
 					if (o.content.parent().hasClass(containerClass)){
 						self.sharedContent = true;
-						//Notify first target about sharing content
 						var p = o.content.parent();
+						//Notify first target about sharing content
 						if (!p.hasClass(containerClass + "-shared")) {
 							p.addClass(containerClass + "-shared");
 							$[pluginName].targets[p.data("target-id")].sharedContent = true;
@@ -203,9 +217,10 @@
 			$[pluginName].targets[self.targetId] = self; //keep cache of created targets
 
 			if (!self.container) {
-				self.container = $(self.containerTpl())
-				.append(o.content)
-				.appendTo(o.container);
+				self.container = $(self.containerTpl()).appendTo(o.container);
+				if (!self.sharedContent) { //prevent withdrawal from the first owner
+					self.container.append(o.content);
+				}
 			}
 
 			if (o.overlay){
@@ -213,6 +228,11 @@
 					$[pluginName].overlay = $('<div class="' + pluginName + '-overlay-blind" hidden/>').appendTo($body)
 				}
 				self.overlay = $[pluginName].overlay;
+			}
+
+			if (o.tip) {
+				self.tipContainer = $('<div class="' + containerClass + '-tip-container"></div>').appendTo(self.container);
+				self.tip = $('<div class="' + containerClass + '-tip " data-tip="top"/>').appendTo(self.tipContainer);
 			}
 
 			if (o.animDuration || o.animDuration === 0){ //set duration through options
@@ -223,6 +243,16 @@
 
 			self.bindEvents();
 
+			//Make autostart, if needed
+			//TODO: detect is jquery object
+			if (o.autolaunch
+				&& o.content instanceof jQuery
+				&& window.location.hash == "#" + o.content.attr("id") 
+				&& !$[pluginName].activeTargetId){
+				self.show();
+				o.overlay && self.showOverlay();
+			}
+
 			return self;
 		},
 
@@ -231,9 +261,9 @@
 
 			var bindings = o.behavior;
 
-			self.target.click(function(e){
+			/*self.target.click(function(e){
 				e.preventDefault();
-			})
+			})*/
 
 			for (var bindStr in bindings){
 				self.bindString(bindStr, bindings[bindStr])
@@ -438,7 +468,7 @@
 
 				self.blockEvents = false;
 
-				self.container.data('content-busy-by', false)
+				$[pluginName].activeTargetId = null;
 				//self.target.removeClass(o.activeClass); //TODO: bad hack to avoid unknown bug on shared contents. (fix later)
 
 				//evts & callbacks
@@ -484,8 +514,8 @@
 			//console.log("showConditions")
 			//If content is busy — appoint show after hide
 			if (self.container.hasClass(o.animInClass) &&
-				self.targetId != self.container.data("content-busy-by")) {
-				$[pluginName].targetMethod(self.container.data('content-busy-by'), "hideAfterShow");
+				self.targetId != $[pluginName].activeTargetId) {
+				$[pluginName].targetMethod($[pluginName].activeTargetId, "hideAfterShow");
 				self.container.on("hide." + containerClass, self.show.bind(self));
 				return false;
 			}
@@ -496,7 +526,7 @@
 				//console.log("shared content moved")
 				self.container.append(o.content)
 			}
-			self.container.data("content-busy-by", self.targetId);
+			$[pluginName].activeTargetId = self.targetId;
 
 			//Already visible - clear any intents (won’t work in constans state)
 			if (self.target.hasClass(o.activeClass)){
@@ -520,7 +550,7 @@
 			//Is hiding on other(any) target - clear any intents, let it hide
 			if (self.container.hasClass(o.animOutClass)) {
 				self.clearIntents();
-				$[pluginName].targetMethod(self.container.data('content-busy-by'), "clearIntents");
+				$[pluginName].targetMethod($[pluginName].activeTargetId, "clearIntents");
 				return false;
 			}
 
@@ -588,7 +618,6 @@
 			return x > rect.left && x < rect.right && y > rect.top && y < rect.bottom;
 		},
 
-
 		move: function(){
 			var self = this, o = self.options,
 				left = 0, top = 0;
@@ -606,7 +635,7 @@
 			pos.right = pos.left + tw;
 
 			if (o.position == "top" || o.position == "bottom"){
-				left = Math.max(Math.min(dw - cw, pos.left), 0);				
+				left = Math.max(Math.min(dw - cw, pos.left), 0);
 			} else if (o.position == "left" || o.position == "right") {
 				top = Math.max(Math.min(pos.top, dh - ch), 0);
 			}
@@ -633,6 +662,8 @@
 				}
 			}
 
+			//self.setTip();
+
 			//NOTE: ZEPTO fucks up animations if set style through css().
 			self.container[0].style.left = left + 'px';
 			self.container[0].style.top = top + 'px';
@@ -641,6 +672,52 @@
 				top: top
 			})*/
 
+			return self;
+		},
+
+		//Move tip based on position and ratio
+		correctTip: function(){
+			var self = this, o = self.options;
+			switch (self.position) {
+				case "top":
+					self.tip.attr("data-tip", "bottom");
+					self.tipContainer.css({
+						bottom: 1,
+						left: 1,
+						top: "auto",
+						right: "auto"
+					})
+					break;
+				case "bottom":
+					self.tip.attr("data-tip", "top");
+					self.tipContainer.css({
+						bottom: 1,
+						left: 1,
+						top: "auto",
+						right: "auto"
+					})
+					break;
+				case "left":
+					self.tip.attr("data-tip", "right");
+					self.tipContainer.css({
+						bottom: "auto",
+						left: "auto",
+						top: 1,
+						right: 1
+					})
+					break;
+				case "right":
+					self.tip.attr("data-tip", "left");
+					self.tipContainer.css({
+						bottom: 1,
+						left: 1,
+						top: "auto",
+						right: "auto"
+					})
+					break;
+				default: //TODO: what if no position for tip passed?
+
+			}
 			return self;
 		},
 
@@ -661,10 +738,9 @@
 			
 			var result = '<div class="' + containerClass + ' ' + containerClass + '-' + o.type +
 			(self.sharedContent ? (" " + containerClass + '-shared') : '') +
-			'" data-target-id="' + self.targetId +
-			'" hidden>';
+			'" data-target-id="' + self.targetId + '" hidden>';
 
-			if (o.close) result += '<div class="' + containerClass + '-close">' + o.close + '</div>';
+			if (o.close) result += '<div class="' + containerClass + '-close">' + o.close + '</div>';			
 
 			result += '</div>';
 
@@ -684,7 +760,7 @@
 			return $(this).each(function (i, el) {
 				var instance = new $[pluginName](el, $.extend(arg || {}, $.parseDataAttributes(el)));
 				if (!$(el).data(pluginName)) $(el).data(pluginName, instance);
-			})			
+			})
 		}
 	}
 
@@ -695,7 +771,7 @@
 			var data = {}, v;
 			if (el.dataset) {
 				for (var prop in el.dataset) {
-					if (el.dataset[prop] === "true") {
+					if (el.dataset[prop] === "true" || el.dataset[prop] === "") {
 						data[prop] = true;
 					} else if (el.dataset[prop] === "false") {
 						data[prop] = false;
