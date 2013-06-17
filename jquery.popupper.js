@@ -649,11 +649,11 @@
 				v = {
 					width: $wnd.width(),
 					height: $wnd.height(),
-					top: $doc.scrollTop(),
-					left: $doc.scrollLeft()
+					top: window.pageYOffset,//$doc.scrollTop(),
+					left: window.pageXOffset//$doc.scrollLeft()
 				},
 				//TODO: count on tip size: tip = self.tip.
-				tip = self.tip ? self.tip.height() : 0;
+				tip = self.tip ? self.tip.height()/2 : 0;
 
 				t.width = self.target.outerWidth(true);
 				t.height = self.target.outerHeight(true);
@@ -704,7 +704,7 @@
 
 			//Count position
 			//TODO: count positioning based on alignment (now just left)
-			if (self.position == P.TOP || self.position == P.BOTTOM){					
+			if (self.position == P.TOP || self.position == P.BOTTOM){
 				left = Math.max(Math.min(t.left, v.width + v.left - c.width),0);
 			} else 	if (self.position == P.LEFT || self.position == P.RIGHT){
 				top = Math.max(Math.min(t.top, v.height + v.top - c.height),0);
@@ -731,7 +731,7 @@
 				throw("Position OVER is unimplemented")
 			}
 
-			//self.setTip();
+			self.moveTip(t, c);
 
 			//NOTE: ZEPTO fucks up animations when style set through css().
 			self.container[0].style.left = left + 'px';
@@ -740,43 +740,45 @@
 			return self;
 		},
 
-		//Move tip based on position and ratio
-		correctTip: function(){
+		//Move tip based on position and ratio. @target, @container — sizes and position
+		moveTip: function(target, container){
 			var self = this, o = self.options;
+			var tch = self.tipContainer.outerHeight(true);
+			var tcw = self.tipContainer.outerWidth(true);
 			switch (self.position) {
-				case "top":
-					self.tip.attr("data-tip", "bottom");
-					self.tipContainer.css({
-						bottom: 1,
-						left: 1,
-						top: "auto",
-						right: "auto"
-					})
-					break;
-				case "bottom":
+				case P.BOTTOM:
 					self.tip.attr("data-tip", "top");
 					self.tipContainer.css({
-						bottom: 1,
-						left: 1,
-						top: "auto",
+						top: -tch,
+						left: 0,
+						bottom: "auto",
 						right: "auto"
 					})
 					break;
-				case "left":
+				case P.LEFT:
 					self.tip.attr("data-tip", "right");
 					self.tipContainer.css({
+						top: 0,
+						right: -tcw,
 						bottom: "auto",
-						left: "auto",
-						top: 1,
-						right: 1
+						left: "auto"
 					})
 					break;
-				case "right":
+				case P.TOP:
+					self.tip.attr("data-tip", "bottom");
+					self.tipContainer.css({
+						bottom: -tch,
+						left: 0,
+						right: "auto",
+						top: "auto"
+					})
+					break;
+				case P.RIGHT:
 					self.tip.attr("data-tip", "left");
 					self.tipContainer.css({
-						bottom: 1,
-						left: 1,
-						top: "auto",
+						top: 0,
+						left: -tcw,
+						bottom: "auto",
 						right: "auto"
 					})
 					break;
