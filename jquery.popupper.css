@@ -18,7 +18,9 @@
 	-khtml-animation-duration: .25s;
 	-moz-animation-duration: .25s;
 	-o-animation-duration: .25s;
-	animation-duration: .25s
+	animation-duration: .25s;
+
+	outline: 1px dotted blue;
 }
 
 
@@ -26,8 +28,8 @@
 .popuppee-dropdown{
 }
 .popuppee-tooltip{
-	box-shadow: 0 0 0 10px #eee;
-	padding: 10px;
+	box-shadow: 0 0 0 10px #ddd;
+	padding: 10px 10px;
 	border-radius: 8px;
 }
 .popuppee-dialog{
@@ -52,13 +54,15 @@
 	width: 40px;
 	height: 40px;
 	overflow: hidden;
+	outline: 1px dotted gray;
 	text-align: center;
 }
 .popuppee-tip{
-	box-shadow: 0 0 0 10px #eee;
+	box-shadow: 0 0 0 10px #ddd;
 	border-top-left-radius: 1px;
 	position: absolute;
 	background: black;
+	outline: 1px dotted gray;
 	-webkit-transform: rotate(45deg);
 	/* Change this values to alter tip size */
 	width: 10px;

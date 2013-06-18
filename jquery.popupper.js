@@ -22,7 +22,8 @@
 			tooltip: {
 				position: "top",
 				tip: true,
-				tipPosition: .5,
+				tipalign: .5,
+				align: "center",
 				behavior: {
 					"mouseenter target 1000": "show", //TODO: handle "show -hide" and "show -"
 					"mouseleave target 1000": "hide"
@@ -248,6 +249,28 @@
 				self.tip = $('<div class="' + containerClass + '-tip " data-tip="top"/>').appendTo(self.tipContainer);
 			}
 
+			//Set alignment of contianer
+			if (o.align) {
+				switch (o.align){
+					case "top":
+					case "left":
+						self.align = 0;
+						break;
+					case "bottom":
+					case "right":
+						self.align = 1;
+						break;
+					case "center":
+					case "middle":
+						self.align = .5;
+						break;
+					default:
+						self.align = o.align;
+				}
+			} else {
+				self.align = 0;
+			}
+
 			if (o.animDuration || o.animDuration === 0){ //set duration through options
 				self.setAnimDuration(o.animDuration);
 			} else { //get duration from css
@@ -257,7 +280,6 @@
 			self.bindEvents();
 
 			//Make autostart, if needed
-			//TODO: detect is zepto object
 			if (o.autolaunch
 				&& o.content instanceof $.fn.constructor
 				&& window.location.hash == "#" + o.content.attr("id") 
@@ -636,8 +658,8 @@
 				left = 0, top = 0;
 
 			var c = {
-					height: self.container.outerHeight(true),
-					width: self.container.outerWidth(true)
+					height: self.container.height(),
+					width: self.container.width()
 				},
 				d = {
 					width: $doc.width(),
@@ -705,9 +727,11 @@
 			//Count position
 			//TODO: count positioning based on alignment (now just left)
 			if (self.position == P.TOP || self.position == P.BOTTOM){
-				left = Math.max(Math.min(t.left, v.width + v.left - c.width),0);
+				left = t.left + t.width * self.align - c.width * self.align;
+				left = Math.max(Math.min(left, v.width + v.left - c.width),0);
 			} else 	if (self.position == P.LEFT || self.position == P.RIGHT){
-				top = Math.max(Math.min(t.top, v.height + v.top - c.height),0);
+				top = t.top + t.height * self.align - c.height * self.align;
+				top = Math.max(Math.min(top, v.height + v.top - c.height),0);
 			}
 
 			if (self.position == P.TOP){
@@ -731,7 +755,7 @@
 				throw("Position OVER is unimplemented")
 			}
 
-			self.moveTip(t, c);
+			self.tip && self.moveTip(t, c);
 
 			//NOTE: ZEPTO fucks up animations when style set through css().
 			self.container[0].style.left = left + 'px';
@@ -892,6 +916,7 @@
 
 
 	//Zepto crutches
+	//TODO: think of removal
 	var outerH = $.fn.outerHeight;
 	$.fn.outerHeight = function(){
 		if (outerH) {
