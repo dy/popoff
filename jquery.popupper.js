@@ -250,25 +250,11 @@
 			}
 
 			//Set alignment of contianer
-			if (o.align) {
-				switch (o.align){
-					case "top":
-					case "left":
-						self.align = 0;
-						break;
-					case "bottom":
-					case "right":
-						self.align = 1;
-						break;
-					case "center":
-					case "middle":
-						self.align = .5;
-						break;
-					default:
-						self.align = o.align;
-				}
-			} else {
-				self.align = 0;
+			self.align = self.getAlignValue(o.align);
+			
+
+			if (o.tipAlign) {
+				self.tipAlign = self.getAlignValue(o.tipAlign);
 			}
 
 			if (o.animDuration || o.animDuration === 0){ //set duration through options
@@ -289,6 +275,27 @@
 			}
 
 			return self;
+		},
+
+		//Returns numeric align value
+		getAlignValue: function(align){
+			var result = 0;
+			switch (align){
+				case "top":
+				case "left":
+					return 0;
+					break;
+				case "bottom":
+				case "right":
+					return 1;
+					break;
+				case "center":
+				case "middle":
+					return .5;
+					break;
+				default:
+					return parseInt(align) || result;
+			}
 		},
 
 		bindEvents: function(){
@@ -654,12 +661,13 @@
 		},
 
 		move: function(){
-			var self = this, o = self.options,
-				left = 0, top = 0;
+			var self = this, o = self.options;
 
 			var c = {
 					height: self.container.height(),
-					width: self.container.width()
+					width: self.container.width(),
+					left: 0,
+					top: 0
 				},
 				d = {
 					width: $doc.width(),
@@ -675,7 +683,7 @@
 					left: window.pageXOffset//$doc.scrollLeft()
 				},
 				//TODO: count on tip size: tip = self.tip.
-				tip = self.tip ? self.tip.height()/2 : 0;
+				tip = self.tip ? self.tipContainer.height()/2 : 0;
 
 				t.width = self.target.outerWidth(true);
 				t.height = self.target.outerHeight(true);
@@ -725,30 +733,29 @@
 			}
 
 			//Count position
-			//TODO: count positioning based on alignment (now just left)
 			if (self.position == P.TOP || self.position == P.BOTTOM){
-				left = t.left + t.width * self.align - c.width * self.align;
-				left = Math.max(Math.min(left, v.width + v.left - c.width),0);
+				c.left = t.left + t.width * self.align - c.width * self.align;
+				c.left = Math.max(Math.min(c.left, v.width + v.left - c.width),0);
 			} else 	if (self.position == P.LEFT || self.position == P.RIGHT){
-				top = t.top + t.height * self.align - c.height * self.align;
-				top = Math.max(Math.min(top, v.height + v.top - c.height),0);
+				c.top = t.top + t.height * self.align - c.height * self.align;
+				c.top = Math.max(Math.min(c.top, v.height + v.top - c.height),0);
 			}
 
 			if (self.position == P.TOP){
-				top = t.top - c.height - tip;
+				c.top = t.top - c.height - tip;
 			} else if (self.position == P.BOTTOM){
-				top = t.bottom + tip;
+				c.top = t.bottom + tip;
 			} else if (self.position == P.RIGHT){
-				left = t.right + tip
+				c.left = t.right + tip
 			} else if (self.position == P.LEFT){
-				left = t.left - c.width - tip;
+				c.left = t.left - c.width - tip;
 			} else if (self.position == P.CENTER){
 				if (self.container.css("position") === "fixed"){
-					left = v.width/2 - c.width/2
-					top = v.height/2 - c.height/2
+					c.left = v.width/2 - c.width/2
+					c.top = v.height/2 - c.height/2
 				} else {		
-					left = v.width/2 - c.width/2 + v.left
-					top = v.height/2 - c.height/2 + v.top
+					c.left = v.width/2 - c.width/2 + v.left
+					c.top = v.height/2 - c.height/2 + v.top
 				}
 			} else {
 				//TODO
@@ -758,8 +765,8 @@
 			self.tip && self.moveTip(t, c);
 
 			//NOTE: ZEPTO fucks up animations when style set through css().
-			self.container[0].style.left = left + 'px';
-			self.container[0].style.top = top + 'px';
+			self.container[0].style.left = c.left + 'px';
+			self.container[0].style.top = c.top + 'px';
 
 			return self;
 		},
@@ -767,47 +774,46 @@
 		//Move tip based on position and ratio. @target, @container — sizes and position
 		moveTip: function(target, container){
 			var self = this, o = self.options;
-			var tch = self.tipContainer.outerHeight(true);
-			var tcw = self.tipContainer.outerWidth(true);
+			var tch = self.tipContainer.height();
+			var tcw = self.tipContainer.width();
+			//Set tip position
 			switch (self.position) {
 				case P.BOTTOM:
-					self.tip.attr("data-tip", "top");
+					self.tipContainer.attr("data-tip", "top");				
+					break;
+				case P.LEFT:
+					self.tipContainer.attr("data-tip", "right");
+					break;
+				case P.TOP:
+					self.tipContainer.attr("data-tip", "bottom");					
+					break;
+				case P.RIGHT:
+					self.tipContainer.attr("data-tip", "left");
+					break;
+				default: //TODO: what if no position for tip passed?
+			}
+
+			switch (self.position) {
+				case P.BOTTOM:
+				case P.TOP:
+					var offset = Math.max(target.left - container.left, 0);
+					var left = offset + (Math.min(target.width, container.width) - tcw ) * self.tipAlign;
+					left = Math.min(left, container.width - tcw);
 					self.tipContainer.css({
-						top: -tch,
-						left: 0,
-						bottom: "auto",
-						right: "auto"
+						left: left,
 					})
 					break;
 				case P.LEFT:
-					self.tip.attr("data-tip", "right");
-					self.tipContainer.css({
-						top: 0,
-						right: -tcw,
-						bottom: "auto",
-						left: "auto"
-					})
-					break;
-				case P.TOP:
-					self.tip.attr("data-tip", "bottom");
-					self.tipContainer.css({
-						bottom: -tch,
-						left: 0,
-						right: "auto",
-						top: "auto"
-					})
-					break;
 				case P.RIGHT:
-					self.tip.attr("data-tip", "left");
+					var offset = Math.max(target.top - container.top, 0);
+					var top = offset + (Math.min(target.height, container.height) - tch ) * self.tipAlign;
+					top = Math.min(top, container.height - tch);
 					self.tipContainer.css({
-						top: 0,
-						left: -tcw,
-						bottom: "auto",
-						right: "auto"
+						top: top,
 					})
 					break;
-				default: //TODO: what if no position for tip passed?
-
+				default:
+					break;
 			}
 			return self;
 		},

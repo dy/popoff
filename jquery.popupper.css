@@ -19,8 +19,6 @@
 	-moz-animation-duration: .25s;
 	-o-animation-duration: .25s;
 	animation-duration: .25s;
-
-	outline: 1px dotted blue;
 }
 
 
@@ -50,11 +48,10 @@
 .popuppee-tip-container{
 	position: absolute;
 	top: -40px;
-	left: 20px;
+	left: 0px;
 	width: 40px;
 	height: 40px;
 	overflow: hidden;
-	outline: 1px dotted gray;
 	text-align: center;
 }
 .popuppee-tip{
@@ -62,7 +59,6 @@
 	border-top-left-radius: 1px;
 	position: absolute;
 	background: black;
-	outline: 1px dotted gray;
 	-webkit-transform: rotate(45deg);
 	/* Change this values to alter tip size */
 	width: 10px;
@@ -70,16 +66,42 @@
 	top: 15px;
 	left: 15px;
 }
-.popuppee-tip[data-tip=top]{
+
+.popuppee-tip-container[data-tip=top]{
+	top: -40px;
+	left: 0px;
+	bottom: auto;
+	right: auto;
+}
+.popuppee-tip-container[data-tip=right]{
+	right: -40px;
+	top: 0px;
+	left: auto;
+	bottom: auto;
+}
+.popuppee-tip-container[data-tip=bottom]{
+	bottom: -40px;
+	left: 0px;
+	top: auto;
+	right: auto;
+}
+.popuppee-tip-container[data-tip=left]{
+	left: -40px;
+	top: 0px;
+	bottom: auto;
+	right: auto;
+}
+
+.popuppee-tip-container[data-tip=top] .popuppee-tip{
 	margin-top: 50%;
 }
-.popuppee-tip[data-tip=right]{
+.popuppee-tip-container[data-tip=right] .popuppee-tip{
 	margin-left: -50%;
 }
-.popuppee-tip[data-tip=bottom]{
+.popuppee-tip-container[data-tip=bottom] .popuppee-tip{
 	margin-top: -50%;
 }
-.popuppee-tip[data-tip=left]{
+.popuppee-tip-container[data-tip=left] .popuppee-tip{
 	margin-left: 50%;
 }
 
