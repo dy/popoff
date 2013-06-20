@@ -555,10 +555,10 @@
 			var self = this, o = self.options;
 			//console.log("showConditions")
 			//If content is busy — appoint show after hide
-			if (self.container.hasClass(o.animInClass) &&
-				self.targetId != P.activeTargetId) {
-				P.targetMethod(P.activeTargetId, "hideAfterShow");
-				self.container.on("hide." + containerClass, self.show.bind(self));
+			if (P.activeTargetId && self.targetId != P.activeTargetId) {
+				P.targetMethod(P.activeTargetId, "clearIntents");
+				P.targetMethod(P.activeTargetId, "hide");
+				P.targets[P.activeTargetId].container.one("hide." + containerClass, self.show.bind(self));
 				return false;
 			}
 
