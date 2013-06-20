@@ -150,7 +150,10 @@
 		targetMethod: function(targetId, methName){
 			var target = P.targets[targetId];
 			target[methName].apply(target, []);
-		}
+		},
+
+		//Should automatically be shown?
+		isAutolaunchPlanned: false
 	})
 
 
@@ -269,9 +272,12 @@
 			if (o.autolaunch
 				&& o.content instanceof $.fn.constructor
 				&& window.location.hash == "#" + o.content.attr("id") 
-				&& !P.activeTargetId){
-				self.show();
-				o.overlay && self.showOverlay();
+				&& !P.activeTargetId
+				&& !P.isAutolaunchPlanned){
+				P.isAutolaunchPlanned = true;
+				self.target.click();
+				//self.show();
+				//o.overlay && self.showOverlay();
 			}
 
 			return self;
@@ -455,7 +461,6 @@
 		//API
 		show: function(){
 			var self = this, o = self.options;
-			//console.log("show")
 			if (!self.checkShowConditions()) {
 				return self;
 			}

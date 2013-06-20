@@ -8,15 +8,9 @@
 
 * Get rid of non-blocking notation (+): there’s no sense in that, cause you cant call hide not stopping show
 
-* Optional tip(triangle) with a color
-	* Tip could be any: svg, border, rotated square. 
-	* My goal is only to place tip relative to the target, rest is due to css settings.
-
 * Notify if content passed is null, like 0-selector
 
-* Think how to avoid dropdown triggering when tried to hide
-
-* Make window popupper: assign popupper to the body
+* Make window popupper: assign popupper to the window as target
 
 * Fix up tests
 * Fix up component.json, package.json and other meta-stuff
@@ -29,17 +23,11 @@
 
 * Handle https as content
 
-* Fix doc height
-
 * Make default styles
 
 * handle case when the container is outside the viewport
 
 * Find bug on shared content popups. Sometimes it stops to hide.
-
-* zepto shared content bug
-
-* Tooltip centrized relative to target position (not as dropdown)
 
 * Zones to avoid when place
 * Vertical/Horizontal placing strategy
@@ -54,11 +42,9 @@
 
 * Handle out-of-screen, out-of-size
 
-* Count tip size when placing
-
 * Aside-menu-popup (like on phones)
 
-* Test custom behaviour (custom type)
+* Test custom behaviour
 
 * Test calling methods from outside, like $(thing).popupper("method");
 
