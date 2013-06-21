@@ -1,3 +1,5 @@
+* Bug: tooltip shown, overlay clicked: fails.
+
 * Autolaunch for zepto (instanceof Zepto) 
 
 * Test href along with title on a
@@ -5,8 +7,6 @@
 * Fix page auto-displacing on anchor link with popupper autolaunch (if element somewhere below in the content)
 
 * Make order of popups to show, like tutorial
-
-* Get rid of non-blocking notation (+): there’s no sense in that, cause you cant call hide not stopping show
 
 * Notify if content passed is null, like 0-selector
 

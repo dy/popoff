@@ -49,11 +49,11 @@
 				autolaunch: true,
 				behavior: {
 					"click target 250": "show",
-					"click target 0": "showOverlay +",
+					"click target 0": "showOverlay",
 					"click outside 0": "hide",
-					"click outside 250": "hideOverlay +",
+					"click outside 250": "hideOverlay",
 					"click close 0": "hide",
-					"click close 250": "hideOverlay +"
+					"click close 250": "hideOverlay"
 				}			
 			},
 			dropdown: {
@@ -325,13 +325,6 @@
 			var props = bindStr.split(" "),
 				evt = props[0], selector = props[1], delay = parseInt(props[2]), meth;
 
-			//non-blocking methods via "+"
-			var blocking = true;
-			if (methName[methName.length-1] == '+') { 
-				methName = methName.slice(0, -1).trim();
-				blocking = false;
-			}
-
 			meth = self[methName].bind(self);
 
 			switch (selector) {
@@ -355,18 +348,19 @@
 			}
 
 			selector.on(evt, function(e){
+				//console.log(evt + ":" + methName + ":" + delay)
 				if (!self.blockEvents) {
-					self.delayedCall( function() {meth(e)}, delay, "events", blocking)
+					self.delayedCall( function() {meth(e)}, delay, self[methName].group)
 				}
 			});
 		},
 
 		//Call method after @delay ms. If needed to stop any other delayed calls, pass @blocking true
-		delayedCall: function(fn, delay, key, blocking){
+		delayedCall: function(fn, delay, key){
 			var self = this;
 
 			key == null && (key = 'none');
-			if (blocking) self.clearDelayedCalls(key);
+			self.clearDelayedCalls(key);
 
 			if (delay) {
 				self.timeouts[key] = setTimeout(fn, delay)
@@ -461,6 +455,7 @@
 		//API
 		show: function(){
 			var self = this, o = self.options;
+			//console.log("show")
 			if (!self.checkShowConditions()) {
 				return self;
 			}
@@ -488,7 +483,7 @@
 
 			//Handle outside click
 			if (self.outsideDelays.hide || self.outsideDelays.hide === 0){
-				$doc.on("click.outside."+pluginName, self.callOnClickOutside(self.hide.bind(self), self.outsideDelays.hide));
+				$doc.on("click.outside."+pluginName, self.callOnClickOutside("hide", self.outsideDelays.hide));
 			}
 
 			//evts & callbacks
@@ -539,10 +534,11 @@
 		},
 
 		//Helping event that detects if click happened outside container and target
-		callOnClickOutside: function(method, delay){			
+		callOnClickOutside: function(methName, delay){			
 			var self = this;
-			//console.log("callOnClickOutside")
+			//console.log("callOnClickOutside:" + methName + ":" + delay);
 			return function(e){
+				//console.log("outside:" + methName)
 				if (e.target === self.container[0]
 					|| e.target === self.target[0]
 					|| self.isInside(e.clientX, e.clientY, self.container)
@@ -550,7 +546,7 @@
 					return;
 				}
 				//clicked outside — ignore everything till @method finishes
-				self.delayedCall(method, delay);
+				self.delayedCall(self[methName].bind(self), delay, self[methName].group);
 				self.blockEvents = true;
 			}.bind(self)
 		},
@@ -628,7 +624,7 @@
 
 			//Handle outside click
 			if (self.outsideDelays.hideOverlay || self.outsideDelays.hideOverlay === 0){
-				$doc.on("click.outside."+pluginName, self.callOnClickOutside(self.hideOverlay.bind(self), self.outsideDelays.hideOverlay));
+				$doc.on("click.outside."+pluginName, self.callOnClickOutside("hideOverlay", self.outsideDelays.hideOverlay));
 			}
 
 			return self;
@@ -849,6 +845,12 @@
 			return result;
 		}
 	})
+
+	//Function groups: functions in one group are mutually blocked
+	P.prototype.hide.group = "container"
+	P.prototype.show.group = "container"
+	P.prototype.hideOverlay.group = "overlay"
+	P.prototype.showOverlay.group = "overlay"
 
 
 	//Plugin
