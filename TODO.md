@@ -1,15 +1,3 @@
-* Bug: tooltip shown, overlay clicked: fails.
-	* Hide of tooltip clears show of overlay.
-	* Need to escape bound methods by target-ID. ClearIntents clears all intents insteadof target ones, it fails on outer bindings therefore.
-	*======done
-	* Show of type-overlay binds after tooltip hide (external bind), but hideOverlay may fire before tooltip hide.
-
-* Bug: clickoutside overlay before container shown: fails to hide container
-	* Click outside happens before show method
-	*======done
-
-* Autolaunch for zepto (instanceof Zepto) 
-
 * Test href along with title on a
 
 * Fix page auto-displacing on anchor link with popupper autolaunch (if element somewhere below in the content)
