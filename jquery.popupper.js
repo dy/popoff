@@ -142,7 +142,7 @@
 			return ++P.nextTargetId;
 		},
 
-		//Cache of targets: id → popupper-controller
+		//Cache of targets: id ~ popupper-controller
 		targets: {},
 
 		//Calls method of target
@@ -353,7 +353,7 @@
 			}
 
 			selector.on(evt, function(e){
-				console.log(time() + evt + ":" + methName + "→" + delay)
+				console.log(time() + evt + " on " + o.type + "-" + self.targetId + " → " + methName + "~" + delay)
 				if (!self.blockEvents) {
 					self.delayedCall( function() {meth(e)}, delay, self[methName].group)
 				}
@@ -425,14 +425,19 @@
 
 		//Intent action: make it next after the current action
 		clearIntents: function(){
-			var self = this;
-			console.log(time() + "clearIntents:"+self.targetId)
+			var self = this, o = self.options;
+			console.log(time() + "clearIntents " + o.type + "-"+self.targetId)
 			this.clearShowIntent();
 			this.clearHideIntent();
 		},
 
 		clearShowIntent: function(){
-			this.container.off("hide." + containerClass + self.eventClass);
+			var self = this;
+			self.container.off("hide." + containerClass + self.eventClass);
+			if (self.externalBind) {
+				console.log("OFF " + self.externalBind + "hide." + containerClass + self.eventClass)
+				P.targets[self.externalBind].container.off("hide." + containerClass + self.eventClass)
+			}
 		},
 
 		clearHideIntent: function(){
@@ -462,7 +467,7 @@
 		//API
 		show: function(){
 			var self = this, o = self.options;
-			console.log(time() + "show:" + self.targetId)
+			console.log(time() + "show " + o.type + "-" + self.targetId)
 			if (!self.checkShowConditions()) {
 				return self;
 			}
@@ -503,7 +508,7 @@
 
 		hide: function(){
 			var self = this, o = self.options;
-			console.log(time() + "hide:" + self.targetId)
+			console.log(time() + "hide " + o.type + "-" + self.targetId)
 			if (!self.checkHideConditions()){
 				return self;
 			}
@@ -519,7 +524,7 @@
 
 				P.activeTargetId = null;
 
-				console.log(time() + "hide:" + self.targetId + " ok")
+				console.log(time() + "hide " + o.type + "-" + self.targetId + " ok")
 
 				//evts & callbacks
 				self.target.trigger("hide");
@@ -543,10 +548,10 @@
 
 		//Helping event that detects if click happened outside container and target
 		callOnClickOutside: function(methName, delay){			
-			var self = this;
-			//console.log(time() + "callOnClickOutside:" + methName + ":" + delay);
+			var self = this, o = self.options;
+			console.log(time() + "callOnClickOutside " + o.type + "-" + self.targetId + " " + methName + "~" + delay);
 			return function(e){
-				//console.log(time() + "outside:" + methName)
+				console.log(time() + "clickOutside " + o.type + "-" + self.targetId + " → " + methName + "~" + delay)
 				if (e.target === self.container[0]
 					|| e.target === self.target[0]
 					|| self.isInside(e.clientX, e.clientY, self.container)
@@ -569,12 +574,15 @@
 				P.targetMethod(P.activeTargetId, "clearIntents");
 				P.targetMethod(P.activeTargetId, "hide");
 				P.targetMethod(P.activeTargetId, "hideOverlay");
-				P.targets[P.activeTargetId].container.on("hide." + containerClass + self.eventClass, self.show.bind(self));
-				console.log(time() + "---bound to hide:" + P.activeTargetId)
+				P.targets[P.activeTargetId].container.on("hide." + containerClass + self.eventClass, function(){
+					self.externalBind = null;
+					self.show.bind(self)();
+				});
+				self.externalBind = P.activeTargetId;
+				console.log(time() + "---bound to hide " + o.type + "-" + P.activeTargetId)
 				return false;
 			}
 
-			//TODO: bind this to the target container
 			//Busy content by itself
 			if (self.sharedContent) {
 				//console.log(time() + "shared content moved")
@@ -601,7 +609,7 @@
 		//Is hide possible right now and if not arrange hide
 		checkHideConditions: function(){
 			var self = this, o = self.options;
-			console.log(time() + "hideConditions:"+self.targetId)
+			console.log(time() + "hideConditions " + o.type + "-"+self.targetId)
 			//Is hiding on other(any) target - clear any intents, let it hide
 			if (self.container.hasClass(o.animOutClass)) {
 				self.clearShowIntent(); //let it hide with no show
@@ -620,14 +628,14 @@
 				self.hideAfterShow();
 				return false;
 			}
-			console.log(time() + "hideConditions:" + self.targetId + " ok")
+			console.log(time() + "hideConditions " + o.type + "-" + self.targetId + " ok")
 
 			return true;
 		},
 
 		showOverlay: function(){
 			var self = this, o = self.options;
-			console.log(time() + "showOverlay:" + self.targetId)
+			console.log(time() + "showOverlay " + o.type + "-" + self.targetId)
 			self.overlay.removeAttr('hidden');
 			self.overlay.removeClass(o.overlayOutClass).addClass(o.animClass + " " + o.overlayInClass);
 
@@ -638,6 +646,8 @@
 			//Handle outside click
 			if (self.outsideDelays.hideOverlay || self.outsideDelays.hideOverlay === 0){
 				$doc.on("click.outside."+pluginName + self.eventClass, self.callOnClickOutside("hideOverlay", self.outsideDelays.hideOverlay));
+				$doc.on("click.outside."+pluginName + self.eventClass, self.callOnClickOutside("hide", self.outsideDelays.hide));			
+				
 			}
 
 			return self;
@@ -645,12 +655,18 @@
 
 		hideOverlay: function(){
 			var self = this, o = self.options;
-			console.log(time() + "hideOverlay:" + self.targetId)
-			if (!o.overlay) return false;
+			console.log(time() + "hideOverlay " + o.type + "-" + self.targetId)
+
+			//false call
+			if (!o.overlay) return false; 
+
 			self.overlay.addClass(o.animClass + " " + o.overlayOutClass).removeClass(o.overlayInClass);
 
 			self.delayedCall(function(){
-				console.log(time() + "hideOverlay:" + self.targetId + " ok")
+
+				self.blockEvents = false;
+
+				console.log(time() + "hideOverlay " + o.type + "-" + self.targetId + " ok")
 				self.overlay.removeClass(o.animClass + " " + o.overlayOutClass).attr('hidden', true);
 			}, o.animDuration, "animOverlay");
 
