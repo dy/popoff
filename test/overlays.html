@@ -14,6 +14,9 @@ body{
 	color: white;
 	padding: 5px 10px;
 }
+.target-container{
+	display: inline-block;
+}
 </style>
 
 <script>
@@ -22,7 +25,7 @@ window.popupper = {
 	animInClass: "fadeInDown",
 	animClass: "animated",
 	animOutClass: "fadeOutUp",
-	animDuration: 850,
+	animDuration: 1000,
 
 	overlayInClass: "fadeIn",
 	overlayOutClass: "fadeOut"
@@ -41,8 +44,8 @@ window.popupper = {
 	<div class="popupper-overlay target" data-content="#shared-content">Second: data-content</div>
 	<a class="overlay target" data-type="overlay" href="#shared-content">Third: DOMReady data-attr</a>
 	<input class="overlay-instant target" type="button" value="Fourth: js-opts"></input>
-	<div><a class="overlay-deferred target" href="#shared-content">Fifth: deferred</a></div>
-	<a class="popupper-overlay target" href="#shared-content" data-autolaunch >Sixth: autolaunch</a>
+	<a class="popupper-overlay target" href="#shared-content" data-autolaunch >Fifth: autolaunch</a>
+	<div class="target-container"><span class="overlay-deferred target" data-for="#shared-content">Sixth: deferred</span></div>
 	<a class="popupper-tooltip target" href="#shared-content" >Seventh: tooltip</a>
 </section>
 

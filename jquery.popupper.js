@@ -48,12 +48,12 @@
 				tip: false,
 				autolaunch: true,
 				behavior: {
-					"click target 250": "show",
+					"click target 550": "show",
 					"click target 0": "showOverlay",
 					"click outside 0": "hide",
-					"click outside 250": "hideOverlay",
+					"click outside 550": "hideOverlay",
 					"click close 0": "hide",
-					"click close 250": "hideOverlay"
+					"click close 550": "hideOverlay"
 				}			
 			},
 			dropdown: {
@@ -184,11 +184,14 @@
 			self.title = self.target.attr("title");
 			self.target.removeAttr("title");
 
-			//Hook href as content, if possible
-			var href = self.target.attr("href");
-			if (!o.content && href){
-				if (href[0] === "#") {
-					o.content = $(self.target.attr("href"));
+			//Hook href or for as content, if possible
+			var href = self.target.attr("href"),
+				forAttr = self.target.attr("for"),
+				dataFor = o['for'],
+				extContent = (href || forAttr || dataFor);
+			if (!o.content && extContent){
+				if (extContent[0] === "#") {
+					o.content = $(extContent);
 				} else {
 					//TODO: test if img
 					//TODO: test if external document
@@ -199,6 +202,8 @@
 			self.target.addClass(pluginName + "-target");
 			self.targetId = P.getTargetId(self.target);
 			self.target.addClass(pluginName + "-target-" + self.targetId); //make unique id for each target
+
+			self.eventClass = ".target" + self.targetId; //to differentiate events
 
 			//Initial content comprehension
 			if (!o.content){
@@ -348,14 +353,14 @@
 			}
 
 			selector.on(evt, function(e){
-				//console.log(evt + ":" + methName + ":" + delay)
+				console.log(time() + evt + ":" + methName + "→" + delay)
 				if (!self.blockEvents) {
 					self.delayedCall( function() {meth(e)}, delay, self[methName].group)
 				}
 			});
 		},
 
-		//Call method after @delay ms. If needed to stop any other delayed calls, pass @blocking true
+		//Call method after @delay ms. @key is a group of other delayed calls to deny.
 		delayedCall: function(fn, delay, key){
 			var self = this;
 
@@ -420,34 +425,36 @@
 
 		//Intent action: make it next after the current action
 		clearIntents: function(){
+			var self = this;
+			console.log(time() + "clearIntents:"+self.targetId)
 			this.clearShowIntent();
 			this.clearHideIntent();
 		},
 
 		clearShowIntent: function(){
-			this.container.off("hide." + containerClass);
+			this.container.off("hide." + containerClass + self.eventClass);
 		},
 
 		clearHideIntent: function(){
-			this.container.off("afterShow." + containerClass);
+			this.container.off("afterShow." + containerClass + self.eventClass);
 		},
 
 		showAfterHide: function(){
 			var self = this, o = self.options;
-			//console.log("showAfterHide")
+			console.log(time() + "showAfterHide")
 			self.clearIntents();
 
-			self.container.one("hide." + containerClass, self.show.bind(self));
+			self.container.one("hide." + containerClass + self.eventClass, self.show.bind(self));
 
 			return self;
 		},
 
 		hideAfterShow: function(){
 			var self = this, o = self.options;
-			//console.log("hideAfterShow")
+			console.log(time() + "hideAfterShow")
 			self.clearIntents();
 
-			self.container.one("afterShow." + containerClass, self.hide.bind(self))
+			self.container.one("afterShow." + containerClass + self.eventClass, self.hide.bind(self))
 
 			return self;
 		},
@@ -455,7 +462,7 @@
 		//API
 		show: function(){
 			var self = this, o = self.options;
-			//console.log("show")
+			console.log(time() + "show:" + self.targetId)
 			if (!self.checkShowConditions()) {
 				return self;
 			}
@@ -483,7 +490,7 @@
 
 			//Handle outside click
 			if (self.outsideDelays.hide || self.outsideDelays.hide === 0){
-				$doc.on("click.outside."+pluginName, self.callOnClickOutside("hide", self.outsideDelays.hide));
+				$doc.on("click.outside."+pluginName + self.eventClass, self.callOnClickOutside("hide", self.outsideDelays.hide));
 			}
 
 			//evts & callbacks
@@ -496,7 +503,7 @@
 
 		hide: function(){
 			var self = this, o = self.options;
-			//console.log("hide")
+			console.log(time() + "hide:" + self.targetId)
 			if (!self.checkHideConditions()){
 				return self;
 			}
@@ -511,7 +518,8 @@
 				self.blockEvents = false;
 
 				P.activeTargetId = null;
-				//self.target.removeClass(o.activeClass); //TODO: bad hack to avoid unknown bug on shared contents. (fix later)
+
+				console.log(time() + "hide:" + self.targetId + " ok")
 
 				//evts & callbacks
 				self.target.trigger("hide");
@@ -524,7 +532,7 @@
 			self.target.removeClass(o.activeClass);
 
 			//Off outside clicks
-			$doc.off("click.outside." + pluginName);
+			$doc.off("click.outside." + pluginName + self.eventClass);
 
 			//evts & callbacks
 			self.target.trigger("beforeHide");
@@ -536,9 +544,9 @@
 		//Helping event that detects if click happened outside container and target
 		callOnClickOutside: function(methName, delay){			
 			var self = this;
-			//console.log("callOnClickOutside:" + methName + ":" + delay);
+			//console.log(time() + "callOnClickOutside:" + methName + ":" + delay);
 			return function(e){
-				//console.log("outside:" + methName)
+				//console.log(time() + "outside:" + methName)
 				if (e.target === self.container[0]
 					|| e.target === self.target[0]
 					|| self.isInside(e.clientX, e.clientY, self.container)
@@ -554,25 +562,29 @@
 		//Is show possible right now and if not arrange show 
 		checkShowConditions: function(){
 			var self = this, o = self.options;
-			//console.log("showConditions")
+			//console.log(time() + "showConditions")
 			//If content is busy — appoint show after hide
 			if (P.activeTargetId && self.targetId != P.activeTargetId) {
+				console.log(time() + "---show different: " + self.targetId + " insteadof " + P.activeTargetId +  ". plan clearIntents, hide, hideOverlay")
 				P.targetMethod(P.activeTargetId, "clearIntents");
 				P.targetMethod(P.activeTargetId, "hide");
-				P.targets[P.activeTargetId].container.one("hide." + containerClass, self.show.bind(self));
+				P.targetMethod(P.activeTargetId, "hideOverlay");
+				P.targets[P.activeTargetId].container.on("hide." + containerClass + self.eventClass, self.show.bind(self));
+				console.log(time() + "---bound to hide:" + P.activeTargetId)
 				return false;
 			}
 
 			//TODO: bind this to the target container
 			//Busy content by itself
 			if (self.sharedContent) {
-				//console.log("shared content moved")
+				//console.log(time() + "shared content moved")
 				self.container.append(o.content)
 			}
 			P.activeTargetId = self.targetId;
 
 			//Already visible - clear any intents (won’t work in constans state)
 			if (self.target.hasClass(o.activeClass)){
+				console.log(time() + 3)
 				self.clearIntents();
 				return false;
 			}
@@ -589,11 +601,11 @@
 		//Is hide possible right now and if not arrange hide
 		checkHideConditions: function(){
 			var self = this, o = self.options;
-			//console.log("hideConditions")
+			console.log(time() + "hideConditions:"+self.targetId)
 			//Is hiding on other(any) target - clear any intents, let it hide
 			if (self.container.hasClass(o.animOutClass)) {
-				self.clearIntents();
-				P.targetMethod(P.activeTargetId, "clearIntents");
+				self.clearShowIntent(); //let it hide with no show
+				//P.targetMethod(P.activeTargetId, "clearHideIntent"); //TODO: what is this for?
 				return false;
 			}
 
@@ -608,13 +620,14 @@
 				self.hideAfterShow();
 				return false;
 			}
+			console.log(time() + "hideConditions:" + self.targetId + " ok")
 
 			return true;
 		},
 
 		showOverlay: function(){
 			var self = this, o = self.options;
-			//console.log("showOverlay")
+			console.log(time() + "showOverlay:" + self.targetId)
 			self.overlay.removeAttr('hidden');
 			self.overlay.removeClass(o.overlayOutClass).addClass(o.animClass + " " + o.overlayInClass);
 
@@ -624,7 +637,7 @@
 
 			//Handle outside click
 			if (self.outsideDelays.hideOverlay || self.outsideDelays.hideOverlay === 0){
-				$doc.on("click.outside."+pluginName, self.callOnClickOutside("hideOverlay", self.outsideDelays.hideOverlay));
+				$doc.on("click.outside."+pluginName + self.eventClass, self.callOnClickOutside("hideOverlay", self.outsideDelays.hideOverlay));
 			}
 
 			return self;
@@ -632,14 +645,16 @@
 
 		hideOverlay: function(){
 			var self = this, o = self.options;
-			//console.log("hideOverlay")
+			console.log(time() + "hideOverlay:" + self.targetId)
+			if (!o.overlay) return false;
 			self.overlay.addClass(o.animClass + " " + o.overlayOutClass).removeClass(o.overlayInClass);
 
 			self.delayedCall(function(){
+				console.log(time() + "hideOverlay:" + self.targetId + " ok")
 				self.overlay.removeClass(o.animClass + " " + o.overlayOutClass).attr('hidden', true);
 			}, o.animDuration, "animOverlay");
 
-			$doc.off("click.outside."+pluginName)
+			$doc.off("click.outside."+pluginName + self.eventClass)
 
 			return self;
 		},
@@ -954,3 +969,11 @@
 	}
 
 })(window.jQuery || window.Zepto);
+
+
+//Logging shit
+var tStart = new Date().getTime();
+
+function time(){
+	return ((new Date().getTime() - tStart)/1000) + "s ";
+}
