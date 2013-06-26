@@ -23,13 +23,9 @@
 
 * handle case when the container is outside the viewport
 
-* Find bug on shared content popups. Sometimes it stops to hide.
-
 * Zones to avoid when place
 * Vertical/Horizontal placing strategy
-* + Multiple or single tooltips (number of tooltips)
-	* Container for every target element otherwise it’s fuck onerous.
-* Escape-keystroke handling
+
 * Event to show it up on
 * + Preinit, post-init
 * Animations throught anim-3d.less.

@@ -18,14 +18,15 @@
 		nextTargetId: 0,
 
 		types: {
-			//some_type: { "event [target|container|close|outside|selector] delay": method [+|-[method]] }
+			//some_type: { "event [target|container|close|outside|selector] delay": "method" | ["method", ..] }
+			//TODO: handle list of methods
 			tooltip: {
 				position: "top",
 				tip: true,
 				tipalign: .5,
 				align: "center",
 				behavior: {
-					"mouseenter target 1000": "show", //TODO: handle "show -hide" and "show -"
+					"mouseenter target 1000": "show",
 					"mouseleave target 1000": "hide"
 				}
 			},
@@ -39,7 +40,7 @@
 					"mouseenter container 0": "show",
 					"mouseleave target 200": "hide",
 					"mouseleave container 200": "hide"
-				}				
+				}			
 			},
 			overlay: {
 				position: "center",
@@ -53,7 +54,9 @@
 					"click outside 0": "hide",
 					"click outside 550": "hideOverlay",
 					"click close 0": "hide",
-					"click close 550": "hideOverlay"
+					"click close 550": "hideOverlay",
+					"keyup escape 0": "hide",
+					"keyup escape 550": "hideOverlay"
 				}			
 			},
 			dropdown: {
@@ -65,7 +68,8 @@
 					"click target": "trigger",
 					"click outside": "hide",
 					"mouseleave container 1500": "hide",
-					"mouseleave target 1500": "hide"
+					"mouseleave target 1500": "hide",
+					"keyup escape": "hide"
 				}
 			},
 			sideMenu: {
@@ -153,7 +157,19 @@
 		},
 
 		//Should automatically be shown?
-		isAutolaunchPlanned: false
+		isAutolaunchPlanned: false,
+
+		//Key aliases
+		keyMap: {
+			"esc": 27,
+			"escape": 27,
+			"up": 38,
+			"down": 40,
+			"left": 37,
+			"right": 39,
+			"enter": 13
+			//TODO: make full keymap
+		}
 	})
 
 
@@ -314,9 +330,9 @@
 
 			var bindings = o.behavior;
 
-			/*self.target.click(function(e){
-				e.preventDefault();
-			})*/
+			//self.target.click(function(e){
+			//	e.preventDefault();
+			//})
 
 			for (var bindStr in bindings){
 				self.bindString(bindStr, bindings[bindStr])
@@ -328,9 +344,20 @@
 		bindString: function(bindStr, methName){
 			var self = this, o = self.options;
 			var props = bindStr.split(" "),
-				evt = props[0], selector = props[1], delay = parseInt(props[2]), meth;
+				evt = props[0], selector = props[1], delay = parseInt(props[2]), meth, whichKey;
 
 			meth = self[methName].bind(self);
+
+			//bind kbd
+			if (evt == "keypress" || evt == "keydown" || evt == "keyup") {
+				whichKey = (P.keyMap[selector] || selector);
+				$doc.on(evt, function(e){
+					if (!self.blockEvents && e.which === whichKey){
+						self.delayedCall( function() {meth(e)}, delay, self[methName].group)
+					}
+				})
+				return;
+			}
 
 			switch (selector) {
 				case "outside":
@@ -573,7 +600,7 @@
 				P.targetMethod(P.activeTargetId, "clearIntents");
 				P.targetMethod(P.activeTargetId, "hide");
 				P.targetMethod(P.activeTargetId, "hideOverlay");
-				P.targets[P.activeTargetId].container.on("hide." + containerClass + self.eventClass, function(){
+				P.targets[P.activeTargetId].container.one("hide." + containerClass + self.eventClass, function(){
 					self.externalBind = null;
 					self.show.bind(self)();
 				});
