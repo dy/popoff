@@ -6,13 +6,27 @@
 
 <style type="text/css">
 body{
-	font-family: sans-serif;	
+	font-family: sans-serif;
+	margin: 0 0;
+	padding: 0 15px;
+}
+h1, h2, h3, h4, h5, h6{
+	padding: 0;
+	margin: 15px 0;
 }
 .target{
 	display: inline-block;
 	background: black;
 	color: white;
 	padding: 5px 10px;
+	-webkit-appearance: none;
+	appearance: none;
+	border: none;
+	outline: none;
+	margin: 0;
+	line-height: 20px;
+	vertical-align: top;
+	font-size: 14px;
 }
 .target-container{
 	display: inline-block;
@@ -40,21 +54,24 @@ window.popupper = {
 	<h2>Shared content overlays</h2>
 	<div id="shared-content" hidden>Shared content element for overlays</div>
 
-	<a class="popupper-overlay target" href="#shared-content">First: href</a>
-	<div class="popupper-overlay target" data-content="#shared-content">Second: data-content</div>
-	<a class="overlay target" data-type="overlay" href="#shared-content">Third: DOMReady data-attr</a>
-	<input class="overlay-instant target" type="button" value="Fourth: js-opts"></input>
-	<a class="popupper-overlay target" href="#shared-content" data-autolaunch >Fifth: autolaunch</a>
-	<div class="target-container"><span class="overlay-deferred target" data-for="#shared-content">Sixth: deferred</span></div>
-	<a class="popupper-tooltip target" href="#shared-content" >Seventh: tooltip</a>
+	<a class="popupper-overlay target" href="#shared-content">1. href</a>
+	<div class="popupper-overlay target" data-content="#shared-content">2. data-content</div>
+	<a class="overlay target" data-type="overlay" href="#shared-content">3. DOMReady data-attr</a>
+	<input class="overlay-instant target" type="button" value="4. js-opts"></input>
+	<a class="popupper-overlay target" href="#shared-content" data-autolaunch >5. autolaunch</a>
+	<div class="target-container"><span class="overlay-deferred target" data-for="#shared-content">6. deferred</span></div>
+	<a class="popupper-tooltip target" href="#shared-content" >7. tooltip</a>
+	<a href="#shared-content" target="blank" class="target">8. window</a>
 </section>
 
 <h2>Things to test</h2>
 <ol>
-	<li>Tooltip show + overlay click + early hide</li>
+	<li>Tooltip show + overlay click + early hide (escape / outside click)</li>
 	<li>Tooltip show + overlay click</li>
 	<li>Autolaunch</li>
 	<li>Shared content for all targets</li>
+	<li>Escape press</li>
+	<li>Popup window</li>
 </ol>
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>

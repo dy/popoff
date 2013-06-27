@@ -17,17 +17,14 @@
 	* Iframes
 	* Documents
 
-* Handle https as content
+* Handle http as content
 
 * Make default styles
 
 * handle case when the container is outside the viewport
 
 * Zones to avoid when place
-* Vertical/Horizontal placing strategy
 
-* Event to show it up on
-* + Preinit, post-init
 * Animations throught anim-3d.less.
 * Event callbacks
 * Lightbox, dropdown, tooltip, balloon, dialog and popup in one.
