@@ -33,7 +33,6 @@
 			popover: {
 				position: "top",
 				tip: true,
-				tipPosition: .2,
 				behavior: {
 					"mouseenter target 50": "show",
 					"click target 0": "show",
@@ -48,6 +47,7 @@
 				overlay: true,
 				tip: false,
 				autolaunch: true,
+				preventDefault: true,
 				behavior: {
 					"click target 550": "show",
 					"click target 0": "showOverlay",
@@ -62,7 +62,8 @@
 			dropdown: {
 				position: "bottom",
 				tip: true,
-				tipPosition: .2,
+				align: 0,
+				preventDefault: true,
 				behavior: {
 					"mouseenter container": "show",
 					"click target": "trigger",
@@ -120,6 +121,7 @@
 
 			close: false, //false (don’t show close) or string with text
 			overlay: false, //Just indicates need to create overlay
+			preventDefault: false,
 
 			position: "top", //top, left, bottom, right, center (for overlays), over (hiding element)
 			align: "center", //0 - by left, 1 - by right, .5 - by center, "left", "top", "right", "bottom", "center"
@@ -274,8 +276,7 @@
 			}
 
 			//Set alignment of contianer
-			self.align = self.getAlignValue(o.align);
-			
+			self.align = self.getAlignValue(o.align);			
 
 			if (o.tipAlign) {
 				self.tipAlign = self.getAlignValue(o.tipAlign);
@@ -288,6 +289,10 @@
 			}
 
 			self.bindEvents();
+
+			if (o.preventDefault) {
+				self.target.click(function(){return false;})
+			}
 
 			//Make autostart, if needed
 			if (o.autolaunch
@@ -344,7 +349,7 @@
 		bindString: function(bindStr, methName){
 			var self = this, o = self.options;
 			var props = bindStr.split(" "),
-				evt = props[0], selector = props[1], delay = parseInt(props[2]), meth, whichKey;
+				evt = props[0], selector = props[1], delay = ~~(props[2]), meth, whichKey;
 
 			meth = self[methName].bind(self);
 
@@ -380,7 +385,11 @@
 			}
 
 			selector.on(evt, function(e){
-				//console.log(time() + evt + " on " + o.type + "-" + self.targetId + " → " + methName + "~" + delay)
+				console.log(time() + evt + " on " + e.currentTarget.classList[0] + "-" + self.targetId + " → " + methName + " after " + delay)
+				//TODO: case when mouseenter on tip-container   
+				//if (e.target != e.currentTarget) return true; //if event is inside of container/target
+				//if (self.tipContainer[0] == e.target) return true;
+				console.log(e.target)
 				if (!self.blockEvents) {
 					self.delayedCall( function() {meth(e)}, delay, self[methName].group)
 				}
@@ -742,36 +751,39 @@
 				//TODO: count on tip size: tip = self.tip.
 				tip = self.tip ? self.tipContainer.height()/2 : 0;
 
-				t.width = self.target.outerWidth(true);
-				t.height = self.target.outerHeight(true);
+				v.bottom = v.top + v.height;
+				v.right = v.left + v.width;
+
+				t.width = self.target.outerWidth();
+				t.height = self.target.outerHeight();
 				t.bottom = t.top + t.height;
 				t.right = t.left + t.width;
 
 			//Decide where to place popup
 			switch (o.position){
 				case "top":
-					if (t.top - c.height - tip < v.left) {
+					if (t.top - c.height - tip < v.top && c.height + tip + t.bottom < v.bottom) {
 						self.position = P.BOTTOM;
 					} else {
 						self.position = P.TOP;
 					}
 					break;
 				case "bottom":
-					if (t.bottom + c.height + tip > v.height + v.top) {
+					if (t.bottom + c.height + tip > v.bottom && t.top - c.height - tip > v.top) {
 						self.position = P.TOP;
 					} else {
 						self.position = P.BOTTOM;
 					}
 					break;
 				case "left":
-					if (t.left - c.width - tip < v.left) {
+					if (t.left - c.width - tip < v.left && t.right + c.width + tip < v.right) {
 						self.position = P.RIGHT;
 					} else {
 						self.position = P.LEFT;
 					}
 					break;
 				case "right":
-					if (t.right + c.width + tip > v.width + v.left) {
+					if (t.right + c.width + tip > v.right && t.left - c.width - tip > v.left) {
 						self.position = P.LEFT;
 					} else {
 						self.position = P.RIGHT;

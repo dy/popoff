@@ -1,3 +1,35 @@
+* Think how to omplement hover on dropdown target after being showed
+
+* Name plugin jquery.popup and init as data-popup="dropdown", data-popup-content="#link". Feel not comfortable with popupper.
+
+* Fluid-fixed hiding element behaviour (kudago-pagination-like)
+
+* BUG: dropdown sometimes excessively hides after show (kudago search). Why?
+
+* BUG: dropdown fucks up on outer click
+
+* Precisely-positioned element instant overlay, as lebedev makes. `position: [-10, -10]`, probably.
+
+* Suggester behaviour
+
+* Think of getting rid of overlay, animating it by css
+
+* Change class init to data-popup init: better naming (avoid popupper class), no class-clattering.
+
+* Form error/warning/success styles of balloons
+
+* Test title along with balloon
+
+* Make lightbox slider test page.
+* Make zoomer test page.
+* Make balloon with remote html-content test page (as for single post page)
+
+* Bug: top offscreen doesn’t work. Fix clipping positions of tooltips.
+
+* Make lightbox work. Connect some slider, make centrizing API method.
+
+* Make .popupper return popupped object. To call API without difficulties in Zepto.
+
 * Test href along with title on a
 
 * Fix page auto-displacing on anchor link with popupper autolaunch (if element somewhere below in the content)

@@ -53,6 +53,7 @@
 	height: 40px;
 	overflow: hidden;
 	text-align: center;
+	pointer-events: none;
 }
 .popuppee-tip{
 	box-shadow: 0 0 0 10px #ddd;
@@ -60,6 +61,10 @@
 	position: absolute;
 	background: black;
 	-webkit-transform: rotate(45deg);
+	-moz-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	-o-transform: rotate(45deg);
+	transform: rotate(45deg);
 	/* Change this values to alter tip size */
 	width: 10px;
 	height: 10px;
