@@ -1,0 +1,49 @@
+<!doctype html>
+
+<style>
+.overlay{
+	width: 200px;
+	height: 40px;
+	text-align: center;
+	top: 50%;
+	left: 50%;
+	margin-left: -100px;
+	margin-top: -20px;
+	background: red;
+	position: fixed;
+	z-index: 1000;
+	opacity: .99;
+}
+
+.overlay:before{
+	content: "";
+	display: block;
+	position: absolute;
+	top: -50vh;
+	left: -50vw;
+	width: 100vw;
+	opacity: 0;
+	height: 100vh;
+	z-index: -999;
+	background: #666;
+	-webkit-transition: 1s linear opacity;
+}
+.overlay.active:before{
+	opacity: 1;
+}
+</style>
+
+
+<div class="overlay">
+	Click me!
+</div>
+
+Probably overlay blind fails to place under the container
+
+<script type="text/javascript">
+var ov = document.querySelector(".overlay");
+
+ov.onclick = function(e){
+	this.classList.toggle("active")
+}
+</script>

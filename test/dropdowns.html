@@ -1,0 +1,92 @@
+<!doctype html>
+
+<link rel="stylesheet" type="text/css" href="../ext/ui-kit.css">
+<link rel="stylesheet" type="text/css" href="../ext/animate.css">
+<link rel="stylesheet" type="text/css" href="../jquery.popupper.css">
+
+<style type="text/css">
+body{
+	font-family: sans-serif;
+	margin: 0 0;
+	padding: 0 15px;
+}
+h1, h2, h3, h4, h5, h6{
+	padding: 0;
+	margin: 15px 0;
+}
+.target{
+	display: inline-block;
+	background: black;
+	color: white;
+	padding: 5px 10px;
+	-webkit-appearance: none;
+	appearance: none;
+	border: none;
+	outline: none;
+	margin: 0;
+	line-height: 20px;
+	vertical-align: top;
+	font-size: 14px;
+}
+.target-container{
+	display: inline-block;
+}
+</style>
+
+<script>
+//Hook to use animate.css
+window.popupper = {
+	animInClass: "fadeInDown",
+	animClass: "animated",
+	animOutClass: "fadeOutUp",
+	animDuration: 1000,
+
+	overlayInClass: "fadeIn",
+	overlayOutClass: "fadeOut"
+}
+</script>
+
+<header>
+	<h1>Dropdown popuppers test</h1>
+</header>
+
+<section id="shared-content-case" class="case">
+	<h2>Shared content dropdowns</h2>
+	<div id="shared-content" hidden>Some content of dropdown</div>
+
+	<a class="popupper target" data-type="dropdown" href="#shared-content">1. Href</a>
+	<div class="popupper-dropdown target" data-type="dropdown" data-content="#shared-content">2. data-content</div>
+	<input class="dropdown target" data-type="dropdown" data-content="#shared-content" data-anim-duration="0" type="button" value="3. DOMReady button input"></input>
+	<input class="dropdown-instant target" type="text" value="4. js opts text input"></input>
+	<div class="target-container"><span class="dropdown-deferred target" data-for="#shared-content">6. deferred</span></div>
+
+</section>
+
+<h2>Things to test</h2>
+<ol>
+	<li>Autohiding on inputs (as on kudago search)</li>
+	<li>Tooltip show + dropdown click + back</li>
+	<li>Autolaunch</li>
+	<li>Shared content for all targets</li>
+	<li>Escape press</li>
+</ol>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../ext/zepto.js"><\/script>')</script>
+
+<script src="../jquery.popupper.js"></script>
+
+<script type="text/javascript">
+	$(function(){
+		$(".dropdown").popupper();
+		$(".dropdown-instant").popupper({
+			type: "dropdown",
+			content: $("#shared-content")
+		});
+		setTimeout(function(){
+			$(".dropdown-deferred").popupper({
+				type: "dropdown"
+			})
+		}, 500)
+	})
+</script>

@@ -49,14 +49,14 @@
 				autolaunch: true,
 				preventDefault: true,
 				behavior: {
-					"click target 550": "show",
+					"click target 50": "show",
 					"click target 0": "showOverlay",
 					"click outside 0": "hide",
-					"click outside 550": "hideOverlay",
+					"click outside 50": "hideOverlay",
 					"click close 0": "hide",
-					"click close 550": "hideOverlay",
+					"click close 50": "hideOverlay",
 					"keyup escape 0": "hide",
-					"keyup escape 550": "hideOverlay"
+					"keyup escape 50": "hideOverlay"
 				}			
 			},
 			dropdown: {
@@ -232,12 +232,13 @@
 				}
 			} else {
 				//Is content a selector?
-				if (o.content[0] == '.' || o.content[0] == '#') {
-					o.content = $(o.content)
+				if (o.content[0] == '.' || o.content[0] == '#' || o.content.nodeType === 1 || o.content instanceof $.fn.constructor) {
+					o.content = $(o.content).last();
 				}
+
 				if (o.cloneContent){
 					o.content = o.content.clone(true, true);
-				} else if (typeof o.content !== "string") {
+				} else if (typeof o.content !== "string") { //ensure content is evaled as $-set
 					//If content is already taken — share it
 					if (o.content.parent().hasClass(containerClass)){
 						self.sharedContent = true;
@@ -251,6 +252,8 @@
 						o.content.detach();
 					}
 					o.content.removeAttr("hidden");
+				} else if (typeof o.content === "string") { //content is still string - probably, http or something like
+					//if (/^http:\/\//.test(o.content))
 				}
 			}
 
@@ -302,6 +305,10 @@
 				&& !P.isAutolaunchPlanned){
 				P.isAutolaunchPlanned = true;
 				self.target.click();
+				setTimeout(function(){
+					window.scrollTo(0, 0);
+					$(window).scrollTop(0);
+				})
 				//self.show();
 				//o.overlay && self.showOverlay();
 			}
@@ -385,11 +392,11 @@
 			}
 
 			selector.on(evt, function(e){
-				console.log(time() + evt + " on " + e.currentTarget.classList[0] + "-" + self.targetId + " → " + methName + " after " + delay)
+				//console.log(time() + evt + " on " + e.currentTarget.classList[0] + "-" + self.targetId + " → " + methName + " after " + delay)
 				//TODO: case when mouseenter on tip-container   
 				//if (e.target != e.currentTarget) return true; //if event is inside of container/target
 				//if (self.tipContainer[0] == e.target) return true;
-				console.log(e.target)
+				//console.log(e.target)
 				if (!self.blockEvents) {
 					self.delayedCall( function() {meth(e)}, delay, self[methName].group)
 				}
@@ -513,6 +520,11 @@
 			}
 
 			self.container.removeAttr('hidden');
+			
+			//evts & callbacks
+			self.target.trigger("show");
+			self.container.trigger("show");
+			o.show && o.show.apply(this);
 
 			self.move();
 
@@ -533,11 +545,6 @@
 			if (self.outsideDelays.hide || self.outsideDelays.hide === 0){
 				$doc.on("click.outside."+pluginName + self.eventClass, self.callOnClickOutside("hide", self.outsideDelays.hide));
 			}
-
-			//evts & callbacks
-			self.target.trigger("show");
-			self.container.trigger("show");
-			o.show && o.show();
 
 			return self;
 		},
@@ -606,14 +613,15 @@
 			//If content is busy — appoint show after hide
 			if (P.activeTargetId && self.targetId != P.activeTargetId) {
 				//console.log(time() + "---show different: " + self.targetId + " insteadof " + P.activeTargetId +  ". plan clearIntents, hide, hideOverlay")
-				P.targetMethod(P.activeTargetId, "clearIntents");
-				P.targetMethod(P.activeTargetId, "hide");
-				P.targetMethod(P.activeTargetId, "hideOverlay");
-				P.targets[P.activeTargetId].container.one("hide." + containerClass + self.eventClass, function(){
+				var tId = P.activeTargetId;
+				P.targetMethod(tId, "clearIntents");
+				P.targetMethod(tId, "hide");
+				P.targetMethod(tId, "hideOverlay");
+				P.targets[tId].container.one("hide." + containerClass + self.eventClass, function(){
 					self.externalBind = null;
 					self.show.bind(self)();
 				});
-				self.externalBind = P.activeTargetId;
+				self.externalBind = tId;
 				//console.log(time() + "---bound to hide " + o.type + "-" + P.activeTargetId)
 				return false;
 			}
@@ -975,7 +983,6 @@
 		if (window[pluginName]) {
 			$.extend(P.defaults, window[pluginName]);
 		}
-
 		$("[class*=" + pluginName + "]").each(function (i, e){
 			var type;
 

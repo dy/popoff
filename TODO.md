@@ -1,4 +1,6 @@
-* Think how to omplement hover on dropdown target after being showed
+* Migrate to jquery.component
+
+* Think how to implement hover on dropdown target after being showed
 
 * Name plugin jquery.popup and init as data-popup="dropdown", data-popup-content="#link". Feel not comfortable with popupper.
 
