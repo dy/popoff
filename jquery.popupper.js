@@ -984,10 +984,10 @@
 			$.extend(P.defaults, window[pluginName]);
 		}
 		$("[class*=" + pluginName + "]").each(function (i, e){
-			var type;
+			var type, classList = e.classList || e.className.split(" ");
 
 			//TODO: parse type from the class
-			for (var i = e.classList.length; i--; ){
+			for (var i = classList.length; i--; ){
 				var className = e.classList[i];
 				var match = className.match(new RegExp("popupper\\-([a-z]+)", "i"));
 				if (match && match[1]) {
