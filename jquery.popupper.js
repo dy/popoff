@@ -18,27 +18,31 @@
 		nextTargetId: 0,
 
 		types: {
-			//some_type: { "event [target|container|close|outside|selector] delay": "method" | ["method", ..] }
+			//some_type: { "event [target|container|close|outside|selector] delay": "method" | ["method", ..] | function(){return methName} }
 			//TODO: handle list of methods
 			tooltip: {
 				position: "top",
 				tip: true,
 				tipalign: .5,
 				align: "center",
-				behavior: {
-					"mouseenter target 1000": "show",
-					"mouseleave target 1000": "hide"
+				states: {
+					"inactive":{
+						"mouseenter target 1000": "show"
+					},
+					"active":{
+						"mouseleave target 1000": "hide"
+					}
 				}
 			},
 			popover: {
 				position: "top",
 				tip: true,
-				behavior: {
-					"mouseenter target 50": "show",
+				states: {//TODO
+					/*"mouseenter target 50": "show",
 					"click target 0": "show",
 					"mouseenter container 0": "show",
 					"mouseleave target 200": "hide",
-					"mouseleave container 200": "hide"
+					"mouseleave container 200": "hide"*/
 				}			
 			},
 			overlay: {
@@ -48,15 +52,19 @@
 				tip: false,
 				autolaunch: true,
 				preventDefault: true,
-				behavior: {
-					"click target 50": "show",
-					"click target 0": "showOverlay",
-					"click outside 0": "hide",
-					"click outside 50": "hideOverlay",
-					"click close 0": "hide",
-					"click close 50": "hideOverlay",
-					"keyup escape 0": "hide",
-					"keyup escape 50": "hideOverlay"
+				states: {
+					"inactive": {
+						"click target 50": "show",
+						"click target 0": "showOverlay"
+					},
+					"active": {
+						"click outside 0": "hide",
+						"click outside 50": "hideOverlay",
+						"click close 0": "hide",
+						"click close 50": "hideOverlay",
+						"keyup escape 0": "hide",
+						"keyup escape 50": "hideOverlay"
+					}
 				}			
 			},
 			dropdown: {
@@ -64,13 +72,20 @@
 				tip: true,
 				align: 0,
 				preventDefault: true,
-				behavior: {
-					"mouseenter container": "show",
-					"click target": "trigger",
-					"click outside": "hide",
-					"mouseleave container 1500": "hide",
-					"mouseleave target 1500": "hide",
-					"keyup escape": "hide"
+				states: {
+					"inactive": {
+						"mouseenter container": "show",
+						"click target": "show",
+					},
+					"active": {
+						"mouseenter container": "show",
+						"mouseenter target": "show",
+						"click outside": "hide",
+						"click target": "hide",
+						"mouseleave container 1500": "hide",
+						"mouseleave target 1500": "hide",
+						"keyup escape": "hide"
+					},
 				}
 			},
 			sideMenu: {
@@ -88,10 +103,10 @@
 			imageZoomer: {
 				//TODO
 				position: "over",
-				behavior: {
-					"click target": "show",
+				states: {
+					/*"click target": "show",
 					"click container": "hide",
-					"mouseleave container 2500": "hide"
+					"mouseleave container 2500": "hide"*/
 				}
 			}
 		},
@@ -117,7 +132,7 @@
 			autolaunch: false, //whether to start on init
 
 			type: "tooltip", //tooltip, popover, overlay, dropdown, custom
-			behavior: null, //custom behaviour could be redefined
+			states: null, //custom behaviour could be redefined
 
 			close: false, //false (don’t show close) or string with text
 			overlay: false, //Just indicates need to create overlay
@@ -192,8 +207,6 @@
 
 			self.active = false; //true only when visible and no any animations are in progress. Not the same as activeClass
 
-			self.blockEvents = false; //when true, any behavioural events are being ignored
-
 			self.outsideDelays = {}; //for dropdowns (list of delays for outside click)
 
 			self.position = P.TOP; //current position of container
@@ -257,8 +270,10 @@
 				}
 			}
 
-			P.targets[self.targetId] = self; //keep cache of created targets
+			//keep cache of created targets
+			P.targets[self.targetId] = self;
 
+			//sort out shared content
 			if (!self.container) {
 				self.container = $(self.containerTpl()).appendTo(o.container);
 				if (!self.sharedContent) { //prevent withdrawal from the first owner
@@ -266,6 +281,7 @@
 				}
 			}
 
+			//create overlay blind
 			if (o.overlay){
 				if (!P.overlay) {
 					P.overlay = $('<div class="' + pluginName + '-overlay-blind" hidden/>').appendTo($body)
@@ -273,6 +289,7 @@
 				self.overlay = P.overlay;
 			}
 
+			//create tip
 			if (o.tip) {
 				self.tipContainer = $('<div class="' + containerClass + '-tip-container"></div>').appendTo(self.container);
 				self.tip = $('<div class="' + containerClass + '-tip " data-tip="top"/>').appendTo(self.tipContainer);
@@ -285,14 +302,17 @@
 				self.tipAlign = self.getAlignValue(o.tipAlign);
 			}
 
+			//correct anim duration, if passed one
 			if (o.animDuration || o.animDuration === 0){ //set duration through options
 				self.setAnimDuration(o.animDuration);
 			} else { //get duration from css
 				o.animDuration = self.getAnimDuration();
 			}
 
-			self.bindEvents();
+			//set state
+			self.changeState("inactive");
 
+			//keep links clear
 			if (o.preventDefault) {
 				self.target.click(function(){return false;})
 			}
@@ -306,45 +326,29 @@
 				P.isAutolaunchPlanned = true;
 				self.target.click();
 				setTimeout(function(){
-					window.scrollTo(0, 0);
-					$(window).scrollTop(0);
+					$wnd.scrollTop(0);
 				})
-				//self.show();
-				//o.overlay && self.showOverlay();
 			}
 
 			return self;
 		},
 
-		//Returns numeric align value
-		getAlignValue: function(align){
-			var result = 0;
-			switch (align){
-				case "top":
-				case "left":
-					return 0;
-					break;
-				case "bottom":
-				case "right":
-					return 1;
-					break;
-				case "center":
-				case "middle":
-					return .5;
-					break;
-				default:
-					return parseInt(align) || result;
-			}
+		changeState: function(state){
+			var self = this, o = self.options;
+
+			self.unbindEvents();
+			self.state && o.states[self.state].leave && o.states[self.state].leave();
+
+			self.state = state;
+
+			o.states[self.state].enter && o.states[self.state].enter();
+			self.bindEvents();
 		},
 
 		bindEvents: function(){
 			var self = this, o = self.options;
 
-			var bindings = o.behavior;
-
-			//self.target.click(function(e){
-			//	e.preventDefault();
-			//})
+			var bindings = o.states[self.state];
 
 			for (var bindStr in bindings){
 				self.bindString(bindStr, bindings[bindStr])
@@ -353,19 +357,42 @@
 			return self;
 		},
 
+		unbindEvents: function () {
+			var self = this, o = self.options;
+
+			if (!self.state) return;
+
+			var bindings = o.states[self.state];
+
+			for (var bindStr in bindings){
+				self.unbindString(bindStr, bindings[bindStr])
+			}
+			
+			return self;
+		},
+
 		bindString: function(bindStr, methName){
 			var self = this, o = self.options;
 			var props = bindStr.split(" "),
-				evt = props[0], selector = props[1], delay = ~~(props[2]), meth, whichKey;
+				evt = props[0], selector = props[1], delay = ~~(props[2]), meth, whichKey,
+				evtPostfix = "." + self.state + "-" + self.targetId, 
+				group = "container" //group is keyword to mutually suppress methods called within one
+				//TODO: fix wrong kbd bindings
 
-			meth = self[methName].bind(self);
+			//define method
+			if ($.isFunction(methName)){
+				meth = methName;
+			} else {
+				meth = self[methName].bind(self);
+				group = self[methName].group;
+			}
 
 			//bind kbd
 			if (evt == "keypress" || evt == "keydown" || evt == "keyup") {
 				whichKey = (P.keyMap[selector] || selector);
-				$doc.on(evt, function(e){
-					if (!self.blockEvents && e.which === whichKey){
-						self.delayedCall( function() {meth(e)}, delay, self[methName].group)
+				$doc.on(evt + evtPostfix, function(e){
+					if (!whichKey || e.which === whichKey){
+						self.delayedCall( function() {meth.call(self, e)}, delay, group)
 					}
 				})
 				return;
@@ -391,16 +418,45 @@
 					selector = $(selector);
 			}
 
-			selector.on(evt, function(e){
+			selector.on(evt + evtPostfix, function(e){
 				//console.log(time() + evt + " on " + e.currentTarget.classList[0] + "-" + self.targetId + " → " + methName + " after " + delay)
 				//TODO: case when mouseenter on tip-container   
 				//if (e.target != e.currentTarget) return true; //if event is inside of container/target
 				//if (self.tipContainer[0] == e.target) return true;
-				//console.log(e.target)
-				if (!self.blockEvents) {
-					self.delayedCall( function() {meth(e)}, delay, self[methName].group)
-				}
+				self.delayedCall( function() { meth.call(self, e) }, delay, group);				
 			});
+		},
+
+		unbindString: function(bindStr, methName){
+			var self = this, o = self.options;
+			var props = bindStr.split(" "),
+				evt = props[0], selector = props[1],
+				evtPostfix = "." + self.state + "-" + self.targetId;
+
+			//bind kbd
+			if (evt == "keypress" || evt == "keydown" || evt == "keyup") {
+				$doc.off(evt + evtPostfix)
+				return;
+			}
+
+			switch (selector) {
+				case "outside":
+					delete self.outsideDelays[methName];
+					return;
+				case "target":
+					selector = self.target;
+					break;
+				case "container":
+					selector = self.container;
+					break;
+				case "close":
+					selector = $("." + containerClass + "-close", self.container);
+					break;
+				default:
+					selector = $(selector);
+			}
+
+			selector.off(evt + evtPostfix);
 		},
 
 		//Call method after @delay ms. @key is a group of other delayed calls to deny.
@@ -430,6 +486,28 @@
 				for (var k in self.timeouts){
 					clearInterval(self.timeouts[k]);
 				}
+			}
+		},
+
+
+		//Returns numeric align value
+		getAlignValue: function(align){
+			var result = 0;
+			switch (align){
+				case "top":
+				case "left":
+					return 0;
+					break;
+				case "bottom":
+				case "right":
+					return 1;
+					break;
+				case "center":
+				case "middle":
+					return .5;
+					break;
+				default:
+					return parseInt(align) || result;
 			}
 		},
 
@@ -524,19 +602,21 @@
 			//evts & callbacks
 			self.target.trigger("show");
 			self.container.trigger("show");
-			o.show && o.show.apply(this);
+			o.show && o.show.apply(this);			
 
 			self.move();
 
 			//Active class used for styles
 			//shows whether element is showing/intending to show or hiding/intending to hide.
 			self.target.addClass(o.activeClass);
+			self.changeState("active");
 			self.container.removeClass(o.animOutClass).addClass(o.animClass + " " + o.animInClass);			
 			
 			self.delayedCall(function(){
 				self.container.removeClass(o.animClass + " " + o.animInClass);
 
 				self.active = true; //only period of complete visibility
+
 				self.target.trigger("afterShow");
 				self.container.trigger("afterShow");
 			}, o.animDuration, "anim");
@@ -562,10 +642,9 @@
 
 			self.delayedCall(function(){
 				self.container.removeClass(o.animClass + " " + o.animOutClass).attr('hidden', true);
+				self.changeState("inactive");
 
-				self.blockEvents = false;
-
-				P.activeTargetId = null;
+				P.activeTargetId = null;				
 
 				//console.log(time() + "hide " + o.type + "-" + self.targetId + " ok")
 
@@ -603,7 +682,6 @@
 				}
 				//clicked outside — ignore everything till @method finishes
 				self.delayedCall(self[methName].bind(self), delay, self[methName].group);
-				self.blockEvents = true;
 			}.bind(self)
 		},
 
@@ -677,9 +755,12 @@
 
 		showOverlay: function(){
 			var self = this, o = self.options;
+			
 			//console.log(time() + "showOverlay " + o.type + "-" + self.targetId)
 			self.overlay.removeAttr('hidden');
 			self.overlay.removeClass(o.overlayOutClass).addClass(o.animClass + " " + o.overlayInClass);
+
+			self.changeState("active")
 
 			self.delayedCall(function(){
 				self.overlay.removeClass(o.animClass + " " + o.overlayInClass);
@@ -705,8 +786,6 @@
 			self.overlay.addClass(o.animClass + " " + o.overlayOutClass).removeClass(o.overlayInClass);
 
 			self.delayedCall(function(){
-
-				self.blockEvents = false;
 
 				//console.log(time() + "hideOverlay " + o.type + "-" + self.targetId + " ok")
 				self.overlay.removeClass(o.animClass + " " + o.overlayOutClass).attr('hidden', true);
