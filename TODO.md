@@ -1,4 +1,5 @@
-* Migrate to jquery.component
+* Simplify state-machine with no positioning code (through css)
+* Think of specifying special events handlers: double click, click left mouse, tap.
 
 * Think how to implement hover on dropdown target after being showed
 
@@ -72,3 +73,7 @@
 * Test calling methods from outside, like $(thing).popupper("method");
 
 * Test position:center when the position is absolute, not fixed
+
+* Centrize when window resized
+
+* Rewrite without jquery

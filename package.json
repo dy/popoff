@@ -1,0 +1,37 @@
+{
+  "name": "poppy",
+  "version": "0.0.0",
+  "description": "Popups provider component",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "mod-js": "~0.2.8"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dfcreative/poppy"
+  },
+  "keywords": [
+    "component",
+    "popup",
+    "jquery",
+    "plugin",
+    "overlay",
+    "tooltip",
+    "dropdown",
+    "mod",
+    "DOM"
+  ],
+  "author": "Deema Eevanov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dfcreative/poppy/issues"
+  },
+  "homepage": "https://github.com/dfcreative/poppy"
+}

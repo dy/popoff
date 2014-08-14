@@ -1,0 +1,21 @@
+{
+  "name": "poppy",
+  "main": "index.js",
+  "version": "0.0.0",
+  "homepage": "https://github.com/dfcreative/poppy",
+  "authors": [
+    "Dmitry <df.creative@gmail.com>"
+  ],
+  "description": "Popups provider",
+  "keywords": [
+    "dropdown",
+    "tooltip",
+    "popup",
+    "overlay",
+    "modal",
+    "jquery",
+    "plugin",
+    "component"
+  ],
+  "license": "MIT"
+}

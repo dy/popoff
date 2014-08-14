@@ -1,11 +1,16 @@
-#jQuery.popupper: [docs & demo](http://dfcreative.github.io/projects/popupper/)
-Generic popup, a base for dropdown, tooltip an any other popupping stuff.
+# Poppy [demo](http://dfcreative.github.io/poppy)
 
-##Notes
-* Some options are settable through css or options
-* Zepto cannot trigger events called "evtName.evClass". Bitch.
-* 
+Dropdown, tooltip, balloon, notification, overlay and any other popupping stuff.
 
-##Plugins that use popuper
-* [Cpickr](https://github.com/dfcreative/cpickr) — alternative color picker
-* [jquery.moment-calendar]() — tiny calendar widget, easily transformable to date-picker.
+## Use
+
+```html
+<script src="poppy.js"></script>
+
+<a data-poppy-id="poppy">Show</a>
+<div id="poppy" data-poppy="overlay">Content to show</div>
+```
+
+## License
+
+MIT

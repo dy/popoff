@@ -291,8 +291,8 @@
 
 			//create tip
 			if (o.tip) {
-				self.tipContainer = $('<div class="' + containerClass + '-tip-container"></div>').appendTo(self.container);
-				self.tip = $('<div class="' + containerClass + '-tip " data-tip="top"/>').appendTo(self.tipContainer);
+				self.tipContainer = $('<div class="' + containerClass + '-tip-container" data-tip="top"></div>').appendTo(self.container);
+				self.tip = $('<div class="' + containerClass + '-tip "/>').appendTo(self.tipContainer);
 			}
 
 			//Set alignment of contianer
@@ -314,7 +314,13 @@
 
 			//keep links clear
 			if (o.preventDefault) {
-				self.target.click(function(){return false;})
+				self.target.click(function(e){
+					if (e.which !==  1 || e.metaKey) {
+						e.stopImmediatePropagation();
+						return true;
+					}
+					return false;
+				})
 			}
 
 			//Make autostart, if needed
@@ -329,6 +335,9 @@
 					$wnd.scrollTop(0);
 				})
 			}
+
+			//container specific class
+			self.container.addClass(o.containerClass)
 
 			return self;
 		},
@@ -419,10 +428,10 @@
 			}
 
 			selector.on(evt + evtPostfix, function(e){
-				//console.log(time() + evt + " on " + e.currentTarget.classList[0] + "-" + self.targetId + " → " + methName + " after " + delay)
-				//TODO: case when mouseenter on tip-container   
-				//if (e.target != e.currentTarget) return true; //if event is inside of container/target
-				//if (self.tipContainer[0] == e.target) return true;
+				if (e.type === "click" && e.which !==  1 || e.metaKey) {
+					e.stopImmediatePropagation();
+					return true;
+				}
 				self.delayedCall( function() { meth.call(self, e) }, delay, group);				
 			});
 		},
@@ -535,13 +544,13 @@
 			self.container.css("-o-animation-duration") ||
 			self.container.css("-khtml-animation-duration");
 
-			var unit = dur.slice(-2);
+			var unit = (dur && dur.slice(-2)) || "ms";
 			if (unit == "ms"){
 				dur = parseInt(dur)
 			} else {
 				dur = parseFloat(dur) * 1000
 			}
-			return dur;
+			return dur || o.animDuration;
 		},
 
 		//Intent action: make it next after the current action
@@ -833,7 +842,7 @@
 					width: $wnd.width(),
 					height: $wnd.height(),
 					top: window.pageYOffset,//$doc.scrollTop(),
-					left: window.pageXOffset//$doc.scrollLeft()
+					left: window.pageXOffset,//$doc.scrollLeft()
 				},
 				//TODO: count on tip size: tip = self.tip.
 				tip = self.tip ? self.tipContainer.height()/2 : 0;
@@ -843,20 +852,20 @@
 
 				t.width = self.target.outerWidth();
 				t.height = self.target.outerHeight();
-				t.bottom = t.top + t.height;
-				t.right = t.left + t.width;
+				t.bottom = v.top + v.height - (t.top + t.height);
+				t.right = v.left + v.width - (t.left + t.width);
 
 			//Decide where to place popup
 			switch (o.position){
 				case "top":
-					if (t.top - c.height - tip < v.top && c.height + tip + t.bottom < v.bottom) {
+					if (t.top - c.height - tip < v.top && c.height + tip + t.top + t.height < v.bottom) {
 						self.position = P.BOTTOM;
 					} else {
 						self.position = P.TOP;
 					}
 					break;
 				case "bottom":
-					if (t.bottom + c.height + tip > v.bottom && t.top - c.height - tip > v.top) {
+					if (t.top + t.height + c.height + tip > v.bottom && t.top - c.height - tip > v.top) {
 						self.position = P.TOP;
 					} else {
 						self.position = P.BOTTOM;
@@ -898,9 +907,11 @@
 			}
 
 			if (self.position == P.TOP){
-				c.top = t.top - c.height - tip;
+				c.bottom = t.bottom + t.height + tip;
+				c.top = null;
 			} else if (self.position == P.BOTTOM){
-				c.top = t.bottom + tip;
+				c.bottom = null;
+				c.top = t.top + t.height + tip;
 			} else if (self.position == P.RIGHT){
 				c.left = t.right + tip
 			} else if (self.position == P.LEFT){
@@ -922,7 +933,8 @@
 
 			//NOTE: ZEPTO fucks up animations when style set through css().
 			self.container[0].style.left = c.left + 'px';
-			self.container[0].style.top = c.top + 'px';
+			self.container[0].style.top = (c.top === null) ? "auto" : (c.top + 'px');
+			self.container[0].style.bottom = (c.bottom === null) ? "auto" : (c.bottom + 'px');
 
 			return self;
 		},
@@ -1067,7 +1079,7 @@
 
 			//TODO: parse type from the class
 			for (var i = classList.length; i--; ){
-				var className = e.classList[i];
+				var className = classList[i];
 				var match = className.match(new RegExp("popupper\\-([a-z]+)", "i"));
 				if (match && match[1]) {
 					type = match[1];
