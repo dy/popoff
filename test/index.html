@@ -1,6 +1,19 @@
 <!doctype html>
 
-<script type="text/javascript" src="../poppy.js"></script>
+<link rel="stylesheet" type="text/css" href="../index.css">
 
-<a href="#popup">Show me popup</a>
-<div data-poppy="popup">The popup!</div>
+<!-- dev tests -->
+<script type="text/javascript" src="../node_modules/require-stub/index.js"></script>
+<script type="text/javascript" src="../node_modules/mod-constructor/node_modules/object-id/index.js" data-module-name="enot/index.min"></script>
+<script type="text/javascript" src="../node_modules/mod-constructor/node_modules/extend/index.js" data-module-name="enot/index.min"></script>
+<script type="text/javascript" src="../node_modules/mod-constructor/node_modules/each-csv/index.js" data-module-name="enot/index.min"></script>
+<script type="text/javascript" src="../node_modules/matches-selector/index.js"></script>
+<script type="text/javascript" src="../node_modules/mod-constructor/node_modules/enot/index.js"></script>
+<script type="text/javascript" src="../node_modules/mod-constructor/index.js"></script>
+<script type="text/javascript" src="../index.js"></script>
+
+<!-- prod tests -->
+{# <script src="../dist/poppy.js"></script> #}
+
+<div id="popup">The popup!</div>
+<a href="#popup" data-poppy="popup">Show me popup</a>

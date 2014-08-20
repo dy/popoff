@@ -1,0 +1,138 @@
+﻿.poppy-container [hidden]{
+	display: none;
+}
+.poppy-container {
+	position: absolute;
+	background: white;
+	top: 0;
+	left: 0;
+	z-index: 999;
+	box-shadow: 0 0 2px gray;
+	padding: 10px;
+	-webkit-animation-duration: .25s;
+	-khtml-animation-duration: .25s;
+	-moz-animation-duration: .25s;
+	-ms-animation-duration: .25s;
+	-o-animation-duration: .25s;
+	animation-duration: .25s;
+}
+
+
+
+/* Elements */
+.poppy-target{
+	cursor:pointer;
+}
+.poppy-tip-container{
+	position: absolute;
+	top: -40px;
+	left: 0px;
+	width: 40px;
+	height: 40px;
+	overflow: hidden;
+	text-align: center;
+	pointer-events: none;
+}
+.poppy-tip{
+	box-shadow: 0 0 0 10px #ddd;
+	border-top-left-radius: 1px;
+	position: absolute;
+	background: black;
+	-webkit-transform: rotate(45deg);
+	-khtml-transform: rotate(45deg);
+	-moz-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	-o-transform: rotate(45deg);
+	transform: rotate(45deg);
+	/* Change these values to alter tip size */
+	width: 10px;
+	height: 10px;
+	top: 15px;
+	left: 15px;
+}
+
+.poppy-tip-container.poppy-tip-container-top{
+	top: -40px;
+	left: 0px;
+	bottom: auto;
+	right: auto;
+}
+.poppy-tip-container.poppy-tip-container-right{
+	right: -40px;
+	top: 0px;
+	left: auto;
+	bottom: auto;
+}
+.poppy-tip-container.poppy-tip-container-bottom{
+	bottom: -40px;
+	left: 0px;
+	top: auto;
+	right: auto;
+}
+.poppy-tip-container.poppy-tip-container-left{
+	left: -40px;
+	top: 0px;
+	bottom: auto;
+	right: auto;
+}
+
+.poppy-tip-container.poppy-tip-container-top .poppy-tip{
+	margin-top: 50%;
+}
+.poppy-tip-container.poppy-tip-container-right .poppy-tip{
+	margin-left: -50%;
+}
+.poppy-tip-container.poppy-tip-container-bottom .poppy-tip{
+	margin-top: -50%;
+}
+.poppy-tip-container.poppy-tip-container-left .poppy-tip{
+	margin-left: 50%;
+}
+
+.poppy-close{
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 40px;
+	height: 40px;
+	cursor: pointer;
+	line-height: 40px;
+	text-align: center;
+}
+.poppy-close:after{
+	content: '×';
+}
+
+
+
+
+
+/* Specific containers */
+.poppy-dropdown{
+}
+.poppy-tooltip{
+	box-shadow: 0 0 0 10px #ddd;
+	padding: 10px 10px;
+	border-radius: 8px;
+}
+.poppy-blind{
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 998;
+	background: rgba(80,80,80,.6);
+}
+.poppy-dialog{
+
+}
+.poppy-lightbox{
+
+}
+.poppy-overlay{
+	position: fixed;
+	min-height: 60%;
+	min-width: 60%;
+	text-align: center;
+}

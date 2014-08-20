@@ -1,17 +1,22 @@
 {
   "name": "poppy",
-  "version": "0.0.0",
-  "description": "Popups provider component",
+  "version": "0.0.1",
+  "description": "Popups, tooltips and overlays blossom",
   "main": "index.js",
   "directories": {
     "test": "test"
   },
   "dependencies": {
-    "mod-js": "~0.2.8"
+    "mod-constructor": "latest"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "mocha": "~1.21.4",
+    "phantomjs": "~1.9.7-15",
+    "mocha-phantomjs": "~3.5.0",
+    "require-stub": "0.0.13"
+  },
   "scripts": {
-    "test": "test"
+    "test": "mocha-phantomjs test/index.html"
   },
   "repository": {
     "type": "git",
@@ -28,7 +33,7 @@
     "mod",
     "DOM"
   ],
-  "author": "Deema Eevanov",
+  "author": "Deema Evanov",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/dfcreative/poppy/issues"
