@@ -1,5 +1,10 @@
 <!doctype html>
 
+<style type="text/css">
+[hidden]{
+	display: none;
+}
+</style>
 <link rel="stylesheet" type="text/css" href="../index.css">
 
 <!-- dev tests -->
@@ -13,7 +18,7 @@
 <script type="text/javascript" src="../index.js"></script>
 
 <!-- prod tests -->
-{# <script src="../dist/poppy.js"></script> #}
+<!-- <script src="../dist/poppy.js"></script> -->
 
-<div id="popup">The popup!</div>
+<div id="popup" hidden>The popup!</div>
 <a href="#popup" data-poppy="popup">Show me popup</a>

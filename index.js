@@ -29,8 +29,6 @@ extend(Poppy.prototype, {
 		console.log('init')
 	},
 	created: function(){
-		//unhide self if it was hidden
-		this.removeAttribute('hidden');
 	},
 
 
@@ -247,7 +245,12 @@ extend(Poppy.prototype, {
 				if (linkElements[0] === location.origin + location.pathname){
 					//try to save queried element
 					var res = document.querySelector('#' + linkElements[1]);
-					if (res) return res;
+					if (res) {
+						//unhide self if it was hidden
+						if (res.parentNode) res.parentNode.removeChild(res);
+						res.removeAttribute('hidden');
+						return res;
+					}
 
 					//if not - save query string
 					return '#' + linkElements[1];
@@ -281,6 +284,7 @@ extend(Poppy.prototype, {
 
 		changed: function(content){
 			// console.log('target: ' + content)
+
 		}
 	},
 
@@ -425,7 +429,6 @@ extend(Poppy.prototype, {
 	* -------------------------- API
 	*/
 	show: function(){
-		// console.log('show')
 
 		//eval content to show
 		this.$container.appendChild(this.content);
