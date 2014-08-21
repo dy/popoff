@@ -1,3 +1,41 @@
+* Submodules:
+	tooltip: {
+	}
+
+	dropdown: {
+	}
+
+	popup: {
+	}
+
+	overlay: {
+	}
+
+	blind: {
+	}
+
+	notification: {
+	}
+
+	sideMenu: {
+	}
+
+	dialog: {
+	}
+
+	modal: {
+	}
+
+	zoomer: {
+	}
+
+	imageZoomer: {
+	}
+
+	popover: {
+	}
+
+
 * Simplify state-machine with no positioning code (through css)
 * Think of specifying special events handlers: double click, click left mouse, tap.
 

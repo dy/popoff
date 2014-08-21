@@ -1,6 +1,6 @@
 # Poppy [demo](http://dfcreative.github.io/poppy)
 
-Dropdown, tooltip, balloon, notification, overlay and any other popupping stuff.
+Any kind of popup provider
 
 ## Use
 
