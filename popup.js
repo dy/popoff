@@ -5,6 +5,8 @@
 var Poppy = require('index');
 var Mod = require('mod-constructor');
 var extend = require('extend');
+var place = require('placer');
+
 
 module.exports = Popup;
 
@@ -88,7 +90,7 @@ proto.handleHref = {
 		'before, window hashchange': function(){
 			//detect link in href
 			if (document.location.hash === this.hash) {
-				this.show();
+				this.show().place();
 			}
 		}
 	},
@@ -106,12 +108,19 @@ proto.handleHref = {
 //FIXME: ? replace with Poppy.state.extend({...});
 proto.state = extend({}, Poppy.fn.state, {
 	_: {
-		'click': 'show'
+		'click': 'show, place'
 	},
 	visible: {
-		'click': 'hide'
+		'click, @$closeButton click': 'hide'
 	}
 });
+
+proto.place = function(){
+	place(this.$container, {
+		relativeTo: window,
+		align: 'center'
+	})
+}
 
 
 //handle popup as a mod

@@ -1,15 +1,37 @@
 # Poppy [demo](http://dfcreative.github.io/poppy)
 
-Any kind of popup provider
+Any kind of popup provider.
+
 
 ## Use
 
-```html
-<script src="poppy.js"></script>
-
-<a data-poppy-id="poppy">Show</a>
-<div id="poppy" data-poppy="overlay">Content to show</div>
 ```
+npm install poppy
+```
+
+```html
+<script src="poppy/popup.js"></script>
+
+<a data-popup href="#popup">Show</a>
+<div id="popup">Content to show</div>
+```
+
+You can also browserify stuff:
+
+```
+var Popup = require('poppy/popup');
+```
+
+
+## Kinds of popups
+
+* popup
+* tooltip
+* overlay
+* dropdown
+* fullscreen
+* modal
+* zoom
 
 ## License
 

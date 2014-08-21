@@ -5,15 +5,17 @@
 
 module.exports = place;
 
+var win = window;
+
 //default options
 var defaults = {
 	//source to align relatively to
 	//element/{x,y}/[x,y]/
-	target: window,
+	relativeTo: window,
 
 	//which side to palce element
 	//t/r/b/l, 'center' ( === undefined),
-	side: 'center',
+	position: 'center',
 
 	//intensity of alignment
 	//left, center, right, top, bottom, 0..1
@@ -26,9 +28,35 @@ var defaults = {
 	within: window
 }
 
+//set of position placers
+var placeBySide = {
+	'center': function(el, rect){
+		var center = [(rect[1] - rect[0] / 2), (rect[3] - rect[2] / 2)];
+		var width = parseCSSValue(getComputedStyle(el).width);
+		var height = parseCSSValue(getComputedStyle(el).height);
+		el.style.top = (center[1]/2 - height/2) + 'px';
+		el.style.left = (center[0]/2 - width/2) + 'px';
+	}
+}
+
+
 //place element relative to the target on the side
 function place(element, options){
 	options = options || {};
 
+	//get target rect to align
+	var target = options.relativeTo || defaults.relativeTo;
+	var targetRect;
+	if (target === win) {
+		targetRect = [0, win.innerWidth, 0, win.innerHeight]
+	}
 
+	//align according to the position
+	var side = options.position || defaults.position;
+
+	placeBySide[side](element, targetRect);
+}
+
+function parseCSSValue(str){
+	return ~~str.slice(0,-2);
 }

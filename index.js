@@ -216,18 +216,11 @@ proto.avoid = null
 proto.single = false
 
 
-/**
-* ----------------------- Events
-*/
-proto['@$closeButton click'] = 'hide'
-
-
 
 /**
 * -------------------------- API
 */
 proto.show = function(){
-
 	//eval content to show
 	this.$container.appendChild(this.content);
 
@@ -237,6 +230,7 @@ proto.show = function(){
 	//switch state
 	this.state = 'visible';
 
+	return this;
 }
 
 proto.hide = function(){
@@ -250,6 +244,8 @@ proto.hide = function(){
 
 	//switch state
 	this.state = 'hidden';
+
+	return this;
 }
 
 
