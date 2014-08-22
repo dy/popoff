@@ -134,8 +134,8 @@ proto.content = {
 
 		//return absent target stub
 		else {
-			content = document.createElement('div');
-			content.innerHTML = 'No target found for poppy ' + this;
+			// content = document.createElement('div');
+			// content.innerHTML = 'No target found for poppy ' + this;
 		}
 
 		return content;
@@ -222,7 +222,9 @@ proto.single = false
 */
 proto.show = function(){
 	//eval content to show
-	this.$container.appendChild(this.content);
+	if (this.content) {
+		this.$container.appendChild(this.content);
+	}
 
 	//append container to the holder
 	this.holder.appendChild(this.$container);
@@ -240,7 +242,9 @@ proto.hide = function(){
 	this.holder.removeChild(this.$container);
 
 	//remove content from the container
-	this.$container.removeChild(this.content);
+	if (this.content) {
+		this.$container.removeChild(this.content);
+	}
 
 	//switch state
 	this.state = 'hidden';

@@ -33,7 +33,8 @@ proto.selector = '[data-popup]';
 proto.init = function(){
 	console.log('init popup')
 }
-
+proto.created = function(){
+}
 
 
 
@@ -52,8 +53,22 @@ proto.$closeButton = {
 }
 
 //static overlay blind
-Popup.$blind = new Poppy();
+Popup.$blind = new Poppy({
+	created: function(){
+		this.$container.classList.add(name + '-blind')
+	}
+});
+proto.$blind = {
+	init: Popup.$blind
+}
+proto.$blindContainer = {
+	init: Popup.$blind.$container
+}
 
+//add proper class to the container
+proto.$container.changed = function($container){
+	$container.classList.add(name + '-popup');
+}
 
 
 /**
@@ -90,7 +105,7 @@ proto.handleHref = {
 		'before, window hashchange': function(){
 			//detect link in href
 			if (document.location.hash === this.hash) {
-				this.show().place();
+				this.show();
 			}
 		}
 	},
@@ -105,16 +120,36 @@ proto.handleHref = {
 /**
 * Behaviour
 */
-//FIXME: ? replace with Poppy.state.extend({...});
+//FIXME: ? replace with Poppy.prototype.state
 proto.state = extend({}, Poppy.fn.state, {
 	_: {
-		'click': 'show, place'
+		'click': 'show'
 	},
 	visible: {
-		'click, @$closeButton click': 'hide'
+		'click, this.$closeButton click, this.$blindContainer click': 'hide'
 	}
 });
 
+proto.show = function(){
+	//show blind
+	this.$blind.show();
+
+	//show container
+	Poppy.fn.show.call(this);
+
+	//place properly
+	this.place();
+}
+
+proto.hide = function(){
+	//show container
+	Poppy.fn.hide.call(this);
+
+	//show blind
+	this.$blind.hide();
+}
+
+//align by center
 proto.place = function(){
 	place(this.$container, {
 		relativeTo: window,
