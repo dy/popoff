@@ -2,7 +2,7 @@
 * Extend poppy with popup behaviour
 */
 
-var Poppy = require('index');
+var Poppy = require('poppy');
 var Mod = require('mod-constructor');
 var extend = require('extend');
 var place = require('placer');
@@ -136,9 +136,6 @@ proto.show = function(){
 
 	//show container
 	Poppy.fn.show.call(this);
-
-	//place properly
-	this.place();
 }
 
 proto.hide = function(){
@@ -149,8 +146,8 @@ proto.hide = function(){
 	this.$blind.hide();
 }
 
-//align by center
 proto.place = function(){
+	//place properly (align by center)
 	place(this.$container, {
 		relativeTo: window,
 		align: 'center'

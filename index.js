@@ -26,11 +26,11 @@ proto.extends = 'div';
 * -------------- Lifecycle & events
 */
 proto.init = function(){
-	console.log('poppy init')
+	// console.log('poppy init')
 }
 
 proto.created = function(){
-	console.log('poppy created')
+	// console.log('poppy created')
 }
 
 
@@ -59,8 +59,8 @@ proto.$container = {
 */
 //just state of popup
 proto.state = {
-	hidden: undefined,
 	_: undefined,
+	visible: undefined,
 	changed: function(newState, oldState){
 		//keep class updated
 		this.classList.add(newState);
@@ -104,16 +104,18 @@ proto.content = {
 			if (linkElements[0] === location.origin + location.pathname){
 				//try to save queried element
 				var res = document.querySelector('#' + linkElements[1]);
-				if (res) {
-					//unhide self if it was hidden
-					if (res.parentNode) res.parentNode.removeChild(res);
-					res.removeAttribute('hidden');
-					return res;
-				}
+				if (res) return res;
 
 				//if not - save query string
 				return '#' + linkElements[1];
 			}
+
+			//try query element
+			var res = document.querySelector(value);
+			if (res) return res;
+
+			//if not - return value as is
+			return value;
 		}
 
 		return value;
@@ -129,7 +131,7 @@ proto.content = {
 		}
 
 		else if (typeof v === 'string'){
-			return document.querySelector(v);
+			content = document.querySelector(v);
 		}
 
 		//return absent target stub
@@ -142,7 +144,11 @@ proto.content = {
 	},
 
 	changed: function(content){
-		// console.log('target: ' + content)
+		//unhide content if it is hidden
+		if (content instanceof HTMLElement) {
+			if (content.parentNode) content.parentNode.removeChild(content);
+			content.removeAttribute('hidden');
+		}
 	}
 }
 
@@ -229,6 +235,9 @@ proto.show = function(){
 	//append container to the holder
 	this.holder.appendChild(this.$container);
 
+	//place
+	this.place();
+
 	//switch state
 	this.state = 'visible';
 
@@ -252,6 +261,9 @@ proto.hide = function(){
 	return this;
 }
 
+proto.place = function(){
+	//implement this behaviour in instances
+}
 
 
 //alignment setter

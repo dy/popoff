@@ -31,11 +31,11 @@ var defaults = {
 //set of position placers
 var placeBySide = {
 	'center': function(el, rect){
-		var center = [(rect[1] - rect[0] / 2), (rect[3] - rect[2] / 2)];
-		var width = parseCSSValue(getComputedStyle(el).width);
-		var height = parseCSSValue(getComputedStyle(el).height);
-		el.style.top = (center[1]/2 - height/2) + 'px';
-		el.style.left = (center[0]/2 - width/2) + 'px';
+		var center = [(rect[1] + rect[0]) / 2, (rect[3] + rect[2]) / 2];
+		var width = el.offsetWidth;
+		var height = el.offsetHeight;
+		el.style.top = (center[1] - height/2) + 'px';
+		el.style.left = (center[0] - width/2) + 'px';
 	}
 }
 
@@ -49,6 +49,10 @@ function place(element, options){
 	var targetRect;
 	if (target === win) {
 		targetRect = [0, win.innerWidth, 0, win.innerHeight]
+	}
+	else if (target instanceof Element) {
+		var rect = target.getBoundingClientRect();
+		targetRect = [rect.left, rect.right, rect.top, rect.bottom]
 	}
 
 	//align according to the position
