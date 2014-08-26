@@ -12,7 +12,7 @@ function Popover(){
 
 //FIXME: replace Poppy.fn with Poppy.prototype
 //FIXME: extension doesn't clone the object: use Object.create(Poppy);
-var proto = extend(Popover.prototype, Poppy.fn);
+var proto = extend(Popover.prototype, Poppy.extend({}).fn);
 
 //autoinit
 //FIXME: replace with observe-selector
