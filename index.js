@@ -1,5 +1,4 @@
 var Mod = require('mod-constructor');
-var place = require('placer');
 
 module.exports = Mod(Poppy);
 

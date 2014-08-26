@@ -1,6 +1,6 @@
 # Poppy [demo](http://dfcreative.github.io/poppy)
 
-Any kind of popup provider.
+Popups provider.
 
 
 ## Use
@@ -32,6 +32,13 @@ var Popup = require('poppy/popup');
 * fullscreen
 * modal
 * zoom
+* blind
+* notification
+* sideMenu
+* dialog
+* imageZoomer
+* popover
+
 
 ## License
 
