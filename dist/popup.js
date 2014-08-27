@@ -108,7 +108,10 @@ function Popup(){
 
 var proto = Popup.prototype;
 
+//FIXME: that shit with prototypes
 var parent = Poppy.extend({}).fn;
+parent = parent.prototype || parent;
+
 for (var propName in parent){
 	proto[propName] = parent[propName];
 }
