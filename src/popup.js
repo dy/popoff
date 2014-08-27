@@ -8,8 +8,6 @@ var place = require('placer');
 var extend = require('extend');
 
 
-module.exports = Popup;
-
 
 
 var name = Poppy.displayName;
@@ -166,4 +164,4 @@ proto.place = function(){
 
 
 //handle popup as a mod
-Mod(Popup);
+module.exports = Mod(Popup);

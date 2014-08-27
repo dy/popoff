@@ -2,7 +2,6 @@ var Poppy = require('../index');
 var Mod = window.Mod || require('mod-constructor');
 var place = require('placer');
 
-module.exports = Popover;
 
 
 var name = Poppy.displayName;
@@ -90,4 +89,4 @@ proto.place = function(){
 
 
 //handle popup as a mod
-Mod(Popover);
+module.exports = Mod(Popover);
