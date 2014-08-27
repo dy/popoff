@@ -1,6 +1,6 @@
 {
   "name": "poppy",
-  "main": "dist/poppy.js",
+  "main": "index.js",
   "version": "0.0.1",
   "homepage": "https://github.com/dfcreative/poppy",
   "authors": [
