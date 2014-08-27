@@ -114,7 +114,7 @@ proto.selector = '[data-popup]';
 * Lifecycle
 */
 proto.init = function(){
-	console.log('init popup')
+	// console.log('init popup')
 }
 proto.created = function(){
 }
@@ -159,7 +159,7 @@ proto.$container.changed = function($container){
 */
 //show close button
 proto.closeButton = {
-	false: {
+	'false': {
 
 	},
 	_: {
@@ -174,10 +174,10 @@ proto.closeButton = {
 
 //show overlay along with popup
 proto.blind = {
-	false: {
+	'false': {
 
 	},
-	true: {
+	'true': {
 
 	}
 }
@@ -192,7 +192,7 @@ proto.handleHref = {
 			}
 		}
 	},
-	false : {
+	'false' : {
 
 	}
 }
