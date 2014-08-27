@@ -179,8 +179,8 @@ proto.content = {
 		}
 
 		//read for, if defined
-		if (this.for) {
-			return this.for
+		if (this['for']) {
+			return this['for']
 		}
 	},
 
