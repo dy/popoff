@@ -17,7 +17,7 @@ function Poppy(){
 
 var proto = Poppy.prototype;
 
-proto.extends = 'div';
+proto['extends'] = 'div';
 
 
 
