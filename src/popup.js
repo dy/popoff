@@ -4,12 +4,15 @@
 
 var Poppy = require('poppy');
 var Mod = window.Mod || require('mod-constructor');
-var extend = require('extend');
 var place = require('placer');
+var extend = require('extend');
 
 
 module.exports = Popup;
 
+
+
+var name = Poppy.displayName;
 
 
 /**
@@ -19,10 +22,14 @@ function Popup(){
 	return this.constructor.apply(this, arguments);
 }
 
-//take over poppy properties
-extend(Popup.prototype, Poppy.fn);
 
 var proto = Popup.prototype;
+
+var parent = Poppy.extend({}).fn;
+for (var propName in parent){
+	proto[propName] = parent[propName];
+}
+
 
 proto.selector = '[data-popup]';
 

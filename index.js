@@ -4,7 +4,7 @@ var Mod = window.Mod || require('mod-constructor');
 module.exports = Mod(Poppy);
 
 
-var name = 'poppy';
+var name = module.exports.displayName = 'poppy';
 
 
 /**

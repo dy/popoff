@@ -6,6 +6,8 @@ var place = require('placer');
 module.exports = Popover;
 
 
+var name = Poppy.displayName;
+
 function Popover(){
 	return this.constructor.apply(this, arguments);
 }
@@ -15,6 +17,7 @@ function Popover(){
 var proto = Popover.prototype;
 
 var parent = Poppy.extend({}).fn;
+
 for (var propName in parent){
 	proto[propName] = parent[propName];
 }
