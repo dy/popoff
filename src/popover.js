@@ -1,4 +1,4 @@
-var Mod = require('mod-constructor');
+var Mod = window.Mod || require('mod-constructor');
 var Poppy = require('poppy');
 var place = require('placer');
 

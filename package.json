@@ -15,14 +15,20 @@
     "phantomjs": "~1.9.7-15",
     "mocha-phantomjs": "~3.5.0",
     "require-stub": "0.0.13",
-    "browserify": "~5.10.1"
+    "browserify": "~5.10.1",
+    "closurecompiler": "~1.3.2"
   },
   "scripts": {
     "test": "mocha-phantomjs test/index.html",
+
     "build": "npm run build-popup & npm run build-popover & npm run build-poppy",
-    "build-poppy": "browserify -x mod-constructor index.js > dist/index.js",
-    "build-popup": "browserify -x mod-constructor -x placer -x poppy src/popup.js > dist/popup.js",
-    "build-popover": "browserify -x mod-constructor -x placer -x poppy src/popover.js > dist/popover.js"
+    "build-poppy": "npm run minify-poppy && browserify -i mod-constructor -r placer -r ./index.js:poppy > dist/index.js",
+    "build-popup": "npm run minify-popup && browserify -i mod-constructor -x placer -x poppy src/popup.js > dist/popup.js",
+    "build-popover": "npm run minify-popover && browserify -i mod-constructor -x placer -x poppy src/popover.js > dist/popover.js",
+
+    "minify-poppy": "",
+    "minify-popup": "",
+    "minify-popover": ""
   },
   "repository": {
     "type": "git",

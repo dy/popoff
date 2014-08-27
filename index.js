@@ -1,4 +1,5 @@
-var Mod = require('mod-constructor');
+//FIXME: include Mod as a dependency
+var Mod = window.Mod || require('mod-constructor');
 
 module.exports = Mod(Poppy);
 

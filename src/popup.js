@@ -3,7 +3,7 @@
 */
 
 var Poppy = require('poppy');
-var Mod = require('mod-constructor');
+var Mod = window.Mod || require('mod-constructor');
 var extend = require('extend');
 var place = require('placer');
 
