@@ -1,6 +1,6 @@
 {
   "name": "poppy",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Popups, tooltips and overlays blossom",
   "main": "index.js",
   "directories": {
@@ -20,12 +20,10 @@
   },
   "scripts": {
     "test": "mocha-phantomjs test/index.html",
-
     "build": "npm run build-popup & npm run build-popover & npm run build-poppy",
     "build-poppy": "npm run minify-poppy && browserify -i mod-constructor -r placer -r ./index.js:poppy > dist/poppy.js",
     "build-popup": "npm run minify-popup && browserify -i mod-constructor -x placer -x poppy src/popup.js > dist/popup.js",
     "build-popover": "npm run minify-popover && browserify -i mod-constructor -x placer -x poppy src/popover.js > dist/popover.js",
-
     "minify-poppy": "",
     "minify-popup": "",
     "minify-popover": ""
