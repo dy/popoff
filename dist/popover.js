@@ -386,13 +386,9 @@ var place = require('placer');
 
 var name = Poppy.displayName;
 
-function Popover(){
-	return this.constructor.apply(this, arguments);
-}
-
 //FIXME: replace Poppy.fn with Poppy.prototype
 //FIXME: extension doesn't clone the object: use Object.create(Poppy);
-var proto = Popover.prototype;
+var Popover = proto = {};
 
 var parent = Poppy.extend({}).fn;
 parent = parent.prototype || parent;

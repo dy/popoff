@@ -16,12 +16,7 @@ var name = Poppy.displayName;
 /**
 * Popup constructor
 */
-function Popup(){
-	return this.constructor.apply(this, arguments);
-}
-
-
-var proto = Popup.prototype;
+var proto = Popup = {};
 
 //FIXME: that shit with prototypes
 var parent = Poppy.extend({}).fn;
