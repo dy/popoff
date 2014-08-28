@@ -2,8 +2,6 @@
 //FIXME: include Mod as a dependency
 var Mod = window.Mod || require('mod-constructor');
 
-module.exports = Mod(Poppy);
-
 
 var name = module.exports.displayName = 'poppy';
 
@@ -11,12 +9,7 @@ var name = module.exports.displayName = 'poppy';
 /**
 * Poppy is always a link/target to click to show the container
 */
-function Poppy(){
-	//delegate call to mod constructor
-	return this.constructor.apply(this, arguments);
-}
-
-var proto = Poppy.prototype;
+var proto = Poppy = {};
 
 proto['extends'] = 'div';
 
@@ -289,6 +282,9 @@ function setSide(value){
 function setElement(value, oldValue){
 	return value;
 }
+
+
+module.exports = Mod(Poppy);
 },{"mod-constructor":undefined}],2:[function(require,module,exports){
 /**
 * Placer
@@ -388,19 +384,12 @@ var name = Poppy.displayName;
 
 //FIXME: replace Poppy.fn with Poppy.prototype
 //FIXME: extension doesn't clone the object: use Object.create(Poppy);
-var Popover = proto = {};
+var Popover = Mod({
+	mixin: [Poppy],
+	selector: '[data-popover]'
+});
 
-var parent = Poppy.extend({}).fn;
-parent = parent.prototype || parent;
-
-for (var propName in parent){
-	proto[propName] = parent[propName];
-}
-
-//autoinit
-//FIXME: replace with observe-selector
-proto.selector = '[data-popover]';
-
+var proto = Popover.fn;
 
 
 /**

@@ -2,8 +2,6 @@
 //FIXME: include Mod as a dependency
 var Mod = window.Mod || require('mod-constructor');
 
-module.exports = Mod(Poppy);
-
 
 var name = module.exports.displayName = 'poppy';
 
@@ -11,12 +9,7 @@ var name = module.exports.displayName = 'poppy';
 /**
 * Poppy is always a link/target to click to show the container
 */
-function Poppy(){
-	//delegate call to mod constructor
-	return this.constructor.apply(this, arguments);
-}
-
-var proto = Poppy.prototype;
+var proto = Poppy = {};
 
 proto['extends'] = 'div';
 
@@ -289,6 +282,9 @@ function setSide(value){
 function setElement(value, oldValue){
 	return value;
 }
+
+
+module.exports = Mod(Poppy);
 },{"mod-constructor":undefined}],2:[function(require,module,exports){
 var hasOwn = Object.prototype.hasOwnProperty;
 var toString = Object.prototype.toString;
@@ -478,18 +474,13 @@ var name = Poppy.displayName;
 /**
 * Popup constructor
 */
-var proto = Popup = {};
+var Popup = Mod({
+	mixin: [Poppy],
+	selector: '[data-popup]'
+});
 
-//FIXME: that shit with prototypes
-var parent = Poppy.extend({}).fn;
-parent = parent.prototype || parent;
+var proto = Popup.fn;
 
-for (var propName in parent){
-	proto[propName] = parent[propName];
-}
-
-
-proto.selector = '[data-popup]';
 
 
 /**

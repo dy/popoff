@@ -7,8 +7,9 @@
     "test": "test"
   },
   "dependencies": {
-    "mod-constructor": "~0.2.20",
-    "placer": "0.0.0"
+    "mod-constructor": "*",
+    "placer": "*",
+    "selector-observer": "*"
   },
   "devDependencies": {
     "mocha": "~1.21.4",

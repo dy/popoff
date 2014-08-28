@@ -2,36 +2,32 @@ var Poppy = require('../index');
 var Mod = window.Mod || require('mod-constructor');
 var place = require('placer');
 
+module.exports = Poppy.extend(Popover);
 
 
 var name = Poppy.displayName;
 
 //FIXME: replace Poppy.fn with Poppy.prototype
 //FIXME: extension doesn't clone the object: use Object.create(Poppy);
-var Popover = proto = {};
-
-var parent = Poppy.extend({}).fn;
-parent = parent.prototype || parent;
-
-for (var propName in parent){
-	proto[propName] = parent[propName];
+function Popover(){
+	return this.constructor.apply(this, arguments);
 }
-
-//autoinit
-//FIXME: replace with observe-selector
-proto.selector = '[data-popover]';
-
-
+var proto = Popover.prototype;
 
 /**
 * Lifecycle
 */
 proto.init = function(){
+	// console.log('init popover')
 }
 proto.created = function(){
 	// console.log('popover created')
 }
 
+//watch for the elements
+new SelectorObserver(document.documentElement, '[data-popover]', function(e){
+	new Popover(this);
+});
 
 //add proper class to the container
 proto.$container.changed = function($container){
@@ -81,8 +77,3 @@ proto.place = function(){
 		align: 'center'
 	})
 }
-
-
-
-//handle popup as a mod
-module.exports = Mod(Popover);

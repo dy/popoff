@@ -2,19 +2,16 @@
 var Mod = window.Mod || require('mod-constructor');
 
 module.exports = Mod(Poppy);
-
-
-var name = module.exports.displayName = 'poppy';
-
-
 /**
 * Poppy is always a link/target to click to show the container
 */
+
+var name = 'poppy';
+
 function Poppy(){
-	//delegate call to mod constructor
 	return this.constructor.apply(this, arguments);
 }
-
+Poppy.displayName = name;
 var proto = Poppy.prototype;
 
 proto['extends'] = 'div';
@@ -231,7 +228,6 @@ proto.show = function(){
 	if (this.content) {
 		this.$container.appendChild(this.content);
 	}
-
 	//append container to the holder
 	this.holder.appendChild(this.$container);
 

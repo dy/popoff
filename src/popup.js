@@ -6,29 +6,25 @@ var Poppy = require('../index');
 var Mod = window.Mod || require('mod-constructor');
 var place = require('placer');
 var extend = require('extend');
+var SelectorObserver = require('selector-observer');
 
 
+var Popup = module.exports = Mod({
+	mixins: [Poppy]
+});
 
 
 var name = Poppy.displayName;
 
-
 /**
 * Popup constructor
 */
-var proto = Popup = {};
+var proto = Popup.fn;
 
-//FIXME: that shit with prototypes
-var parent = Poppy.extend({}).fn;
-parent = parent.prototype || parent;
-
-for (var propName in parent){
-	proto[propName] = parent[propName];
-}
-
-
-proto.selector = '[data-popup]';
-
+//watch for the elements
+new SelectorObserver(document.documentElement, '[data-popup]', function(e){
+	new Popup(this);
+});
 
 /**
 * Lifecycle
@@ -37,6 +33,7 @@ proto.init = function(){
 	// console.log('init popup')
 }
 proto.created = function(){
+	// console.log('created popup', this.$blind)
 }
 
 
@@ -56,6 +53,7 @@ proto.$closeButton = {
 }
 
 //static overlay blind
+// console.log('---init blind')
 Popup.$blind = new Poppy({
 	created: function(){
 		this.$container.classList.add(name + '-blind')
@@ -67,6 +65,7 @@ proto.$blind = {
 proto.$blindContainer = {
 	init: Popup.$blind.$container
 }
+
 
 //add proper class to the container
 proto.$container.changed = function($container){
