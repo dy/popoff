@@ -21,11 +21,11 @@
   },
   "scripts": {
     "test": "mocha-phantomjs test/index.html",
-    "build": "npm run build-popup & npm run build-popover",
-    "build-popup": "npm run minify-popup && browserify -x mod-constructor --standalone Popup ./src/popup.js > dist/popup.js",
-    "build-popover": "npm run minify-popover && browserify -x mod-constructor --standalone Popover ./src/popover.js > dist/popover.js",
-    "minify-popup": "",
-    "minify-popover": ""
+    "build": "npm run build-popup & npm run build-popover & npm run build-dropdown",
+
+    "build-popup": "browserify -x mod-constructor --standalone Popup ./src/popup.js > dist/popup.js",
+    "build-popover": "browserify -x mod-constructor --standalone Popover ./src/popover.js > dist/popover.js",
+    "build-dropdown": "browserify -x mod-constructor --standalone Dropdown ./src/dropdown.js > dist/dropdown.js"
   },
   "repository": {
     "type": "git",

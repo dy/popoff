@@ -1,6 +1,7 @@
 var Poppy = require('../index');
 var Mod = window.Mod || require('mod-constructor');
 var place = require('placer');
+var SelectorObserver = require('selector-observer');
 
 module.exports = Poppy.extend(Popover);
 

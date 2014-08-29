@@ -8,7 +8,7 @@
 <link rel="stylesheet" type="text/css" href="../index.css">
 
 <!-- dev tests -->
-<script type="text/javascript" src="../node_modules/require-stub/index.js"></script>
+<!-- <script type="text/javascript" src="../node_modules/require-stub/index.js"></script>
 
 <script src="../node_modules/mod-constructor/node_modules/each-csv/index.js"></script>
 <script src="../node_modules/mod-constructor/node_modules/mutypes/index.js"></script>
@@ -20,19 +20,21 @@
 <script src="../node_modules/mod-constructor/node_modules/st8/index.js"></script>
 <script src="../node_modules/extend/index.js"></script>
 <script src="../node_modules/mod-constructor/index.js"></script>
-
-<!-- <script src="../node_modules/mod-constructor/dist/mod.js"></script> -->
+<script src="../node_modules/selector-observer/lib/index.js"></script>
 
 <script type="text/javascript" src="../node_modules/placer/index.js"></script>
 <script type="text/javascript" src="../node_modules/extend/index.js"></script>
-<script type="text/javascript" src="../node_modules/selector-observer/lib/index.js"></script>
 <script type="text/javascript" src="../index.js" data-module-name="poppy"></script>
 <script type="text/javascript" src="../src/popup.js"></script>
 <script type="text/javascript" src="../src/popover.js"></script>
-<script type="text/javascript" src="../src/dropdown.js"></script>
+<script type="text/javascript" src="../src/dropdown.js"></script>-->
 
 <!-- prod tests -->
-<!-- <script src="../dist/poppy.js"></script> -->
+<script src="../node_modules/mod-constructor/dist/mod.js"></script>
+<script src="../dist/poppy.js"></script>
+<script src="../dist/popup.js"></script>
+<script src="../dist/popover.js"></script>
+<script src="../dist/dropdown.js"></script>
 
 <div id="popup" hidden>The popup!</div>
 <a href="#popup" data-popup>Pop me up</a>
@@ -41,7 +43,6 @@
 <div id="popover" hidden>The popover!</div>
 <a href="#add-item" data-popover data-content="#popover">Pop me over</a>
 
-
 <ul id="dropdown" hidden>
 	<li>Item</li>
 	<li>Item</li>
@@ -49,14 +50,15 @@
 </ul>
 <button data-dropdown data-content="#dropdown">Dropdown</button>
 
+
 <!-- create progarmmatically -->
 <script type="text/javascript">
 	var dd = new Dropdown();
 	// dd.content = "Hello world!"
 	dd.content = document.createElement('div');
-	dd.content.innerHTML = '123'
+	dd.content.innerHTML = '123';
 	dd.show();
 	setTimeout(function(){
 		dd.hide();
-	},800)
+	},800);
 </script>
