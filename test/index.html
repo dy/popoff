@@ -48,3 +48,15 @@
 	<li>Item</li>
 </ul>
 <button data-dropdown data-content="#dropdown">Dropdown</button>
+
+<!-- create progarmmatically -->
+<script type="text/javascript">
+	var dd = new Dropdown();
+	// dd.content = "Hello world!"
+	dd.content = document.createElement('div');
+	dd.content.innerHTML = '123'
+	dd.show();
+	setTimeout(function(){
+		dd.hide();
+	},800)
+</script>

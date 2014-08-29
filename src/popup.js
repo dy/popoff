@@ -90,7 +90,7 @@ proto.closeButton = {
 			this.$container.removeChild(this.$closeButton);
 		}
 	}
-}
+};
 
 //show overlay along with popup
 proto.blind = {
@@ -100,7 +100,7 @@ proto.blind = {
 	'true': {
 
 	}
-}
+};
 
 //react on href change
 proto.handleHref = {
@@ -115,7 +115,7 @@ proto.handleHref = {
 	'false' : {
 
 	}
-}
+};
 
 
 

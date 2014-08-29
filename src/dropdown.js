@@ -21,7 +21,7 @@ var proto = Dropdown.prototype;
 
 
 proto.created = function(){
-	console.log('dropdown created');
+	// console.log('dropdown created');
 };
 
 

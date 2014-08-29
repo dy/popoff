@@ -122,11 +122,17 @@ proto.content = {
 			}
 
 			//try to query element
-			res = document.querySelector(value);
-			if (res) return res;
+			try {
+				res = document.querySelector(value);
+				if (res) return res;
+			} catch (e) {
+			}
 
-			//if not - return value as is
-			return value;
+			//if not - create element with content
+			res = document.createElement('div');
+			res.innerHTML = value;
+
+			return res;
 		}
 
 		return value;
@@ -142,14 +148,17 @@ proto.content = {
 		}
 
 		else if (typeof v === 'string'){
-			content = document.querySelector(v);
+			try {
+				content = document.querySelector(v);
+				return content;
+			} catch (e){
+
+			}
 		}
 
 		//return absent target stub
-		else {
-			// content = document.createElement('div');
-			// content.innerHTML = 'No target found for poppy ' + this;
-		}
+		// content = document.createElement('div');
+		// content.innerHTML = v;
 
 		return content;
 	},
@@ -240,14 +249,13 @@ proto.single = false;
  * -------------------------- API
  */
 
-
 /**
  * Show the container
  * @return {Poppy} Chaining
  */
 
 proto.show = function(){
-	console.log("show")
+	// console.log("show")
 
 	//eval content to show
 	if (this.content) {
@@ -272,7 +280,7 @@ proto.show = function(){
  */
 
 proto.hide = function(){
-	console.log('hide', this.$container.parentNode)
+	// console.log('hide', this.$container.parentNode)
 
 	//remove container from the holder
 	this.holder.removeChild(this.$container);
