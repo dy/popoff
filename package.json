@@ -1,6 +1,6 @@
 {
   "name": "poppy",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Popups, tooltips and overlays blossom",
   "main": "index.js",
   "directories": {
@@ -22,7 +22,6 @@
   "scripts": {
     "test": "mocha-phantomjs test/index.html",
     "build": "npm run build-popup & npm run build-popover & npm run build-dropdown",
-
     "build-popup": "browserify -x mod-constructor --standalone Popup ./src/popup.js > dist/popup.js",
     "build-popover": "browserify -x mod-constructor --standalone Popover ./src/popover.js > dist/popover.js",
     "build-dropdown": "browserify -x mod-constructor --standalone Dropdown ./src/dropdown.js > dist/dropdown.js"
