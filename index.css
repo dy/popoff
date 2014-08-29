@@ -140,6 +140,19 @@
 	animation-duration: .25s;
 }
 .poppy-dropdown{
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 999;
+	background: white;
+	box-shadow: 0 0 2px gray;
+	padding: 10px 10px 10px 10px;
+	-webkit-animation-duration: .25s;
+	-khtml-animation-duration: .25s;
+	-moz-animation-duration: .25s;
+	-ms-animation-duration: .25s;
+	-o-animation-duration: .25s;
+	animation-duration: .25s;
 }
 .poppy-tooltip{
 	box-shadow: 0 0 0 10px #ddd;

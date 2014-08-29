@@ -31,10 +31,11 @@ new SelectorObserver(document.documentElement, '[data-popup]', function(e){
 */
 proto.init = function(){
 	// console.log('init popup')
-}
+};
+
 proto.created = function(){
 	// console.log('created popup', this.$blind)
-}
+};
 
 
 
@@ -138,7 +139,7 @@ proto.show = function(){
 
 	//show container
 	Poppy.fn.show.call(this);
-}
+};
 
 proto.hide = function(){
 	//show container
@@ -146,15 +147,15 @@ proto.hide = function(){
 
 	//show blind
 	this.$blind.hide();
-}
+};
 
 proto.place = function(){
 	//place properly (align by center)
 	place(this.$container, {
 		relativeTo: window,
 		align: 'center'
-	})
-}
+	});
+};
 
 
 //handle popup as a mod

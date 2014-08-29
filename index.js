@@ -1,17 +1,27 @@
+/**
+ * Poppy is always a link/target to click to show the container
+ */
+
 //FIXME: include Mod as a dependency
 var Mod = window.Mod || require('mod-constructor');
 
 module.exports = Mod(Poppy);
-/**
-* Poppy is always a link/target to click to show the container
-*/
 
+
+//prefix for classes
 var name = 'poppy';
+
+
+/**
+ * ------------- Constructor
+ */
 
 function Poppy(){
 	return this.constructor.apply(this, arguments);
 }
+
 Poppy.displayName = name;
+
 var proto = Poppy.prototype;
 
 proto['extends'] = 'div';
@@ -20,8 +30,9 @@ proto['extends'] = 'div';
 
 
 /**
-* -------------- Lifecycle & events
-*/
+ * -------------- Lifecycle & events
+ */
+
 proto.init = function(){
 	// console.log('poppy init')
 }
@@ -35,8 +46,9 @@ proto.created = function(){
 
 
 /**
-* --------------- Elements
-*/
+ * --------------- Elements
+ */
+
 //keeper of content
 proto.$container = {
 	init: function(){
@@ -46,14 +58,14 @@ proto.$container = {
 
 		return $container;
 	}
-}
+};
 
 
 
 
 /**
-* ------------------ Options
-*/
+ * ------------------ Options
+ */
 //just state of popup
 proto.state = {
 	_: undefined,
@@ -63,7 +75,7 @@ proto.state = {
 		this.classList.add(newState);
 		this.classList.remove(oldState);
 	}
-}
+};
 
 //Where to place popupped content-container
 proto.holder = {
@@ -73,7 +85,7 @@ proto.holder = {
 		else return value;
 	},
 	set: setElement
-}
+};
 
 //string selector, Node, or href. Content to show in container
 proto.content = {
@@ -88,27 +100,29 @@ proto.content = {
 
 		//read for, if defined
 		if (this['for']) {
-			return this['for']
+			return this['for'];
 		}
 	},
 
 	//FIXME: scope it within contentType states
 	//FIXME: simplify this (too unclear)
 	set: function(value){
+		var res;
+
 		if (typeof value === 'string'){
 			//if pathname is current - shorten selector
 			var linkElements = value.split('#');
 			if (linkElements[0] === location.origin + location.pathname){
 				//try to save queried element
-				var res = document.querySelector('#' + linkElements[1]);
+				res = document.querySelector('#' + linkElements[1]);
 				if (res) return res;
 
 				//if not - save query string
 				return '#' + linkElements[1];
 			}
 
-			//try query element
-			var res = document.querySelector(value);
+			//try to query element
+			res = document.querySelector(value);
 			if (res) return res;
 
 			//if not - return value as is
@@ -147,9 +161,19 @@ proto.content = {
 			content.removeAttribute('hidden');
 		}
 	}
-}
+};
 
-//type of content to show
+
+/**
+ * Type of content to show
+ *
+ * null		Other element on the page
+ * 'image'	An external image will be loaded
+ * 'ajax'	Request an URL, insert as an HTML
+ * 'iframe'	Insert an iframe with URL passed
+ * 'swf'
+ * 'text'	Insert content as a plain test
+ */
 proto.contentType = {
 	//target selector
 	_:{
@@ -174,7 +198,7 @@ proto.contentType = {
 	text: {
 
 	}
-}
+};
 
 
 /* Replace with external modules
@@ -204,26 +228,27 @@ proto.tip = {
 proto.tipAlign = {
 	set: setSide
 }
-
-//restriction area for the popup, viewport by default
-proto.within = {
-	set: setElement
-}
-
-//selector of elements to avoid overlapping with
-proto.avoid = null
 */
 
 
-//instantly close other dropdowns when one shows
-proto.single = false
+//instantly close other dropdowns when the one shows
+proto.single = false;
 
 
 
 /**
-* -------------------------- API
-*/
+ * -------------------------- API
+ */
+
+
+/**
+ * Show the container
+ * @return {Poppy} Chaining
+ */
+
 proto.show = function(){
+	console.log("show")
+
 	//eval content to show
 	if (this.content) {
 		this.$container.appendChild(this.content);
@@ -238,10 +263,16 @@ proto.show = function(){
 	this.state = 'visible';
 
 	return this;
-}
+};
+
+
+/**
+ * Close the container
+ * @return {Poppy} Chaining
+ */
 
 proto.hide = function(){
-	// console.log('hide', this.$container.parentNode)
+	console.log('hide', this.$container.parentNode)
 
 	//remove container from the holder
 	this.holder.removeChild(this.$container);
@@ -255,12 +286,22 @@ proto.hide = function(){
 	this.state = 'hidden';
 
 	return this;
-}
+};
 
-proto.place = function(){
-	//implement this behaviour in instances
-}
 
+/**
+ * Automatically called after show.
+ * Implement this behaviour in instances
+ * Place container properly.
+ */
+
+proto.place = function(){};
+
+
+
+/**
+ * ---------------------- Helpers
+ */
 
 //alignment setter
 function setSide(value){

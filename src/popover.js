@@ -19,10 +19,10 @@ var proto = Popover.prototype;
 */
 proto.init = function(){
 	// console.log('init popover')
-}
+};
 proto.created = function(){
 	// console.log('popover created')
-}
+};
 
 //watch for the elements
 new SelectorObserver(document.documentElement, '[data-popover]', function(e){
@@ -32,7 +32,7 @@ new SelectorObserver(document.documentElement, '[data-popover]', function(e){
 //add proper class to the container
 proto.$container.changed = function($container){
 	$container.classList.add(name + '-popover');
-}
+};
 
 
 /**
@@ -48,7 +48,7 @@ proto.state._ = {
 
 		this.show();
 	}
-}
+};
 proto.state.visible = {
 	//FIXME: replace with :not modifier
 	'document click': function(e){
@@ -62,18 +62,18 @@ proto.state.visible = {
 		if (dist > this.visibleDistance) this.hide();
 
 	}
-}
+};
 //distance from the place of initial click to hide the popover
 proto.visibleDistance = {
 	init: function(){
-		return window.innerWidth * .4;
+		return window.innerWidth * 0.4;
 	}
-}
+};
 
 proto.place = function(){
 	//place properly (align by center)
 	place(this.$container, {
 		relativeTo: this,
 		align: 'center'
-	})
-}
+	});
+};
