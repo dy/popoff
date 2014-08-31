@@ -95,19 +95,34 @@ proto.holder = {
 
 proto['for'] = undefined;
 
-//string selector, Node, or href. Content to show in container
+
+/**
+ * Content selector ←→ poppy-instance
+ */
+
+var contentCache = {};
+
+
+/**
+ * Content to show in container.
+ *
+ * @type {(string|Node|selector)} init
+ *
+ */
+
 proto.content = {
 	init: function(value){
 		//if specified - return it
 		if (value) return value;
 
-		//read href, if it is set
-		if (this.href) {
-			return this.href;
-		}
 		//read for, if defined
 		if (this['for']) {
 			return this['for'];
+		}
+
+		//read href, if it is set
+		if (this.href) {
+			return this.href;
 		}
 	},
 
@@ -117,21 +132,33 @@ proto.content = {
 		var res;
 
 		if (typeof value === 'string'){
+			//try to get cached content
+			if (contentCache[value]) return contentCache[value];
+
 			//if pathname is current - shorten selector
 			var linkElements = value.split('#');
 			if (linkElements[0] === location.origin + location.pathname){
+				var q = '#' + linkElements[1];
 				//try to save queried element
-				res = document.querySelector('#' + linkElements[1]);
-				if (res) return res;
+				res = document.querySelector(q);
+				if (res) {
+					//save queried content
+					contentCache[q] = res;
+					return res;
+				}
 
 				//if not - save query string
-				return '#' + linkElements[1];
+				return q;
 			}
 
 			//try to query element
 			try {
 				res = document.querySelector(value);
-				if (res) return res;
+				if (res) {
+					//save queried content
+					contentCache[value] = res;
+					return res;
+				}
 			} catch (e) {
 			}
 
@@ -257,6 +284,7 @@ proto.single = false;
  * -------------------------- API
  */
 
+
 /**
  * Show the container
  * @return {Poppy} Chaining
@@ -293,11 +321,11 @@ proto.show = function(){
 proto.hide = function(){
 	// console.log('hide')
 
-	//remove container from the holder
+	//remove container from the holder, if it is still there
 	this.holder.removeChild(this.$container);
 
 	//remove content from the container
-	if (this.content) {
+	if (this.content && this.content.parentNode === this.$container) {
 		this.$container.removeChild(this.content);
 	}
 
@@ -427,12 +455,196 @@ module.exports = function extend() {
 
 
 },{}],3:[function(require,module,exports){
+module.exports = css;
+
+
+var win = window;
+
+
+/** Get clean style. */
+var fakeStyle = document.createElement('div').style;
+
+
+/** Detect vendor prefix. */
+var prefix = css['prefix'] = (function() {
+	var regex = /^(webkit|moz|ms|O|khtml)[A-Z]/, prop;
+	for (prop in fakeStyle) {
+		if (regex.test(prop)) {
+			return prop.match(regex)[1];
+		}
+	}
+	return '';
+}());
+
+
+/** Prevent you know what. */
+function pd(e){
+	e.preventDefault();
+}
+
+
+/**
+ * Disable or Enable any selection possibilities for an element.
+ *
+ * @param    {Element}   $el   Target to make unselectable.
+ */
+
+css['disableSelection'] = function($el){
+	css($el, {
+		'user-select': 'none',
+		'user-drag': 'none',
+		'touch-callout': 'none'
+	});
+	$el.setAttribute('unselectable', 'on');
+	$el.addEventListener('selectstart', pd);
+};
+css['enableSelection'] = function($el){
+	css($el, {
+		'user-select': null,
+		'user-drag': null,
+		'touch-callout': null
+	});
+	$el.removeAttribute('unselectable');
+	$el.removeEventListener('selectstart', pd);
+};
+
+
+/**
+ * Return paddings of an element.
+ *
+ * @param    {Element}   $el   An element to calc paddings.
+ * @return   {Object}   Paddings object `{top:n, bottom:n, left:n, right:n}`.
+ */
+
+css['paddings'] = function($el){
+	var style = win.getComputedStyle($el);
+
+	return {
+		top: parseValue(style.paddingTop),
+		left: parseValue(style.paddingLeft),
+		bottom: parseValue(style.paddingBottom),
+		right: parseValue(style.paddingRight)
+	};
+};
+
+
+/**
+ * Return margins of an element.
+ *
+ * @param    {Element}   $el   An element which to calc margins.
+ * @return   {Object}   Paddings object `{top:n, bottom:n, left:n, right:n}`.
+ */
+
+css['margins'] = function($el){
+	var style = win.getComputedStyle($el);
+
+	return {
+		top: parseValue(style.marginTop),
+		left: parseValue(style.marginLeft),
+		bottom: parseValue(style.marginBottom),
+		right: parseValue(style.marginRight)
+	};
+};
+
+
+/** Returns parsed css value. */
+function parseValue(str){
+	str += '';
+	return ~~str.slice(0,-2);
+}
+css['parseValue'] = parseValue;
+
+
+/**
+ * Return absolute offsets.
+ *
+ * @param    {Element}   el   A target.
+ * @return   {Object}   Offsets object with trbl, fromRight, fromLeft.
+ */
+
+css['offsets'] = function(el){
+	if (!el) return {};
+
+	var cRect;
+
+	try {
+		cRect = el.getBoundingClientRect();
+	} catch (e) {
+		cRect = {
+			top: el.clientTop,
+			left: el.clientLeft
+		};
+	}
+
+	//whether element is or is in fixed
+	var isNotFixed = 1, parentEl = el;
+	while (parentEl instanceof Element && isNotFixed) {
+		isNotFixed = win.getComputedStyle(parentEl).position === 'fixed' ? 0 : 1;
+		parentEl = parentEl.parentNode;
+	}
+
+	return {
+		top: cRect.top + (isNotFixed && win.pageYOffset),
+		left: cRect.left + (isNotFixed && win.pageXOffset),
+		width: el.offsetWidth,
+		height: el.offsetHeight,
+		bottom: cRect.top + (isNotFixed && win.pageYOffset) + el.offsetHeight,
+		right: cRect.left + (isNotFixed && win.pageXOffset) + el.offsetWidth,
+		fromRight: win.innerWidth - cRect.left - el.offsetWidth,
+		fromBottom: (win.innerHeight + (isNotFixed && win.pageYOffset) - cRect.top - el.offsetHeight)
+	};
+};
+
+
+/**
+ * Apply styles to an element. This is the module exports.
+ *
+ * @param    {Element}   el   An element to apply styles.
+ * @param    {Object|string}   obj   Set of style rules or string to get style rule.
+ */
+
+function css(el, obj){
+	if (!el || !obj) return;
+
+	//return value, if string passed
+	if (typeof obj === 'string') {
+		return el.style[prefixize(obj)];
+	}
+
+	for (var name in obj){
+		//convert numbers to px
+		if (typeof obj[name] === 'number') obj[name] += 'px';
+
+		if (obj[name]) {
+			el.style[prefixize(name)] = obj[name];
+		} else {
+			el.style[prefixize(name)] = '';
+		}
+	}
+}
+
+
+/**
+ * Return prefixized prop name, if needed.
+ *
+ * @param    {string}   name   A property name.
+ * @return   {string}   Prefixed property name.
+ */
+
+function prefixize(name){
+	var uName = name[0].toUpperCase() + name.slice(1);
+	if (fakeStyle[prefix + uName] !== undefined) return prefix + uName;
+	return name;
+}
+},{}],4:[function(require,module,exports){
 /**
 * Placer
 * Places any element relative to any other element the way you define
 */
 
 module.exports = place;
+
+var css = require('mucss');
 
 var win = window;
 
@@ -459,12 +671,14 @@ var defaults = {
 
 //set of position placers
 var placeBySide = {
-	center: function(el, rect){
+	center: function(placee, rect){
 		var center = [(rect[2] + rect[0]) / 2, (rect[3] + rect[1]) / 2];
-		var width = el.offsetWidth;
-		var height = el.offsetHeight;
-		el.style.top = (center[1] - height/2) + 'px';
-		el.style.left = (center[0] - width/2) + 'px';
+		var width = placee.offsetWidth;
+		var height = placee.offsetHeight;
+		css(placee, {
+			top: (center[1] - height/2),
+			left: (center[0] - width/2)
+		});
 	},
 
 	left: function(el, rect){
@@ -518,7 +732,7 @@ function place(element, options){
 function parseCSSValue(str){
 	return ~~str.slice(0,-2);
 }
-},{}],4:[function(require,module,exports){
+},{"mucss":3}],5:[function(require,module,exports){
 var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver
 function matches(el, selector) {
   var fn = el.matches || el.matchesSelector || el.msMatchesSelector || el.mozMatchesSelector || el.webkitMatchesSelector || el.oMatchesSelector
@@ -646,7 +860,7 @@ Element.prototype.observeSelector = function(selector, onAdded, onRemoved) {
   return new SelectorObserver(this, selector, onAdded, onRemoved)
 }
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /**
 * Extend poppy with popup behaviour
 */
@@ -809,5 +1023,5 @@ proto.place = function(){
 
 //handle popup as a mod
 module.exports = Mod(Popup);
-},{"../index":1,"extend":2,"mod-constructor":"mod-constructor","placer":3,"selector-observer":4}]},{},[5])(5)
+},{"../index":1,"extend":2,"mod-constructor":"mod-constructor","placer":4,"selector-observer":5}]},{},[6])(6)
 });

@@ -96,6 +96,13 @@ proto['for'] = undefined;
 
 
 /**
+ * Content selector ←→ poppy-instance
+ */
+
+var contentCache = {};
+
+
+/**
  * Content to show in container.
  *
  * @type {(string|Node|selector)} init
@@ -124,21 +131,33 @@ proto.content = {
 		var res;
 
 		if (typeof value === 'string'){
+			//try to get cached content
+			if (contentCache[value]) return contentCache[value];
+
 			//if pathname is current - shorten selector
 			var linkElements = value.split('#');
 			if (linkElements[0] === location.origin + location.pathname){
+				var q = '#' + linkElements[1];
 				//try to save queried element
-				res = document.querySelector('#' + linkElements[1]);
-				if (res) return res;
+				res = document.querySelector(q);
+				if (res) {
+					//save queried content
+					contentCache[q] = res;
+					return res;
+				}
 
 				//if not - save query string
-				return '#' + linkElements[1];
+				return q;
 			}
 
 			//try to query element
 			try {
 				res = document.querySelector(value);
-				if (res) return res;
+				if (res) {
+					//save queried content
+					contentCache[value] = res;
+					return res;
+				}
 			} catch (e) {
 			}
 
@@ -263,6 +282,7 @@ proto.single = false;
 /**
  * -------------------------- API
  */
+
 
 /**
  * Show the container

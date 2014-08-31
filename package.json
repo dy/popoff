@@ -10,7 +10,8 @@
     "mod-constructor": "*",
     "placer": "*",
     "selector-observer": "*",
-    "mucss": "*"
+    "mucss": "*",
+    "es6-collections": "~0.2.1"
   },
   "devDependencies": {
     "mocha": "~1.21.4",
