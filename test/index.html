@@ -7,41 +7,30 @@
 </style>
 <link rel="stylesheet" type="text/css" href="../index.css">
 
+<script src="../node_modules/mod-constructor/dist/mod.js"></script>
+
 <!-- dev tests -->
-<!-- <script type="text/javascript" src="../node_modules/require-stub/index.js"></script>
-
-<script src="../node_modules/mod-constructor/node_modules/each-csv/index.js"></script>
-<script src="../node_modules/mod-constructor/node_modules/mutypes/index.js"></script>
-<script src="../node_modules/mod-constructor/node_modules/mustring/index.js"></script>
-<script src="../node_modules/mod-constructor/node_modules/muparse/index.js"></script>
-<script src="../node_modules/mod-constructor/node_modules/muevents/index.js"></script>
-<script src="../node_modules/matches-selector/index.js"></script>
-<script src="../node_modules/mod-constructor/node_modules/enot/index.js"></script>
-<script src="../node_modules/mod-constructor/node_modules/st8/index.js"></script>
-<script src="../node_modules/extend/index.js"></script>
-<script src="../node_modules/mod-constructor/index.js"></script>
+<!-- <script src="../node_modules/require-stub/index.js"></script>
 <script src="../node_modules/selector-observer/lib/index.js"></script>
-
-<script type="text/javascript" src="../node_modules/placer/index.js"></script>
-<script type="text/javascript" src="../node_modules/extend/index.js"></script>
-<script type="text/javascript" src="../index.js" data-module-name="poppy"></script>
-<script type="text/javascript" src="../src/popup.js"></script>
-<script type="text/javascript" src="../src/popover.js"></script>
-<script type="text/javascript" src="../src/dropdown.js"></script>-->
+<script src="../node_modules/placer/index.js"></script>
+<script src="../node_modules/extend/index.js"></script>
+<script src="../index.js" data-module-name="poppy"></script>
+<script src="../src/popup.js"></script>
+<script src="../src/popover.js"></script>
+<script src="../src/dropdown.js"></script> -->
 
 <!-- prod tests -->
-<script src="../node_modules/mod-constructor/dist/mod.js"></script>
 <script src="../dist/poppy.js"></script>
 <script src="../dist/popup.js"></script>
 <script src="../dist/popover.js"></script>
 <script src="../dist/dropdown.js"></script>
 
 <div id="popup" hidden>The popup!</div>
-<a href="#popup" data-popup>Pop me up</a>
+<a href="#popup" data-popup>Pop me up</a><br/>
 
 
 <div id="popover" hidden>The popover!</div>
-<a href="#add-item" data-popover data-content="#popover">Pop me over</a>
+<a href="#add-item" data-popover data-content="#popover">Pop me over</a><br/>
 
 <ul id="dropdown" hidden>
 	<li>Item</li>
@@ -51,13 +40,33 @@
 <button data-dropdown data-content="#dropdown">Dropdown</button>
 
 
+<button class="popover-api">Pop API over</button>
+
+
+<div id="popover-content" hidden>
+	Popover via API!
+</div>
+
 <!-- create progarmmatically -->
 <script type="text/javascript">
+	//Create programmatically dropdown
 	var dd = new Dropdown();
-	// dd.content = "Hello world!"
 	dd.content = document.createElement('div');
-	dd.content.innerHTML = '123';
+	dd.content.innerHTML = 'Dropdown via API';
 	dd.show();
+
+
+	//Create programmatically popover
+	var pp;
+	document.querySelector('.popover-api').onclick = function(){
+		pp = new Popover(this, {
+			'for': '#popover-content'
+		});
+		pp.show();
+	}
+
+
+	//hide guys
 	setTimeout(function(){
 		dd.hide();
 	},800);

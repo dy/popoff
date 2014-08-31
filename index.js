@@ -72,8 +72,8 @@ proto.state = {
 	visible: undefined,
 	changed: function(newState, oldState){
 		//keep class updated
-		this.classList.add(newState);
-		this.classList.remove(oldState);
+		this.classList.add(name + '-' + newState);
+		this.classList.remove(name + '-' + oldState);
 	}
 };
 
@@ -87,6 +87,13 @@ proto.holder = {
 	set: setElement
 };
 
+
+/**
+ * Set ptoperties need to be observed
+ */
+
+proto['for'] = undefined;
+
 //string selector, Node, or href. Content to show in container
 proto.content = {
 	init: function(value){
@@ -97,7 +104,6 @@ proto.content = {
 		if (this.href) {
 			return this.href;
 		}
-
 		//read for, if defined
 		if (this['for']) {
 			return this['for'];
@@ -142,6 +148,7 @@ proto.content = {
 	//eval content each time it is going to be get
 	get: function(v){
 		var content;
+		// console.log('get content', v)
 
 		if (v instanceof HTMLElement){
 			return v;
@@ -255,22 +262,25 @@ proto.single = false;
  */
 
 proto.show = function(){
-	// console.log("show")
+	var self = this;
 
-	//eval content to show
-	if (this.content) {
-		this.$container.appendChild(this.content);
-	}
-	//append container to the holder
-	this.holder.appendChild(this.$container);
+	//set timeout in order to pass over current bubbling event
+	setTimeout(function(){
+		//eval content to show
+		if (self.content) {
+			self.$container.appendChild(self.content);
+		}
+		//append container to the holder
+		self.holder.appendChild(self.$container);
 
-	//place
-	this.place();
+		//place
+		self.place();
 
-	//switch state
-	this.state = 'visible';
+		//switch state
+		self.state = 'visible';
+	});
 
-	return this;
+	return self;
 };
 
 
@@ -280,7 +290,7 @@ proto.show = function(){
  */
 
 proto.hide = function(){
-	// console.log('hide', this.$container.parentNode)
+	// console.log('hide')
 
 	//remove container from the holder
 	this.holder.removeChild(this.$container);

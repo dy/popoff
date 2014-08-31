@@ -43,10 +43,6 @@ proto.$container.changed = function($container){
 proto.state._ = {
 	//FIXME: get rid of defer
 	'click:defer': function (e) {
-		//save position of click
-		this._xPos = e.clientX;
-		this._yPos = e.clientY;
-
 		this.show();
 	}
 };
@@ -58,7 +54,10 @@ proto.state.visible = {
 
 	//if mouse moved too far - close also
 	'document mousemove': function(e){
-		var xDiff = e.clientX - this._xPos, yDiff = e.clientY - this._yPos;
+		var rect = this.getBoundingClientRect();
+		var centerX = (rect.left + rect.right) / 2;
+		var centerY = (rect.top + rect.bottom) / 2;
+		var xDiff = e.clientX - centerX, yDiff = e.clientY - centerY;
 		var dist = Math.sqrt(xDiff*xDiff + yDiff*yDiff);
 		if (dist > this.visibleDistance) this.hide();
 
@@ -70,6 +69,13 @@ proto.visibleDistance = {
 		return window.innerWidth * 0.4;
 	}
 };
+
+
+/**
+ * Popover is always placed over the element
+ *
+ * @return {[type]} [description]
+ */
 
 proto.place = function(){
 	//place properly (align by center)
