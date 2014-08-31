@@ -94,19 +94,27 @@ proto.holder = {
 
 proto['for'] = undefined;
 
-//string selector, Node, or href. Content to show in container
+
+/**
+ * Content to show in container.
+ *
+ * @type {(string|Node|selector)} init
+ *
+ */
+
 proto.content = {
 	init: function(value){
 		//if specified - return it
 		if (value) return value;
 
-		//read href, if it is set
-		if (this.href) {
-			return this.href;
-		}
 		//read for, if defined
 		if (this['for']) {
 			return this['for'];
+		}
+
+		//read href, if it is set
+		if (this.href) {
+			return this.href;
 		}
 	},
 
@@ -292,11 +300,11 @@ proto.show = function(){
 proto.hide = function(){
 	// console.log('hide')
 
-	//remove container from the holder
+	//remove container from the holder, if it is still there
 	this.holder.removeChild(this.$container);
 
 	//remove content from the container
-	if (this.content) {
+	if (this.content && this.content.parentNode === this.$container) {
 		this.$container.removeChild(this.content);
 	}
 

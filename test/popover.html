@@ -1,0 +1,48 @@
+<!doctype html>
+<title>Shitty kudago-popover case</title>
+
+<link rel="stylesheet" type="text/css" href="../index.css">
+<style type="text/css">
+	body{
+		text-align: center;
+	}
+</style>
+
+<script src="../node_modules/mod-constructor/dist/mod.js"></script>
+
+<!-- dev tests -->
+<script src="../node_modules/require-stub/index.js"></script>
+<script src="../node_modules/selector-observer/lib/index.js"></script>
+<script src="../node_modules/mucss/index.js"></script>
+<script src="../node_modules/placer/index.js"></script>
+<script src="../node_modules/extend/index.js"></script>
+<script src="../index.js" data-module-name="poppy"></script>
+<script src="../src/popup.js"></script>
+<script src="../src/popover.js"></script>
+<script src="../src/dropdown.js"></script>
+
+<!-- prod tests -->
+<!-- <script src="../dist/popover.js"></script> -->
+
+<a href="#to-cart" itemid="123" class="buy-button">Add to cart</a><br/>
+<a href="#to-cart" itemid="124" class="buy-button">Add to cart</a><br/>
+<a href="#to-cart" itemid="125" class="buy-button">Add to cart</a><br/>
+
+<div id="amount-popover" hidden>
+	Popover content
+	<input type="number"/>
+</div>
+
+<script>
+	var App = Mod({}, {
+		'document click:on(.buy-button)': function(e){
+			e.preventDefault();
+
+			var pp = new Popover(e.delegateTarget, {
+				'for': '#amount-popover'
+			});
+
+			pp.show();
+		}
+	});
+</script>

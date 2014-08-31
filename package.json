@@ -9,7 +9,8 @@
   "dependencies": {
     "mod-constructor": "*",
     "placer": "*",
-    "selector-observer": "*"
+    "selector-observer": "*",
+    "mucss": "*"
   },
   "devDependencies": {
     "mocha": "~1.21.4",
