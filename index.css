@@ -125,7 +125,7 @@
 	animation-duration: .25s;
 }
 .poppy-popover{
-	position: fixed;
+	position: absolute;
 	top: 0;
 	left: 0;
 	z-index: 999;

@@ -373,7 +373,7 @@ function setElement(value, oldValue){
 	return value;
 }
 },{"mod-constructor":"mod-constructor"}],2:[function(require,module,exports){
-module.exports = css;
+module['exports'] = css;
 
 
 var win = window;
@@ -495,22 +495,45 @@ css['offsets'] = function(el){
 	}
 
 	//whether element is or is in fixed
-	var isNotFixed = 1, parentEl = el;
-	while (parentEl instanceof Element && isNotFixed) {
-		isNotFixed = win.getComputedStyle(parentEl).position === 'fixed' ? 0 : 1;
-		parentEl = parentEl.parentNode;
-	}
+	var isFixed = css['isFixed'](el);
+	var xOffset = isFixed ? 0 : win.pageXOffset;
+	var yOffset = isFixed ? 0 : win.pageYOffset;
 
 	return {
-		top: cRect.top + (isNotFixed && win.pageYOffset),
-		left: cRect.left + (isNotFixed && win.pageXOffset),
+		top: cRect.top + yOffset,
+		left: cRect.left + xOffset,
 		width: el.offsetWidth,
 		height: el.offsetHeight,
-		bottom: cRect.top + (isNotFixed && win.pageYOffset) + el.offsetHeight,
-		right: cRect.left + (isNotFixed && win.pageXOffset) + el.offsetWidth,
+		bottom: cRect.top + yOffset + el.offsetHeight,
+		right: cRect.left + xOffset + el.offsetWidth,
 		fromRight: win.innerWidth - cRect.left - el.offsetWidth,
-		fromBottom: (win.innerHeight + (isNotFixed && win.pageYOffset) - cRect.top - el.offsetHeight)
+		fromBottom: (win.innerHeight + yOffset - cRect.top - el.offsetHeight)
 	};
+};
+
+
+/**
+ * Detect whether element is placed to fixed container or fixed itself.
+ *
+ * @param {(Element|Object)} el Element to detect fixedness.
+ *
+ * @return {boolean} Whether element is nested.
+ */
+
+css['isFixed'] = function (el) {
+	var parentEl = el;
+
+	//window is fixed, btw
+	if (el === win) return true;
+
+	//unlike the document
+	if (el === document) return false;
+
+	while (parentEl) {
+		if (win.getComputedStyle(parentEl).position === 'fixed') return true;
+		parentEl = parentEl.offsetParent;
+	}
+	return false;
 };
 
 
@@ -611,16 +634,26 @@ var placeBySide = {
 
 	},
 
-	bottom: function(el, rect){
-		var width = el.offsetWidth;
-		var height = el.offsetHeight;
-		el.style.top = rect[3] + 'px';
-		el.style.left = rect[0] + 'px';
+	bottom: function(placee, rect){
+		var width = placee.offsetWidth;
+		var height = placee.offsetHeight;
+		css(placee, {
+			left: rect[0],
+			top: rect[3]
+		});
 	}
 };
 
 
-//place element relative to the target on the side
+/**
+ * Place element relative to the target by the side & params passed.
+ *
+ * @param {Element} element An element to place
+ * @param {object} options Options object
+ *
+ * @return {Element} Placed element to chain calls
+ */
+
 function place(element, options){
 	options = options || {};
 
@@ -630,25 +663,31 @@ function place(element, options){
 
 	if (target === win) {
 		targetRect = [0, 0, win.innerWidth, win.innerHeight];
+
+		//fix the position
+		element.style.position = 'fixed';
 	}
 	else if (target instanceof Element) {
-		var rect = target.getBoundingClientRect();
+		var rect = css.offsets(target);
 		targetRect = [rect.left, rect.top, rect.right, rect.bottom];
+
+		//set the position as of the target
+		if (css.isFixed(target)) element.style.position = 'fixed';
+		else element.style.position = 'absolute';
 	}
 	else if (typeof target === 'string'){
 		var targetEl = document.querySelector(target);
 		if (!targetEl) return false;
 		// var rect;
+		//TODO
 	}
 
 	//align according to the position
 	var side = options.side || defaults.side;
 
 	placeBySide[side](element, targetRect);
-}
 
-function parseCSSValue(str){
-	return ~~str.slice(0,-2);
+	return element;
 }
 },{"mucss":2}],4:[function(require,module,exports){
 var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver
