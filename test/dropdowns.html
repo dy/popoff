@@ -1,9 +1,5 @@
 <!doctype html>
 
-<link rel="stylesheet" type="text/css" href="../ext/ui-kit.css">
-<link rel="stylesheet" type="text/css" href="../ext/animate.css">
-<link rel="stylesheet" type="text/css" href="../jquery.popupper.css">
-
 <style type="text/css">
 body{
 	font-family: sans-serif;
@@ -33,37 +29,55 @@ h1, h2, h3, h4, h5, h6{
 }
 </style>
 
-<script>
-//Hook to use animate.css
-window.popupper = {
-	animInClass: "fadeInDown",
-	animClass: "animated",
-	animOutClass: "fadeOutUp",
-	animDuration: 1000,
+<link rel="stylesheet" type="text/css" href="../index.css">
+<style type="text/css">
+	body{
+		text-align: center;
+	}
+</style>
 
-	overlayInClass: "fadeIn",
-	overlayOutClass: "fadeOut"
-}
-</script>
+
+<script src="../node_modules/mod-constructor/dist/mod.js"></script>
+<script src="../node_modules/es6-collections/build/es6-collections.min.js"></script>
+
+<!-- dev tests -->
+<script src="../node_modules/require-stub/index.js"></script>
+<script src="../node_modules/selector-observer/lib/index.js"></script>
+<script src="../node_modules/mucss/index.js"></script>
+<script src="../node_modules/placer/index.js"></script>
+<script src="../node_modules/extend/index.js"></script>
+<script src="../index.js" data-module-name="poppy"></script>
+
+<!-- prod tests -->
+<!-- <script src="../dist/popover.js"></script> -->
+
 
 <header>
 	<h1>Dropdown popuppers test</h1>
 </header>
 
+
+<p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus</p>
+
+
+<p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus</p>
+
+
 <section id="shared-content-case" class="case">
 	<h2>Shared content dropdowns</h2>
 	<div id="shared-content" hidden>Some content of dropdown</div>
 
-	<a class="popupper target" data-type="dropdown" href="#shared-content">1. Href</a>
-	<div class="popupper-dropdown target" data-type="dropdown" data-content="#shared-content">2. data-content</div>
-	<input class="dropdown target" data-type="dropdown" data-content="#shared-content" data-anim-duration="0" type="button" value="3. DOMReady button input"></input>
+	<a class="target" data-dropdown href="#shared-content">1. Href</a>
+	<div class="target" data-dropdown data-content="#shared-content">2. data-content</div>
+	<input class="target" data-dropdown data-content="#shared-content" type="button" value="3. DOMReady button input"></input>
 	<input class="dropdown-instant target" type="text" value="4. js opts text input"></input>
+
 	<div class="target-container"><span class="dropdown-deferred target" data-for="#shared-content">6. deferred</span></div>
 
 </section>
 
 <h2>Things to test</h2>
-<ol>
+<ol style="text-align:left; margin: 0 auto; width: 300px;">
 	<li>Autohiding on inputs (as on kudago search)</li>
 	<li>Tooltip show + dropdown click + back</li>
 	<li>Autolaunch</li>
@@ -71,22 +85,24 @@ window.popupper = {
 	<li>Escape press</li>
 </ol>
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="../ext/zepto.js"><\/script>')</script>
 
-<script src="../jquery.popupper.js"></script>
+
+<p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus</p>
+
+
+<p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus</p>
+
+
+<script src="../src/dropdown.js"></script>
 
 <script type="text/javascript">
-	$(function(){
-		$(".dropdown").popupper();
-		$(".dropdown-instant").popupper({
-			type: "dropdown",
-			content: $("#shared-content")
+	new Dropdown(document.querySelector('.dropdown-instant'), {
+		content: document.querySelector('#shared-content')
+	});
+
+	setTimeout(function(){
+		new Dropdown(document.querySelector('.dropdown-deferred'), {
+			content: document.querySelector('#shared-content')
 		});
-		setTimeout(function(){
-			$(".dropdown-deferred").popupper({
-				type: "dropdown"
-			})
-		}, 500)
-	})
+	}, 500)
 </script>

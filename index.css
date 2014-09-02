@@ -21,10 +21,9 @@
 	pointer-events: none;
 }
 .poppy-tip{
-	box-shadow: 0 0 0 10px #ddd;
 	border-top-left-radius: 1px;
 	position: absolute;
-	background: black;
+	background: white;
 	-webkit-transform: rotate(45deg);
 	-khtml-transform: rotate(45deg);
 	-moz-transform: rotate(45deg);

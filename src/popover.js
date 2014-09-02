@@ -1,7 +1,6 @@
 var Poppy = require('../index');
 var Mod = window.Mod || require('mod-constructor');
 var place = require('placer');
-var SelectorObserver = require('selector-observer');
 
 module.exports = Poppy.extend(Popover);
 
@@ -25,10 +24,6 @@ proto.created = function(){
 	// console.log('popover created')
 };
 
-//watch for the elements
-new SelectorObserver(document.documentElement, '[data-popover]', function(e){
-	new Popover(this);
-});
 
 //add proper class to the container
 proto.$container.changed = function($container){
@@ -84,3 +79,16 @@ proto.place = function(){
 		align: 'center'
 	});
 };
+
+
+/**
+ * Autoinit instances.
+ *
+ * @see Use [selector-observer]{@link https://www.npmjs.org/package/selector-observer}
+ *      if you want to init items dynamically. *
+ */
+
+var items = document.querySelectorAll('[data-popover]');
+for(var i = items.length; i--;){
+	new Popover(items[i]);
+}

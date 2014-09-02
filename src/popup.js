@@ -6,7 +6,6 @@ var Poppy = require('../index');
 var Mod = window.Mod || require('mod-constructor');
 var place = require('placer');
 var extend = require('extend');
-var SelectorObserver = require('selector-observer');
 
 
 var Popup = module.exports = Mod({
@@ -21,10 +20,6 @@ var name = Poppy.displayName;
 */
 var proto = Popup.fn;
 
-//watch for the elements
-new SelectorObserver(document.documentElement, '[data-popup]', function(e){
-	new Popup(this);
-});
 
 /**
 * Lifecycle
@@ -160,3 +155,17 @@ proto.place = function(){
 
 //handle popup as a mod
 module.exports = Mod(Popup);
+
+
+
+/**
+ * Autoinit instances.
+ *
+ * @see Use [selector-observer]{@link https://www.npmjs.org/package/selector-observer}
+ *      if you want to init items dynamically. *
+ */
+
+var items = document.querySelectorAll('[data-popup]');
+for(var i = items.length; i--;){
+	new Dropdown(items[i]);
+}

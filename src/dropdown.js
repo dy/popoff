@@ -1,23 +1,23 @@
 var Poppy = require('../index');
 var Mod = window.Mod || require('mod-constructor');
 var place = require('placer');
-var SelectorObserver = require('selector-observer');
 
+
+/**
+ * Dropdown component - as you used to know it
+ *
+ * @constructor
+ * @extends {Poppy}
+ * @module dropdown
+ */
 
 var Dropdown = module.exports = Poppy.extend();
 
-
+/** Parent component name to use as class identifier */
 var name = Poppy.displayName;
 
 
-//observe instances
-new SelectorObserver(document.documentElement, '[data-dropdown]', function(){
-	new Dropdown(this);
-});
-
-
 var proto = Dropdown.prototype;
-
 
 
 proto.created = function(){
@@ -26,7 +26,7 @@ proto.created = function(){
 
 
 /**
- * Add proper class to the container
+ * Add dropdown class to the container
  */
 
 proto.$container.changed = function($container){
@@ -47,9 +47,11 @@ proto.state.visible = {
 
 
 /**
-* Dropdowns are usually placed below the element.
+* Dropdowns are usually placed below the element, except for border cases
+*
 * @return {Dropdown} For chaining methods
 */
+
 proto.place = function(){
 	place(this.$container, {
 		relativeTo: this,
@@ -58,3 +60,23 @@ proto.place = function(){
 
 	return this;
 };
+
+
+/**
+ * Show dropdown tip by default
+ */
+
+proto.tip.init = true;
+
+
+/**
+ * Autoinit instances.
+ *
+ * @see Use [selector-observer]{@link https://www.npmjs.org/package/selector-observer}
+ *      if you want to init items dynamically. *
+ */
+
+var items = document.querySelectorAll('[data-dropdown]');
+for(var i = items.length; i--;){
+	new Dropdown(items[i]);
+}

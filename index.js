@@ -1,55 +1,79 @@
-/**
- * Poppy is always a link/target to click to show the container
- */
-
 //FIXME: include Mod as a dependency
 var Mod = window.Mod || require('mod-constructor');
 
+
+/** @module Poppy */
 module.exports = Mod(Poppy);
 
 
-//prefix for classes
-var name = 'poppy';
+
+/* -------------------- I N I T ------------------- */
 
 
 /**
- * ------------- Constructor
+ * Poppy mod to extend.
+ * Poppy is always a link/target to click to show the container.
+ *
+ * @constructor
+ * @chainable
+ * @augments {Element}
  */
 
 function Poppy(){
 	return this.constructor.apply(this, arguments);
 }
 
-Poppy.displayName = name;
+
+/** Prefix for classes */
+var name = Poppy.displayName = 'poppy';
+
 
 var proto = Poppy.prototype;
 
+
+/** Ensure target element at least a div */
 proto['extends'] = 'div';
 
 
-
-
-/**
- * -------------- Lifecycle & events
- */
-
+/** Before created */
 proto.init = function(){
 	// console.log('poppy init')
-}
+};
 
+
+/** After created */
 proto.created = function(){
 	// console.log('poppy created')
-}
-
-
-
+};
 
 
 /**
- * --------------- Elements
+ * Visibility state of popup.
+ *
+ * @enum {string}
+ * @default 'hidden'
  */
 
-//keeper of content
+proto.state = {
+	_: undefined,
+	visible: undefined,
+	changed: function(newState, oldState){
+		//keep class updated
+		this.classList.add(name + '-' + newState);
+		this.classList.remove(name + '-' + oldState);
+	}
+};
+
+
+
+/* -------------------- E L E M E N T S ---------------------- */
+
+/**
+ * Keeper of content
+ *
+ * @type {Element}
+ */
+
 proto.$container = {
 	init: function(){
 		//create poppy container
@@ -61,23 +85,36 @@ proto.$container = {
 };
 
 
-
-
 /**
- * ------------------ Options
+ * Small arrow aside the container
  */
-//just state of popup
-proto.state = {
-	_: undefined,
-	visible: undefined,
-	changed: function(newState, oldState){
-		//keep class updated
-		this.classList.add(name + '-' + newState);
-		this.classList.remove(name + '-' + oldState);
+
+proto.$tip = {
+	init: function(){
+		//create tip container - overflow:hidden for the tip
+		var $tipContainer = document.createElement('div');
+		$tipContainer.classList.add(name + '-tip-container');
+
+		//create tip - a white rectangle to rotate to look as a tip
+		var $tip = document.createElement('div');
+		$tip.classList.add(name + '-tip');
+		$tipContainer.appendChild($tip);
+
+		return $tipContainer;
 	}
 };
 
-//Where to place popupped content-container
+
+
+/* ---------------------- O P T I O N S ----------------------- */
+
+
+/**
+ * Where to place popupped content-container
+ *
+ * @type {Element}
+ */
+
 proto.holder = {
 	init: 'body',
 	get: function(value){
@@ -89,24 +126,9 @@ proto.holder = {
 
 
 /**
- * Set ptoperties need to be observed
- */
-
-proto['for'] = undefined;
-
-
-/**
- * Content selector ←→ poppy-instance
- */
-
-var contentCache = {};
-
-
-/**
  * Content to show in container.
  *
- * @type {(string|Node|selector)} init
- *
+ * @type {(string|Node|selector)}
  */
 
 proto.content = {
@@ -206,9 +228,18 @@ proto.content = {
 	}
 };
 
+/** Content selector ←→ poppy-instance */
+var contentCache = {};
+
+/** Need to be captured on init */
+proto['for'] = undefined;
+
 
 /**
  * Type of content to show
+ *
+ * @enum {string}
+ * @default null
  *
  * null		Other element on the page
  * 'image'	An external image will be loaded
@@ -217,6 +248,7 @@ proto.content = {
  * 'swf'
  * 'text'	Insert content as a plain test
  */
+
 proto.contentType = {
 	//target selector
 	_:{
@@ -244,13 +276,24 @@ proto.contentType = {
 };
 
 
-/* Replace with external modules
-//the side to align the container relative to the target - only meaningful range
+/**
+ * Side to align the container relative to the target
+ * only meaningful range
+ *
+ */
+
 proto.align = {
 	set: setSide
-}
+};
 
-//whether to show tip
+
+/**
+ * Whether to show tip or not
+ *
+ * @enum {boolean}
+ * @default false
+ */
+
 proto.tip = {
 	true: {
 		before: function(){
@@ -265,27 +308,35 @@ proto.tip = {
 				this.$container.removeChild(this.$tip);
 		}
 	}
-}
+};
 
-//the side to align tip relative to the target but within the container
+
+/**
+ * Side to align tip relative to the target but within the container
+ *
+ * @enum {string|number}
+ * @default .5
+ */
+
 proto.tipAlign = {
 	set: setSide
-}
-*/
+};
 
 
-//instantly close other dropdowns when the one shows
+/**
+ * Instantly close other dropdowns when the one shows
+ */
+
 proto.single = false;
 
 
 
-/**
- * -------------------------- API
- */
+/* ------------------- A P I --------------------- */
 
 
 /**
  * Show the container
+ *
  * @return {Poppy} Chaining
  */
 
@@ -337,19 +388,24 @@ proto.hide = function(){
 
 /**
  * Automatically called after show.
- * Implement this behaviour in instances
- * Place container properly.
+ * Implement this behaviour in instances - place container accordingly to the element.
+ *
+ * @abstract
  */
 
 proto.place = function(){};
 
 
 
+/* ------------ H E L P E R S ------------- */
+
+
 /**
- * ---------------------- Helpers
+ * Alignment setter
+ *
+ * @param {string|number} value Convert any value passed to float 0..1
  */
 
-//alignment setter
 function setSide(value){
 	if (typeof value === 'string') {
 		switch (value) {
@@ -367,7 +423,15 @@ function setSide(value){
 	return value;
 }
 
-//element setter
+
+/**
+ * Element setter - parse an argument passed, return element
+ *
+ * @param {*} value New element
+ * @param {*} oldValue Old element
+ * @return {Element} Parsed element
+ */
+
 function setElement(value, oldValue){
 	return value;
 }
