@@ -4,12 +4,9 @@
 .poppy-container {
 }
 
+/* -------------- T I P ----------------- */
 
-
-/* Elements */
-.poppy-target{
-	cursor:pointer;
-}
+/* Tip container */
 .poppy-tip-container{
 	position: absolute;
 	top: -40px;
@@ -24,6 +21,7 @@
 	border-top-left-radius: 1px;
 	position: absolute;
 	background: white;
+	box-shadow: 0px 0px 1px rgba(40,50,55, .5);
 	-webkit-transform: rotate(45deg);
 	-khtml-transform: rotate(45deg);
 	-moz-transform: rotate(45deg);
@@ -37,43 +35,48 @@
 	left: 15px;
 }
 
-.poppy-tip-container-top{
+/* Poppy container when tip is on */
+.poppy-container-tip-top{
 	top: -40px;
 	left: 0px;
 	bottom: auto;
 	right: auto;
+	margin-top: 8px;
 }
-.poppy-tip-container-right{
+.poppy-container-tip-right{
 	right: -40px;
 	top: 0px;
 	left: auto;
 	bottom: auto;
 }
-.poppy-tip-container-bottom{
+.poppy-container-tip-bottom{
 	bottom: -40px;
 	left: 0px;
 	top: auto;
 	right: auto;
 }
-.poppy-tip-container-left{
+.poppy-container-tip-left{
 	left: -40px;
 	top: 0px;
 	bottom: auto;
 	right: auto;
 }
-
-.poppy-tip-container-top .poppy-tip{
+.poppy-container-tip-top .poppy-tip{
 	margin-top: 50%;
 }
-.poppy-tip-container-right .poppy-tip{
+.poppy-container-tip-right .poppy-tip{
 	margin-left: -50%;
 }
-.poppy-tip-container-bottom .poppy-tip{
+.poppy-container-tip-bottom .poppy-tip{
 	margin-top: -50%;
 }
-.poppy-tip-container-left .poppy-tip{
+.poppy-container-tip-left .poppy-tip{
 	margin-left: 50%;
 }
+
+
+
+/* --------------------- C L O S E ---------------------*/
 
 .poppy-close{
 	position: absolute;
@@ -95,9 +98,8 @@
 
 
 
+/* -------------- S P E C I F I C  C O N T A I N E R S ---------------- */
 
-
-/* Specific containers */
 .poppy-blind{
 	position: fixed;
 	top: 0;
@@ -113,7 +115,7 @@
 	left: 0;
 	z-index: 999;
 	background: white;
-	box-shadow: 0 0 2px gray;
+	box-shadow: 0 1px 6px rgba(40,50,55, .5);
 	min-height: 20px;
 	padding: 10px 40px 10px 10px;
 	-webkit-animation-duration: .25s;
@@ -129,7 +131,7 @@
 	left: 0;
 	z-index: 999;
 	background: white;
-	box-shadow: 0 0 2px gray;
+	box-shadow: 0 1px 6px rgba(40,50,55, .5);
 	padding: 10px 10px 10px 10px;
 	-webkit-animation-duration: .25s;
 	-khtml-animation-duration: .25s;
@@ -144,7 +146,7 @@
 	left: 0;
 	z-index: 999;
 	background: white;
-	box-shadow: 0 0 2px gray;
+	box-shadow: 0 1px 6px rgba(40,50,55, .5);
 	padding: 10px 10px 10px 10px;
 	-webkit-animation-duration: .25s;
 	-khtml-animation-duration: .25s;

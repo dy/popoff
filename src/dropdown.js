@@ -1,6 +1,7 @@
 var Poppy = require('../index');
 var Mod = window.Mod || require('mod-constructor');
 var place = require('placer');
+var extend = require('extend');
 
 
 /**
@@ -41,9 +42,9 @@ proto.$container.changed = function($container){
 proto.state._ = {
 	'click:defer': 'show'
 };
-proto.state.visible = {
+extend(proto.state.visible, {
 	'document click:not(.poppy-dropdown)': 'hide'
-};
+});
 
 
 /**

@@ -47,20 +47,30 @@ proto.created = function(){
 };
 
 
+
+/* --------------------- E V E N T S ------------------------- */
+
+
 /**
  * Visibility state of popup.
  *
  * @enum {string}
  * @default 'hidden'
+ * @abstract
  */
 
 proto.state = {
 	_: undefined,
-	visible: undefined,
+	visible: {
+		/** Keep container updated on resize */
+		'window resize': 'place'
+	},
+
+	/** Keep class on the container according to the visibility */
 	changed: function(newState, oldState){
 		//keep class updated
-		this.classList.add(name + '-' + newState);
-		this.classList.remove(name + '-' + oldState);
+		this.$container.classList.add(name + '-' + newState);
+		this.$container.classList.remove(name + '-' + oldState);
 	}
 };
 
@@ -298,20 +308,26 @@ proto.align = {
 proto.tip = {
 	'top, left, bottom, right': {
 		before: function(){
+			//add tip class
+			this.$container.classList.add(name + '-container-tip');
+
 			//append tip to the container
 			this.$container.appendChild(this.$tip);
 		}
 	},
 	changed: function(newValue, old){
 		//keep tip direction class updated
-		this.$tip.classList.remove(name + '-tip-container-' + old);
-		this.$tip.classList.add(name + '-tip-container-' + newValue);
+		this.$container.classList.remove(name + '-container-tip-' + old);
+		this.$container.classList.add(name + '-container-tip-' + newValue);
 	},
 	_: {
 		before: function(){
 			//remove tip from the container
 			if (this.$container.contains(this.$tip))
 				this.$container.removeChild(this.$tip);
+
+			//remove tip class
+			this.$container.classList.remove(name + '-container-tip');
 		}
 	}
 };

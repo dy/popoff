@@ -42,7 +42,6 @@ h1, h2, h3, h4, h5, h6{
 
 <!-- dev tests -->
 <script src="../node_modules/require-stub/index.js"></script>
-<script src="../node_modules/selector-observer/lib/index.js"></script>
 <script src="../node_modules/mucss/index.js"></script>
 <script src="../node_modules/placer/index.js"></script>
 <script src="../node_modules/extend/index.js"></script>
@@ -67,10 +66,10 @@ h1, h2, h3, h4, h5, h6{
 	<h2>Shared content dropdowns</h2>
 	<div id="shared-content" hidden>Some content of dropdown</div>
 
-	<a class="target" data-dropdown href="#shared-content">1. Href</a>
-	<div class="target" data-dropdown data-content="#shared-content">2. data-content</div>
-	<input class="target" data-dropdown data-content="#shared-content" type="button" value="3. DOMReady button input"></input>
-	<input class="dropdown-instant target" type="text" value="4. js opts text input"></input>
+	<a id="1" class="target" data-dropdown href="#shared-content">1. Href</a>
+	<div  id="2" class="target" data-dropdown data-for="#shared-content">2. data-content</div>
+	<input id="3" class="target" data-dropdown data-content="#shared-content" type="button" value="3. DOMReady button input"></input>
+	<input id="4" class="dropdown-instant target" type="text" value="4. js opts text input"></input>
 
 	<div class="target-container"><span class="dropdown-deferred target" data-for="#shared-content">6. deferred</span></div>
 
