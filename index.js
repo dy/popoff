@@ -78,8 +78,9 @@ proto.state = {
 
 /* -------------------- E L E M E N T S ---------------------- */
 
+
 /**
- * Keeper of content
+ * Keeper of content.
  *
  * @type {Element}
  */
@@ -89,6 +90,13 @@ proto.$container = {
 		//create poppy container
 		var $container = document.createElement('div');
 		$container.classList.add(name + '-container');
+
+		//set reference to poppy
+		$container.poppy = this;
+
+		//bind API
+		$container.show = this.show;
+		$container.hide = this.hide;
 
 		return $container;
 	}
@@ -231,9 +239,12 @@ proto.content = {
 	},
 
 	changed: function(content){
-		//unhide content if it is hidden
+		//unhide content if it is hidden and if it is not in the popupper
 		if (content instanceof HTMLElement) {
-			if (content.parentNode) content.parentNode.removeChild(content);
+			if (content.parentNode && !content.parentNode.classList.contains(name + '-container')) {
+				content.parentNode.removeChild(content);
+			}
+
 			content.removeAttribute('hidden');
 		}
 	}
