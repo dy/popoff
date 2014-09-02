@@ -53,10 +53,17 @@ proto.state.visible = {
 */
 
 proto.place = function(){
-	place(this.$container, {
+	var result = place(this.$container, {
 		relativeTo: this,
 		side: 'bottom'
 	});
+
+	//set tip according to the side
+	if (result){
+		this.tip = 'top';
+	} else {
+		this.tip = 'bottom';
+	}
 
 	return this;
 };

@@ -37,41 +37,41 @@
 	left: 15px;
 }
 
-.poppy-tip-container.poppy-tip-container-top{
+.poppy-tip-container-top{
 	top: -40px;
 	left: 0px;
 	bottom: auto;
 	right: auto;
 }
-.poppy-tip-container.poppy-tip-container-right{
+.poppy-tip-container-right{
 	right: -40px;
 	top: 0px;
 	left: auto;
 	bottom: auto;
 }
-.poppy-tip-container.poppy-tip-container-bottom{
+.poppy-tip-container-bottom{
 	bottom: -40px;
 	left: 0px;
 	top: auto;
 	right: auto;
 }
-.poppy-tip-container.poppy-tip-container-left{
+.poppy-tip-container-left{
 	left: -40px;
 	top: 0px;
 	bottom: auto;
 	right: auto;
 }
 
-.poppy-tip-container.poppy-tip-container-top .poppy-tip{
+.poppy-tip-container-top .poppy-tip{
 	margin-top: 50%;
 }
-.poppy-tip-container.poppy-tip-container-right .poppy-tip{
+.poppy-tip-container-right .poppy-tip{
 	margin-left: -50%;
 }
-.poppy-tip-container.poppy-tip-container-bottom .poppy-tip{
+.poppy-tip-container-bottom .poppy-tip{
 	margin-top: -50%;
 }
-.poppy-tip-container.poppy-tip-container-left .poppy-tip{
+.poppy-tip-container-left .poppy-tip{
 	margin-left: 50%;
 }
 

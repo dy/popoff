@@ -86,7 +86,8 @@ proto.$container = {
 
 
 /**
- * Small arrow aside the container
+ * Small arrow aside the container.
+ * Tip is a tip container indeed, but user shouldn’t care.
  */
 
 proto.$tip = {
@@ -295,11 +296,16 @@ proto.align = {
  */
 
 proto.tip = {
-	true: {
+	'top, left, bottom, right': {
 		before: function(){
 			//append tip to the container
 			this.$container.appendChild(this.$tip);
 		}
+	},
+	changed: function(newValue, old){
+		//keep tip direction class updated
+		this.$tip.classList.remove(name + '-tip-container-' + old);
+		this.$tip.classList.add(name + '-tip-container-' + newValue);
 	},
 	_: {
 		before: function(){
@@ -335,7 +341,7 @@ proto.single = false;
 
 
 /**
- * Show the container
+ * Show the container.
  *
  * @return {Poppy} Chaining
  */
