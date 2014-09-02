@@ -1,84 +1,140 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.Popup=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-/**
- * Poppy is always a link/target to click to show the container
- */
-
 //FIXME: include Mod as a dependency
 var Mod = window.Mod || require('mod-constructor');
 
+
+/** @module Poppy */
 module.exports = Mod(Poppy);
 
 
-//prefix for classes
-var name = 'poppy';
+
+/* -------------------- I N I T ------------------- */
 
 
 /**
- * ------------- Constructor
+ * Poppy mod to extend.
+ * Poppy is always a link/target to click to show the container.
+ *
+ * @constructor
+ * @chainable
+ * @augments {Element}
  */
 
 function Poppy(){
 	return this.constructor.apply(this, arguments);
 }
 
-Poppy.displayName = name;
+
+/** Prefix for classes */
+var name = Poppy.displayName = 'poppy';
+
 
 var proto = Poppy.prototype;
 
+
+/** Ensure target element at least a div */
 proto['extends'] = 'div';
 
 
-
-
-/**
- * -------------- Lifecycle & events
- */
-
+/** Before created */
 proto.init = function(){
 	// console.log('poppy init')
-}
+};
 
+
+/** After created */
 proto.created = function(){
 	// console.log('poppy created')
-}
+};
 
 
 
+/* --------------------- E V E N T S ------------------------- */
 
 
 /**
- * --------------- Elements
+ * Visibility state of popup.
+ *
+ * @enum {string}
+ * @default 'hidden'
+ * @abstract
  */
 
-//keeper of content
+proto.state = {
+	_: undefined,
+	visible: {
+		/** Keep container updated on resize */
+		'window resize': 'place'
+	},
+
+	/** Keep class on the container according to the visibility */
+	changed: function(newState, oldState){
+		//keep class updated
+		this.$container.classList.add(name + '-' + newState);
+		this.$container.classList.remove(name + '-' + oldState);
+	}
+};
+
+
+
+/* -------------------- E L E M E N T S ---------------------- */
+
+
+/**
+ * Keeper of content.
+ *
+ * @type {Element}
+ */
+
 proto.$container = {
 	init: function(){
 		//create poppy container
 		var $container = document.createElement('div');
 		$container.classList.add(name + '-container');
 
+		//set reference to poppy
+		$container.poppy = this;
+
+		//bind API
+		$container.show = this.show;
+		$container.hide = this.hide;
+
 		return $container;
 	}
 };
 
 
-
-
 /**
- * ------------------ Options
+ * Small arrow aside the container.
+ * Tip is a tip container indeed, but user shouldn’t care.
  */
-//just state of popup
-proto.state = {
-	_: undefined,
-	visible: undefined,
-	changed: function(newState, oldState){
-		//keep class updated
-		this.classList.add(name + '-' + newState);
-		this.classList.remove(name + '-' + oldState);
+
+proto.$tip = {
+	init: function(){
+		//create tip container - overflow:hidden for the tip
+		var $tipContainer = document.createElement('div');
+		$tipContainer.classList.add(name + '-tip-container');
+
+		//create tip - a white rectangle to rotate to look as a tip
+		var $tip = document.createElement('div');
+		$tip.classList.add(name + '-tip');
+		$tipContainer.appendChild($tip);
+
+		return $tipContainer;
 	}
 };
 
-//Where to place popupped content-container
+
+
+/* ---------------------- O P T I O N S ----------------------- */
+
+
+/**
+ * Where to place popupped content-container
+ *
+ * @type {Element}
+ */
+
 proto.holder = {
 	init: 'body',
 	get: function(value){
@@ -90,24 +146,9 @@ proto.holder = {
 
 
 /**
- * Set ptoperties need to be observed
- */
-
-proto['for'] = undefined;
-
-
-/**
- * Content selector ←→ poppy-instance
- */
-
-var contentCache = {};
-
-
-/**
  * Content to show in container.
  *
- * @type {(string|Node|selector)} init
- *
+ * @type {(string|Node|selector)}
  */
 
 proto.content = {
@@ -199,17 +240,29 @@ proto.content = {
 	},
 
 	changed: function(content){
-		//unhide content if it is hidden
+		//unhide content if it is hidden and if it is not in the popupper
 		if (content instanceof HTMLElement) {
-			if (content.parentNode) content.parentNode.removeChild(content);
+			if (content.parentNode && !content.parentNode.classList.contains(name + '-container')) {
+				content.parentNode.removeChild(content);
+			}
+
 			content.removeAttribute('hidden');
 		}
 	}
 };
 
+/** Content selector ←→ poppy-instance */
+var contentCache = {};
+
+/** Need to be captured on init */
+proto['for'] = undefined;
+
 
 /**
  * Type of content to show
+ *
+ * @enum {string}
+ * @default null
  *
  * null		Other element on the page
  * 'image'	An external image will be loaded
@@ -218,6 +271,7 @@ proto.content = {
  * 'swf'
  * 'text'	Insert content as a plain test
  */
+
 proto.contentType = {
 	//target selector
 	_:{
@@ -245,48 +299,78 @@ proto.contentType = {
 };
 
 
-/* Replace with external modules
-//the side to align the container relative to the target - only meaningful range
+/**
+ * Side to align the container relative to the target
+ * only meaningful range
+ *
+ */
+
 proto.align = {
 	set: setSide
-}
+};
 
-//whether to show tip
+
+/**
+ * Whether to show tip or not
+ *
+ * @enum {boolean}
+ * @default false
+ */
+
 proto.tip = {
-	true: {
+	'top, left, bottom, right': {
 		before: function(){
+			//add tip class
+			this.$container.classList.add(name + '-container-tip');
+
 			//append tip to the container
 			this.$container.appendChild(this.$tip);
 		}
+	},
+	changed: function(newValue, old){
+		//keep tip direction class updated
+		this.$container.classList.remove(name + '-container-tip-' + old);
+		this.$container.classList.add(name + '-container-tip-' + newValue);
 	},
 	_: {
 		before: function(){
 			//remove tip from the container
 			if (this.$container.contains(this.$tip))
 				this.$container.removeChild(this.$tip);
+
+			//remove tip class
+			this.$container.classList.remove(name + '-container-tip');
 		}
 	}
-}
+};
 
-//the side to align tip relative to the target but within the container
+
+/**
+ * Side to align tip relative to the target but within the container
+ *
+ * @enum {string|number}
+ * @default .5
+ */
+
 proto.tipAlign = {
 	set: setSide
-}
-*/
+};
 
 
-//instantly close other dropdowns when the one shows
+/**
+ * Instantly close other dropdowns when the one shows
+ */
+
 proto.single = false;
 
 
 
-/**
- * -------------------------- API
- */
+/* ------------------- A P I --------------------- */
 
 
 /**
- * Show the container
+ * Show the container.
+ *
  * @return {Poppy} Chaining
  */
 
@@ -338,19 +422,24 @@ proto.hide = function(){
 
 /**
  * Automatically called after show.
- * Implement this behaviour in instances
- * Place container properly.
+ * Implement this behaviour in instances - place container accordingly to the element.
+ *
+ * @abstract
  */
 
 proto.place = function(){};
 
 
 
+/* ------------ H E L P E R S ------------- */
+
+
 /**
- * ---------------------- Helpers
+ * Alignment setter
+ *
+ * @param {string|number} value Convert any value passed to float 0..1
  */
 
-//alignment setter
 function setSide(value){
 	if (typeof value === 'string') {
 		switch (value) {
@@ -368,7 +457,15 @@ function setSide(value){
 	return value;
 }
 
-//element setter
+
+/**
+ * Element setter - parse an argument passed, return element
+ *
+ * @param {*} value New element
+ * @param {*} oldValue Old element
+ * @return {Element} Parsed element
+ */
+
 function setElement(value, oldValue){
 	return value;
 }
@@ -455,6 +552,128 @@ module.exports = function extend() {
 
 
 },{}],3:[function(require,module,exports){
+/**
+* @module  placer
+*
+* Places any element relative to any other element the way you define
+*/
+module.exports = place;
+
+var css = require('mucss');
+
+var win = window;
+
+/**
+ * Default options
+ */
+
+var defaults = {
+	//source to align relatively to
+	//element/{x,y}/[x,y]/
+	relativeTo: window,
+
+	//which side to palce element
+	//t/r/b/l, 'center' ( === undefined),
+	side: 'center',
+
+	//intensity of alignment
+	//left, center, right, top, bottom, 0..1
+	align: 0.5,
+
+	//selector/nodelist/node/[x,y]/window/function(el)
+	avoid: undefined,
+
+	//selector/nodelist/node/[x,y]/window/function(el)
+	within: window
+};
+
+
+/**
+ * Set of position placers
+ * @enum {Function}
+ */
+
+var placeBySide = {
+	center: function(placee, rect){
+		var center = [(rect[2] + rect[0]) / 2, (rect[3] + rect[1]) / 2];
+		var width = placee.offsetWidth;
+		var height = placee.offsetHeight;
+		css(placee, {
+			top: (center[1] - height/2),
+			left: (center[0] - width/2)
+		});
+	},
+
+	left: function(el, rect){
+
+	},
+
+	right: function(el, rect){
+
+	},
+
+	top: function(el, rect){
+
+	},
+
+	bottom: function(placee, rect){
+		var width = placee.offsetWidth;
+		var height = placee.offsetHeight;
+
+		css(placee, {
+			left: rect[0],
+			top: rect[3]
+		});
+	}
+};
+
+
+/**
+ * Place element relative to the target by the side & params passed.
+ *
+ * @param {Element} element An element to place
+ * @param {object} options Options object
+ *
+ * @return {boolean} The result of placement - whether placing succeeded
+ */
+
+function place(element, options){
+	options = options || {};
+
+	//get target rect to align
+	var target = options.relativeTo || defaults.relativeTo;
+	var targetRect;
+
+	if (target === win) {
+		targetRect = [0, 0, win.innerWidth, win.innerHeight];
+
+		//fix the position
+		element.style.position = 'fixed';
+	}
+	else if (target instanceof Element) {
+		var rect = css.offsets(target);
+		targetRect = [rect.left, rect.top, rect.right, rect.bottom];
+
+	}
+	else if (typeof target === 'string'){
+		var targetEl = document.querySelector(target);
+		if (!targetEl) return false;
+		// var rect;
+		//TODO
+	}
+
+	//set the position as of the target
+	if (css.isFixed(target)) element.style.position = 'fixed';
+	else element.style.position = 'absolute';
+
+	//align according to the position
+	var side = options.side || defaults.side;
+
+	placeBySide[side](element, targetRect);
+
+	return element;
+}
+},{"mucss":4}],4:[function(require,module,exports){
 module['exports'] = css;
 
 
@@ -556,15 +775,16 @@ css['parseValue'] = parseValue;
 
 
 /**
- * Return absolute offsets.
+ * Return absolute offsets of any target passed
  *
  * @param    {Element}   el   A target.
  * @return   {Object}   Offsets object with trbl, fromRight, fromLeft.
  */
 
 css['offsets'] = function(el){
-	if (!el) return {};
+	if (!el) return false;
 
+	//calc client rect
 	var cRect;
 
 	try {
@@ -629,20 +849,31 @@ css['isFixed'] = function (el) {
 function css(el, obj){
 	if (!el || !obj) return;
 
+	var name, value;
+
 	//return value, if string passed
 	if (typeof obj === 'string') {
-		return el.style[prefixize(obj)];
+		name = obj;
+
+		//return value, if no value passed
+		if (arguments.length < 3) {
+			return el.style[prefixize(name)];
+		}
+
+		//set style, if value passed
+		value = arguments[2] || '';
+		obj = {};
+		obj[name] = value;
 	}
 
-	for (var name in obj){
+
+	for (name in obj){
 		//convert numbers to px
 		if (typeof obj[name] === 'number') obj[name] += 'px';
 
-		if (obj[name]) {
-			el.style[prefixize(name)] = obj[name];
-		} else {
-			el.style[prefixize(name)] = '';
-		}
+		value = obj[name] || '';
+
+		el.style[prefixize(name)] = value;
 	}
 }
 
@@ -656,250 +887,11 @@ function css(el, obj){
 
 function prefixize(name){
 	var uName = name[0].toUpperCase() + name.slice(1);
+	if (fakeStyle[name] !== undefined) return name;
 	if (fakeStyle[prefix + uName] !== undefined) return prefix + uName;
-	return name;
+	return '';
 }
-},{}],4:[function(require,module,exports){
-/**
-* Placer
-* Places any element relative to any other element the way you define
-*/
-
-module.exports = place;
-
-var css = require('mucss');
-
-var win = window;
-
-//default options
-var defaults = {
-	//source to align relatively to
-	//element/{x,y}/[x,y]/
-	relativeTo: window,
-
-	//which side to palce element
-	//t/r/b/l, 'center' ( === undefined),
-	side: 'center',
-
-	//intensity of alignment
-	//left, center, right, top, bottom, 0..1
-	align: 0.5,
-
-	//selector/nodelist/node/[x,y]/window/function(el)
-	avoid: undefined,
-
-	//selector/nodelist/node/[x,y]/window/function(el)
-	within: window
-};
-
-//set of position placers
-var placeBySide = {
-	center: function(placee, rect){
-		var center = [(rect[2] + rect[0]) / 2, (rect[3] + rect[1]) / 2];
-		var width = placee.offsetWidth;
-		var height = placee.offsetHeight;
-		css(placee, {
-			top: (center[1] - height/2),
-			left: (center[0] - width/2)
-		});
-	},
-
-	left: function(el, rect){
-
-	},
-
-	right: function(el, rect){
-
-	},
-
-	top: function(el, rect){
-
-	},
-
-	bottom: function(placee, rect){
-		var width = placee.offsetWidth;
-		var height = placee.offsetHeight;
-		css(placee, {
-			left: rect[0],
-			top: rect[3]
-		});
-	}
-};
-
-
-/**
- * Place element relative to the target by the side & params passed.
- *
- * @param {Element} element An element to place
- * @param {object} options Options object
- *
- * @return {Element} Placed element to chain calls
- */
-
-function place(element, options){
-	options = options || {};
-
-	//get target rect to align
-	var target = options.relativeTo || defaults.relativeTo;
-	var targetRect;
-
-	if (target === win) {
-		targetRect = [0, 0, win.innerWidth, win.innerHeight];
-
-		//fix the position
-		element.style.position = 'fixed';
-	}
-	else if (target instanceof Element) {
-		var rect = css.offsets(target);
-		targetRect = [rect.left, rect.top, rect.right, rect.bottom];
-
-		//set the position as of the target
-		if (css.isFixed(target)) element.style.position = 'fixed';
-		else element.style.position = 'absolute';
-	}
-	else if (typeof target === 'string'){
-		var targetEl = document.querySelector(target);
-		if (!targetEl) return false;
-		// var rect;
-		//TODO
-	}
-
-	//align according to the position
-	var side = options.side || defaults.side;
-
-	placeBySide[side](element, targetRect);
-
-	return element;
-}
-},{"mucss":3}],5:[function(require,module,exports){
-var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver
-function matches(el, selector) {
-  var fn = el.matches || el.matchesSelector || el.msMatchesSelector || el.mozMatchesSelector || el.webkitMatchesSelector || el.oMatchesSelector
-  return fn ? fn.call(el, selector) : false
-}
-function toArr(nodeList) {
-  return Array.prototype.slice.call(nodeList)
-}
-
-// polyfill for IE < 11
-var isOldIE = false
-if (typeof MutationObserver === 'undefined') {
-  MutationObserver = function(callback) {
-    this.targets = []
-    this.onAdded = function(e) {
-      callback([{ addedNodes: [e.target], removedNodes: [] }])
-    }
-    this.onRemoved = function(e) {
-      callback([{ addedNodes: [], removedNodes: [e.target] }])
-    }
-  }
-
-  MutationObserver.prototype.observe = function(target) {
-    target.addEventListener('DOMNodeInserted', this.onAdded)
-    target.addEventListener('DOMNodeRemoved', this.onRemoved)
-    this.targets.push(target)
-  }
-
-  MutationObserver.prototype.disconnect = function() {
-    var target
-    while (target = this.targets.shift()) {
-      target.removeEventListener('DOMNodeInserted', this.onAdded)
-      target.removeEventListener('DOMNodeRemoved', this.onRemoved)
-    }
-  }
-
-  isOldIE = !!~navigator.appName.indexOf('Internet Explorer')
-}
-
-var SelectorObserver = function(targets, selector, onAdded, onRemoved) {
-  var self     = this
-  this.targets = targets instanceof NodeList
-                   ? Array.prototype.slice.call(targets)
-                   : [targets]
-
-  // support selectors starting with the childs only selector `>`
-  var childsOnly = selector[0] === '>'
-    , search = childsOnly ? selector.substr(1) : selector
-    , initialized = false
-
-  function apply(nodes, callback) {
-    toArr(nodes).forEach(function(node) {
-      //ignore non-element nodes
-      if (node.nodeType !== 1) return;
-
-      // if looking for childs only, the node's parentNode
-      // should be one of our targets
-      if (childsOnly && self.targets.indexOf(node.parentNode) === -1) {
-        return
-      }
-
-      // test if the node itself matches the selector
-      if (matches(node, search)) {
-        callback.call(node)
-      }
-
-                     // ↓ IE workarounds ...
-      if (childsOnly || (initialized && isOldIE && callback !== onRemoved)) return
-
-      if (!node.querySelectorAll) return
-      toArr(node.querySelectorAll(selector)).forEach(function(node) {
-        callback.call(node)
-      })
-    })
-  }
-
-  this.observer = new MutationObserver(function(mutations) {
-    self.disconnect()
-
-    mutations.forEach(function(mutation) {
-      if (onAdded)   apply(mutation.addedNodes,   onAdded)
-      if (onRemoved) apply(mutation.removedNodes, onRemoved)
-    })
-
-    self.observe()
-  })
-
-  initialized = true
-
-  function start() {
-    // call onAdded for existing elements
-    if (onAdded) {
-      self.targets.forEach(function(target) {
-        apply(target.children, onAdded)
-      })
-    }
-
-    self.observe()
-  }
-
-  if (document.readyState !== 'loading') {
-    start()
-  } else {
-    document.addEventListener('DOMContentLoaded', start)
-  }
-}
-
-SelectorObserver.prototype.disconnect = function() {
-  this.observer.disconnect()
-}
-
-SelectorObserver.prototype.observe = function() {
-  var self = this
-  this.targets.forEach(function(target) {
-    self.observer.observe(target, { childList: true, subtree: true })
-  })
-}
-
-if (typeof exports !== 'undefined') {
-  module.exports = SelectorObserver
-}
-
-// DOM extension
-Element.prototype.observeSelector = function(selector, onAdded, onRemoved) {
-  return new SelectorObserver(this, selector, onAdded, onRemoved)
-}
-
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /**
 * Extend poppy with popup behaviour
 */
@@ -908,7 +900,6 @@ var Poppy = require('../index');
 var Mod = window.Mod || require('mod-constructor');
 var place = require('placer');
 var extend = require('extend');
-var SelectorObserver = require('selector-observer');
 
 
 var Popup = module.exports = Mod({
@@ -923,10 +914,6 @@ var name = Poppy.displayName;
 */
 var proto = Popup.fn;
 
-//watch for the elements
-new SelectorObserver(document.documentElement, '[data-popup]', function(e){
-	new Popup(this);
-});
 
 /**
 * Lifecycle
@@ -1062,5 +1049,20 @@ proto.place = function(){
 
 //handle popup as a mod
 module.exports = Mod(Popup);
-},{"../index":1,"extend":2,"mod-constructor":"mod-constructor","placer":4,"selector-observer":5}]},{},[6])(6)
+
+
+
+/**
+ * Autoinit instances.
+ *
+ * @see Use [selector-observer]{@link https://www.npmjs.org/package/selector-observer}
+ *      if you want to init items dynamically. *
+ */
+
+var items = document.querySelectorAll('[data-popup]');
+for(var i = items.length; i--;){
+	new Dropdown(items[i]);
+}
+
+},{"../index":1,"extend":2,"mod-constructor":"mod-constructor","placer":3}]},{},[5])(5)
 });

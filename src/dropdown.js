@@ -14,6 +14,7 @@ var extend = require('extend');
 
 var Dropdown = module.exports = Poppy.extend();
 
+
 /** Parent component name to use as class identifier */
 var name = Poppy.displayName;
 
