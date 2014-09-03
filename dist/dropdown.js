@@ -130,6 +130,17 @@ proto.$tip = {
 
 
 /**
+ * Class to append to {@link $container}
+ */
+
+proto.containerClass = {
+	init: function(value){
+		if (value) this.$container.classList.add(value);
+	}
+};
+
+
+/**
  * Where to place popupped content-container
  *
  * @type {Element}
