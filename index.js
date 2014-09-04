@@ -1,6 +1,7 @@
 //FIXME: include Mod as a dependency
 var Mod = window.Mod || require('mod-constructor');
 var type = require("mutypes");
+var css = require("mucss");
 var place = require("placer");
 
 /** @module Poppy */
@@ -79,6 +80,12 @@ proto.$container = {
 /**
  * Small arrow aside the container.
  * Tip is a tip container indeed, but user shouldn’t care.
+ *
+ * @todo Think of placing tip via placer and placing to the holder
+ *       The way container is placed.
+ *       It would allow to get encapsulate tip placing logic.
+ *       Or try to pass relativeTo attribute to the placer for the tip.
+ *       So try to use placer for tips anyway.
  */
 
 proto.$tip = {
@@ -290,7 +297,7 @@ proto.contentType = {
  *
  */
 
-proto.align = {
+proto.alignment = {
 	init: 0,
 	set: place.getAlign
 };
@@ -393,6 +400,44 @@ proto.single = false;
 
 
 /**
+ * Visibility state of popup.
+ *
+ * @enum {string}
+ * @default 'hidden'
+ * @abstract
+ */
+
+proto.state = {
+	init: 'hidden',
+
+	/** Invisible state */
+	_: undefined,
+
+	/** Do open animation or whatever */
+	'opening': function(){
+		var self = this;
+		setTimeout(function(){
+			self.state = 'visible';
+		});
+	},
+
+	/** Visible state */
+	visible: {
+		/** Keep container updated on resize */
+		'window resize': 'place, updateTip',
+		'document scroll:throttle(50)': 'place, updateTip'
+	},
+
+	/** Keep class on the container according to the visibility */
+	changed: function(newState, oldState){
+		//keep class updated
+		this.$container.classList.add(name + '-' + newState);
+		this.$container.classList.remove(name + '-' + oldState);
+	}
+};
+
+
+/**
  * Show the container.
  *
  * @return {Poppy} Chaining
@@ -400,11 +445,7 @@ proto.single = false;
 
 proto.show = function(e){
 	var self = this;
-	// console.log('show', e)
-
-	//set ignoring hide flag in order to pass over current bubbling event
-	this.deferHide = true;
-	setTimeout(function(){self.deferHide = false;});
+	// console.log('show')
 
 	//eval content to show
 	if (self.content) {
@@ -419,7 +460,7 @@ proto.show = function(e){
 	self.updateTip();
 
 	//switch state
-	self.state = 'visible';
+	self.state = 'opening';
 
 	return self;
 };
@@ -432,9 +473,6 @@ proto.show = function(e){
 
 proto.hide = function(){
 	// console.log('hide');
-
-	//postpone call, if flag is set
-	if (this.deferHide) this.emit('hide:defer');
 
 	//remove container from the holder, if it is still there
 	if (this.$container.parentNode === this.holder)
@@ -469,31 +507,6 @@ proto.place = function(){};
  */
 
 proto.updateTip = function(){};
-
-
-/**
- * Visibility state of popup.
- *
- * @enum {string}
- * @default 'hidden'
- * @abstract
- */
-
-proto.state = {
-	_: undefined,
-	visible: {
-		/** Keep container updated on resize */
-		'window resize': 'place, updateTip',
-		'document scroll:throttle(50)': 'place, updateTip'
-	},
-
-	/** Keep class on the container according to the visibility */
-	changed: function(newState, oldState){
-		//keep class updated
-		this.$container.classList.add(name + '-' + newState);
-		this.$container.classList.remove(name + '-' + oldState);
-	}
-};
 
 
 

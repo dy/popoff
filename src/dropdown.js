@@ -40,8 +40,8 @@ proto.$container.changed = function($container){
  * Behaviour
  */
 
-proto.state._ = {
-	'click:defer': 'show'
+proto.state.hidden = {
+	'click': 'show'
 };
 extend(proto.state.visible, {
 	'document click:not(.poppy-dropdown)': 'hide'
@@ -50,9 +50,9 @@ extend(proto.state.visible, {
 
 /**
 * Dropdowns are usually placed below the element, except for border cases
-*
-* @return {Dropdown} For chaining methods
 */
+
+proto.alignment.init = 0.5;
 
 proto.place = function(){
 	var side = 'bottom';
@@ -61,7 +61,7 @@ proto.place = function(){
 		relativeTo: this,
 		side: side,
 		within: this.holder,
-		align: this.align
+		align: this.alignment
 	});
 	this.tip = 'top';
 
@@ -75,11 +75,10 @@ proto.place = function(){
 			relativeTo: this,
 			side: side,
 			within: this.holder,
-			align: this.align
+			align: this.alignment
 		});
 		this.tip = 'bottom';
 	}
-
 
 	//TODO: if placing top failed, show the popup instead
 

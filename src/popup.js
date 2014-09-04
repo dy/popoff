@@ -120,7 +120,7 @@ proto.handleHref = {
 */
 //FIXME: ? replace with Poppy.prototype.state
 proto.state = extend({}, Poppy.fn.state, {
-	_: {
+	hidden: {
 		'click': 'show'
 	},
 	visible: {

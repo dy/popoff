@@ -1,7 +1,9 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.Popup=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 //FIXME: include Mod as a dependency
 var Mod = window.Mod || require('mod-constructor');
-
+var type = require("mutypes");
+var css = require("mucss");
+var place = require("placer");
 
 /** @module Poppy */
 module.exports = Mod(Poppy);
@@ -79,6 +81,12 @@ proto.$container = {
 /**
  * Small arrow aside the container.
  * Tip is a tip container indeed, but user shouldn’t care.
+ *
+ * @todo Think of placing tip via placer and placing to the holder
+ *       The way container is placed.
+ *       It would allow to get encapsulate tip placing logic.
+ *       Or try to pass relativeTo attribute to the placer for the tip.
+ *       So try to use placer for tips anyway.
  */
 
 proto.$tip = {
@@ -234,8 +242,10 @@ proto.content = {
 	}
 };
 
+
 /** Content selector ←→ poppy-instance */
 var contentCache = {};
+
 
 /** Need to be captured on init */
 proto['for'] = undefined;
@@ -288,8 +298,9 @@ proto.contentType = {
  *
  */
 
-proto.align = {
-	set: setSide
+proto.alignment = {
+	init: 0,
+	set: place.getAlign
 };
 
 
@@ -308,6 +319,43 @@ proto.tip = {
 
 			//append tip to the container
 			this.$container.appendChild(this.$tip);
+		}
+	},
+	'top, bottom': {
+		updateTip: function(){
+			var self = this;
+
+			//tipSize is a size of tip diagonal
+			var containerOffsets = css.offsets(this.$container);
+			var targetOffsets = css.offsets(this);
+			var tipLimit = this.$tip.offsetHeight * .5,
+				tipSize = this.$tip.firstChild.offsetHeight * 1.414;
+
+			//place the tip according to the current tipAlign value
+			var tipOffset = Math.min(Math.max(
+				targetOffsets.top - containerOffsets.top + this.tipAlign * targetOffsets.height - tipLimit
+				, -tipLimit + tipSize * .5)
+				, containerOffsets.height - tipLimit + tipSize * .5);
+
+			css(this.$tip, 'left', tipOffset);
+		}
+	},
+	'left, right': {
+		updateTip: function(){
+			var self = this;
+
+			var containerOffsets = css.offsets(this.$container);
+			var targetOffsets = css.offsets(this);
+			var tipLimit = this.$tip.offsetWidth * .5,
+				tipSize = this.$tip.firstChild.offsetWidth * 1.414;
+
+			//place the tip according to the current tipAlign value
+			var tipOffset = Math.min(Math.max(
+				targetOffsets.left - containerOffsets.left + this.tipAlign * targetOffsets.width - tipLimit
+				, -tipLimit + tipSize * .5)
+				, containerOffsets.width - tipLimit + tipSize * .5);
+
+			css(this.$tip, 'left', tipOffset);
 		}
 	},
 	changed: function(newValue, old){
@@ -336,7 +384,8 @@ proto.tip = {
  */
 
 proto.tipAlign = {
-	set: setSide
+	init: 0.5,
+	set: place.getAlign
 };
 
 
@@ -352,6 +401,44 @@ proto.single = false;
 
 
 /**
+ * Visibility state of popup.
+ *
+ * @enum {string}
+ * @default 'hidden'
+ * @abstract
+ */
+
+proto.state = {
+	init: 'hidden',
+
+	/** Invisible state */
+	_: undefined,
+
+	/** Do open animation or whatever */
+	'opening': function(){
+		var self = this;
+		setTimeout(function(){
+			self.state = 'visible';
+		});
+	},
+
+	/** Visible state */
+	visible: {
+		/** Keep container updated on resize */
+		'window resize': 'place, updateTip',
+		'document scroll:throttle(50)': 'place, updateTip'
+	},
+
+	/** Keep class on the container according to the visibility */
+	changed: function(newState, oldState){
+		//keep class updated
+		this.$container.classList.add(name + '-' + newState);
+		this.$container.classList.remove(name + '-' + oldState);
+	}
+};
+
+
+/**
  * Show the container.
  *
  * @return {Poppy} Chaining
@@ -359,11 +446,7 @@ proto.single = false;
 
 proto.show = function(e){
 	var self = this;
-	// console.log('show', e)
-
-	//set ignoring hide flag in order to pass over current bubbling event
-	this.ignoreHide = true;
-	setTimeout(function(){self.ignoreHide = false;});
+	// console.log('show')
 
 	//eval content to show
 	if (self.content) {
@@ -375,9 +458,10 @@ proto.show = function(e){
 
 	//place
 	self.place();
+	self.updateTip();
 
 	//switch state
-	self.state = 'visible';
+	self.state = 'opening';
 
 	return self;
 };
@@ -391,11 +475,9 @@ proto.show = function(e){
 proto.hide = function(){
 	// console.log('hide');
 
-	//ignore, if flag is set
-	if (this.ignoreHide) return;
-
 	//remove container from the holder, if it is still there
-	this.holder.removeChild(this.$container);
+	if (this.$container.parentNode === this.holder)
+		this.holder.removeChild(this.$container);
 
 	//remove content from the container
 	if (this.content && this.content.parentNode === this.$container) {
@@ -411,7 +493,7 @@ proto.hide = function(){
 
 /**
  * Automatically called after show.
- * Implement this behaviour in instances - place container accordingly to the element.
+ * Override this behaviour in instances, if needed.
  *
  * @abstract
  */
@@ -420,54 +502,16 @@ proto.place = function(){};
 
 
 /**
- * Visibility state of popup.
- *
- * @enum {string}
- * @default 'hidden'
+ * Correct the tip according to the tipAlign value.
+ * Defined in tip state.
  * @abstract
  */
 
-proto.state = {
-	_: undefined,
-	visible: {
-		/** Keep container updated on resize */
-		'window resize': 'place'
-	},
+proto.updateTip = function(){};
 
-	/** Keep class on the container according to the visibility */
-	changed: function(newState, oldState){
-		//keep class updated
-		this.$container.classList.add(name + '-' + newState);
-		this.$container.classList.remove(name + '-' + oldState);
-	}
-};
 
 
 /* ------------ H E L P E R S ------------- */
-
-
-/**
- * Alignment setter
- *
- * @param {string|number} value Convert any value passed to float 0..1
- */
-
-function setSide(value){
-	if (typeof value === 'string') {
-		switch (value) {
-			case 'left':
-			case 'top':
-				return 0;
-			case 'right':
-			case 'bottom':
-				return 1;
-			default:
-				return 0.5;
-		}
-	}
-
-	return value;
-}
 
 
 /**
@@ -481,7 +525,7 @@ function setSide(value){
 function setElement(value, oldValue){
 	return value;
 }
-},{"mod-constructor":"mod-constructor"}],2:[function(require,module,exports){
+},{"mod-constructor":"mod-constructor","mucss":3,"mutypes":4,"placer":5}],2:[function(require,module,exports){
 var hasOwn = Object.prototype.hasOwnProperty;
 var toString = Object.prototype.toString;
 var undefined;
@@ -564,128 +608,6 @@ module.exports = function extend() {
 
 
 },{}],3:[function(require,module,exports){
-/**
-* @module  placer
-*
-* Places any element relative to any other element the way you define
-*/
-module.exports = place;
-
-var css = require('mucss');
-
-var win = window;
-
-/**
- * Default options
- */
-
-var defaults = {
-	//source to align relatively to
-	//element/{x,y}/[x,y]/
-	relativeTo: window,
-
-	//which side to palce element
-	//t/r/b/l, 'center' ( === undefined),
-	side: 'center',
-
-	//intensity of alignment
-	//left, center, right, top, bottom, 0..1
-	align: 0.5,
-
-	//selector/nodelist/node/[x,y]/window/function(el)
-	avoid: undefined,
-
-	//selector/nodelist/node/[x,y]/window/function(el)
-	within: window
-};
-
-
-/**
- * Set of position placers
- * @enum {Function}
- */
-
-var placeBySide = {
-	center: function(placee, rect){
-		var center = [(rect[2] + rect[0]) / 2, (rect[3] + rect[1]) / 2];
-		var width = placee.offsetWidth;
-		var height = placee.offsetHeight;
-		css(placee, {
-			top: (center[1] - height/2),
-			left: (center[0] - width/2)
-		});
-	},
-
-	left: function(el, rect){
-
-	},
-
-	right: function(el, rect){
-
-	},
-
-	top: function(el, rect){
-
-	},
-
-	bottom: function(placee, rect){
-		var width = placee.offsetWidth;
-		var height = placee.offsetHeight;
-
-		css(placee, {
-			left: rect[0],
-			top: rect[3]
-		});
-	}
-};
-
-
-/**
- * Place element relative to the target by the side & params passed.
- *
- * @param {Element} element An element to place
- * @param {object} options Options object
- *
- * @return {boolean} The result of placement - whether placing succeeded
- */
-
-function place(element, options){
-	options = options || {};
-
-	//get target rect to align
-	var target = options.relativeTo || defaults.relativeTo;
-	var targetRect;
-
-	if (target === win) {
-		targetRect = [0, 0, win.innerWidth, win.innerHeight];
-
-		//fix the position
-		element.style.position = 'fixed';
-	}
-	else if (target instanceof Element) {
-		var rect = css.offsets(target);
-		targetRect = [rect.left, rect.top, rect.right, rect.bottom];
-
-	}
-	else if (typeof target === 'string'){
-		var targetEl = document.querySelector(target);
-		if (!targetEl) return false;
-		// var rect;
-		//TODO
-	}
-
-	//set the position as of the target
-	if (css.isFixed(target)) element.style.position = 'fixed';
-	else element.style.position = 'absolute';
-
-	//align according to the position
-	var side = options.side || defaults.side;
-
-	placeBySide[side](element, targetRect);
-
-	return element;
-}
-},{"mucss":4}],4:[function(require,module,exports){
 module['exports'] = css;
 
 
@@ -790,10 +712,11 @@ css['parseValue'] = parseValue;
  * Return absolute offsets of any target passed
  *
  * @param    {Element}   el   A target.
- * @return   {Object}   Offsets object with trbl, fromRight, fromLeft.
+ * @return   {Object}   Offsets object with trbl, fromBottom, fromLeft.
  */
 
-css['offsets'] = function(el){
+css['offsets'] = function(el, relativeTo){
+	//TODO: handle relativeTo arg
 	if (!el) return false;
 
 	//calc client rect
@@ -819,9 +742,7 @@ css['offsets'] = function(el){
 		width: el.offsetWidth,
 		height: el.offsetHeight,
 		bottom: cRect.top + yOffset + el.offsetHeight,
-		right: cRect.left + xOffset + el.offsetWidth,
-		fromRight: win.innerWidth - cRect.left - el.offsetWidth,
-		fromBottom: (win.innerHeight + yOffset - cRect.top - el.offsetHeight)
+		right: cRect.left + xOffset + el.offsetWidth
 	};
 };
 
@@ -903,7 +824,270 @@ function prefixize(name){
 	if (fakeStyle[prefix + uName] !== undefined) return prefix + uName;
 	return '';
 }
+},{}],4:[function(require,module,exports){
+/**
+* Trivial types checkers.
+* Because there’re no common lib for that ( lodash_ is a fatguy)
+*/
+//TODO: make main use as `is.array(target)`
+
+var _ = module.exports = {
+	//speedy impl,ementation of `in`
+	//NOTE: `!target[propName]` 2-3 orders faster than `!(propName in target)`
+	has: function(a, b){
+		if (!a) return false;
+		//NOTE: this causes getter fire
+		if (a[b]) return true;
+		return b in a;
+		// return a.hasOwnProperty(b);
+	},
+
+	//isPlainObject
+	isObject: function(a){
+		var Ctor, result;
+
+		if (_.isPlain(a) || _.isArray(a) || _.isElement(a) || _.isFn(a)) return false;
+
+		// avoid non `Object` objects, `arguments` objects, and DOM elements
+		if (
+			//FIXME: this condition causes weird behaviour if a includes specific valueOf or toSting
+			// !(a && ('' + a) === '[object Object]') ||
+			(!_.has(a, 'constructor') && (Ctor = a.constructor, isFn(Ctor) && !(Ctor instanceof Ctor))) ||
+			!(typeof a === 'object')
+			) {
+			return false;
+		}
+		// In most environments an object's own properties are iterated before
+		// its inherited properties. If the last iterated property is an object's
+		// own property then there are no inherited enumerable properties.
+		for(var key in a) {
+			result = key;
+		};
+
+		return typeof result == 'undefined' || _.has(a, result);
+	},
+
+	isFn: function(a){
+		return !!(a && a.apply);
+	},
+
+	isString: function(a){
+		return typeof a === 'string'
+	},
+
+	isNumber: function(a){
+		return typeof a === 'number'
+	},
+
+	isBool: function(a){
+		return typeof a === 'boolean'
+	},
+
+	isPlain: function(a){
+		return !a || _.isString(a) || _.isNumber(a) || _.isBool(a);
+	},
+
+	isArray: function(a){
+		return a instanceof Array;
+	},
+
+	isElement: function(target){
+		if (typeof document === 'undefined') return;
+		return target instanceof HTMLElement
+	},
+
+	isPrivateName: function(n){
+		return n[0] === '_' && n.length > 1
+	}
+}
 },{}],5:[function(require,module,exports){
+/**
+* @module  placer
+*
+* Places any element relative to any other element the way you define
+*/
+module.exports = place;
+
+var type = require('mutypes');
+var css = require('mucss');
+
+var win = window, doc = document, root = doc.documentElement, body = doc.body;
+
+/**
+ * Default options
+ */
+
+var defaults = {
+	//source to align relatively to
+	//element/{x,y}/[x,y]/
+	relativeTo: window,
+
+	//which side to palce element
+	//t/r/b/l, 'center' ( === undefined),
+	side: 'center',
+
+	/**
+	 * side to align: trbl/0..1
+	 *
+	 * @default  0
+	 * @type {(number|string)}
+	 */
+	align: 0,
+
+	//selector/nodelist/node/[x,y]/window/function(el)
+	avoid: undefined,
+
+	//selector/nodelist/node/[x,y]/window/function(el)
+	within: window
+};
+
+
+/**
+ * Set of position placers
+ * @enum {Function}
+ * @param {Element} placee Element to place
+ * @param {object} rect Offsets rectangle (absolute position)
+ */
+
+var placeBySide = {
+	center: function(placee, rect, within, align){
+		var center = [(rect.left + rect.right) *.5, (rect.bottom + rect.top) *.5];
+		var width = placee.offsetWidth;
+		var height = placee.offsetHeight;
+		css(placee, {
+			top: (center[1] - height*.5),
+			left: (center[0] - width*.5)
+		});
+	},
+
+	left: function(el, rect){
+
+	},
+
+	right: function(el, rect){
+
+	},
+
+	top: function(placee, rect, within, align){
+		var width = placee.offsetWidth;
+		var height = placee.offsetHeight;
+		var parent = placee.offsetParent;
+		var parentHeight = parent.offsetHeight;
+
+		//get reliable parent height
+		//body & html with position:static tend to set bottom:0 as a viewport bottom
+		//so take height for a vp height
+		if (parent === body || parent === root && win.getComputedStyle(parent).position === 'static') parentHeight = win.innerHeight;
+		css(placee, {
+			left: Math.max(Math.min(rect.left + rect.width*align - width*align, within.right - width), within.left),
+			bottom: parentHeight - rect.top,
+			top: 'auto'
+		});
+	},
+
+	bottom: function(placee, rect, within, align){
+		var width = placee.offsetWidth;
+		var height = placee.offsetHeight;
+
+		css(placee, {
+			//clamp position by min/max
+			left: Math.max(Math.min(rect.left + rect.width*align - width*align, within.right - width), within.left),
+			top: rect.bottom,
+			bottom: 'auto'
+		});
+	}
+};
+
+
+/**
+ * Place element relative to the target by the side & params passed.
+ *
+ * @param {Element} element An element to place
+ * @param {object} options Options object
+ *
+ * @return {boolean} The result of placement - whether placing succeeded
+ */
+
+function place(element, options){
+	options = options || {};
+
+	var relativeTo = options.relativeTo || defaults.relativeTo;
+	var within = options.within || defaults.within;
+	var side = options.side || defaults.side;
+	var align = getAlign(options.align !== undefined ? options.align : defaults.align);
+
+
+	//set the position as of the target
+	if (css.isFixed(relativeTo)) element.style.position = 'fixed';
+	else element.style.position = 'absolute';
+
+
+	//place according to the position
+	placeBySide[side](element,
+		getRect(relativeTo),
+		getRect(within), align);
+
+
+	return element;
+}
+
+
+/**
+ * Return offsets rectangle of an element
+ *
+ * @param {*} el Element, selector, window, document, rect, array
+ *
+ * @return {object} Offsets rectangle
+ */
+
+function getRect(target){
+	var rect;
+	if (target === win) {
+		rect = {
+			top: 0,
+			left: 0,
+			right: win.innerWidth,
+			bottom: win.innerHeight
+		};
+	}
+	else if (type.isElement(target)) {
+		rect = css.offsets(target);
+	}
+	else if (type.isString(target)){
+		var targetEl = document.querySelector(target);
+		if (!targetEl) throw Error('No element queried by `' + target + '`');
+
+		rect = css.offsets(targetEl);
+	}
+
+	return rect;
+}
+
+
+/**
+ * Alignment setter
+ *
+ * @param {string|number} value Convert any value passed to float 0..1
+ */
+
+function getAlign(value){
+	if (!value) return 0;
+
+	if (type.isString(value)) {
+		switch (value) {
+			case 'left':
+			case 'top':
+				return 0;
+			case 'right':
+			case 'bottom':
+				return 1;
+		}
+	}
+	var num = parseFloat(value);
+
+	return num !== undefined ? num : 0.5;
+}
+},{"mucss":3,"mutypes":4}],6:[function(require,module,exports){
 /**
 * Extend poppy with popup behaviour
 */
@@ -1026,7 +1210,7 @@ proto.handleHref = {
 */
 //FIXME: ? replace with Poppy.prototype.state
 proto.state = extend({}, Poppy.fn.state, {
-	_: {
+	hidden: {
 		'click': 'show'
 	},
 	visible: {
@@ -1078,5 +1262,5 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 });
 
-},{"../index":1,"extend":2,"mod-constructor":"mod-constructor","placer":3}]},{},[5])(5)
+},{"../index":1,"extend":2,"mod-constructor":"mod-constructor","placer":5}]},{},[6])(6)
 });

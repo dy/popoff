@@ -1,6 +1,7 @@
 var Poppy = require('../index');
 var Mod = window.Mod || require('mod-constructor');
 var place = require('placer');
+var extend = require('extend');
 
 module.exports = Poppy.extend(Popover);
 
@@ -35,13 +36,11 @@ proto.$container.changed = function($container){
 * Behaviour
 */
 //hidden
-proto.state._ = {
+proto.state.hidden = {
 	//FIXME: get rid of defer
-	'click:defer': function (e) {
-		this.show();
-	}
+	'click': 'show'
 };
-proto.state.visible = {
+extend(proto.state.visible, {
 	//FIXME: replace with :not modifier
 	'document click': function(e){
 		if (e.target !== this.$container && !this.$container.contains(e.target)) this.hide();
@@ -57,7 +56,7 @@ proto.state.visible = {
 		if (dist > this.visibleDistance) this.hide();
 
 	}
-};
+});
 //distance from the place of initial click to hide the popover
 proto.visibleDistance = {
 	init: function(){
