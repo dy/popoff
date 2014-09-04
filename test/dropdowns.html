@@ -59,9 +59,9 @@ h1, h2, h3, h4, h5, h6{
 	<div id="shared-content" hidden>Some content of dropdown</div>
 
 	<a id="1" class="target" data-dropdown data-for="#shared-content">1. Href</a>
-	<div  id="2" class="target" data-dropdown data-for="#shared-content">2. data-content</div>
+	<div  id="2" class="target" data-dropdown data-for="#shared-content" data-align="right">2. data-content</div>
 	<input id="3" class="target" data-dropdown data-content="#shared-content" type="button" value="3. DOMReady button input"></input>
-	<input id="4" class="dropdown-instant target" type="text" value="4. js opts text input"></input>
+	<input id="4" class="dropdown-instant target" type="text" value="4. API text input tipAlign=.2"></input>
 
 	<div class="target-container"><span class="dropdown-deferred target" data-for="#shared-content">6. deferred</span></div>
 
@@ -105,12 +105,13 @@ h1, h2, h3, h4, h5, h6{
 	});
 
 	dd.show();
-	dd.hide();
+	// dd.hide();
 
 	setTimeout(function(){
 		var ddd = new Dropdown(document.querySelector('.dropdown-deferred'), {
 			content: document.querySelector('#shared-content')
 		});
-		ddd.show();
+		// ddd.show();
+		// ddd.hide();
 	}, 1000);
 </script>
