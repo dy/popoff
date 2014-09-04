@@ -54,26 +54,29 @@ extend(proto.state.visible, {
 * @return {Dropdown} For chaining methods
 */
 
-proto.placeBySide = {
-	init: 'bottom'
-};
-proto.placeRelativeTo = {
-	init: function(){
-		return this;
-	}
-};
 proto.place = function(){
-	var result = place(this.$container, {
-		relativeTo: this.placeRelativeTo,
-		side: this.placeBySide
+	var side = 'bottom';
+
+	place(this.$container, {
+		relativeTo: this,
+		side: side
 	});
 
+	var containerRect = this.$container.getBoundingClientRect();
+
 	//if placing bottom failed, try to place top (too close to the bottom of the page)
+	if (containerRect.bottom > window.innerHeight) {
+		side = 'top';
+		place(this.$container, {
+			relativeTo: this,
+			side: side
+		});
+	}
 
 	//if placing top failed, show the popup instead
 
 	//set tip according to the side
-	if (result){
+	if (side === 'bottom'){
 		this.tip = 'top';
 	} else {
 		this.tip = 'bottom';

@@ -325,7 +325,7 @@ proto.tip = {
 			var tipOffset = Math.min(Math.max(
 				targetOffsets.top - containerOffsets.top + this.tipAlign * targetOffsets.height - tipLimit
 				, -tipLimit + tipSize * .5)
-				, containerOffsets.height - tipLimit);
+				, containerOffsets.height - tipLimit + tipSize * .5);
 
 			css(this.$tip, 'left', tipOffset);
 		}
@@ -343,7 +343,7 @@ proto.tip = {
 			var tipOffset = Math.min(Math.max(
 				targetOffsets.left - containerOffsets.left + this.tipAlign * targetOffsets.width - tipLimit
 				, -tipLimit + tipSize * .5)
-				, containerOffsets.width - tipLimit);
+				, containerOffsets.width - tipLimit + tipSize * .5);
 
 			css(this.$tip, 'left', tipOffset);
 		}
