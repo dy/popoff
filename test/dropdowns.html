@@ -85,6 +85,7 @@ h1, h2, h3, h4, h5, h6{
 <!-- dev tests -->
 <script src="../node_modules/require-stub/index.js"></script>
 <script src="../node_modules/mucss/index.js"></script>
+<script src="../node_modules/mutypes/index.js"></script>
 <script src="../node_modules/placer/index.js"></script>
 <script src="../node_modules/extend/index.js"></script>
 <script src="../index.js" data-module-name="poppy"></script>
@@ -93,10 +94,12 @@ h1, h2, h3, h4, h5, h6{
 <!-- prod tests -->
 <!-- <script src="../dist/dropdown.js"></script> -->
 
+
 <script type="text/javascript">
 
 	var dd = new Dropdown(document.querySelector('.dropdown-instant'), {
-		content: '#shared-content'
+		content: '#shared-content',
+		tipAlign: 0.2
 	});
 
 	dd.show();
@@ -106,5 +109,5 @@ h1, h2, h3, h4, h5, h6{
 		new Dropdown(document.querySelector('.dropdown-deferred'), {
 			content: document.querySelector('#shared-content')
 		});
-	}, 1000)
+	}, 1000);
 </script>

@@ -1,6 +1,6 @@
 //FIXME: include Mod as a dependency
 var Mod = window.Mod || require('mod-constructor');
-
+var type = require("mutypes");
 
 /** @module Poppy */
 module.exports = Mod(Poppy);
@@ -233,8 +233,10 @@ proto.content = {
 	}
 };
 
+
 /** Content selector ←→ poppy-instance */
 var contentCache = {};
+
 
 /** Need to be captured on init */
 proto['for'] = undefined;
@@ -288,7 +290,7 @@ proto.contentType = {
  */
 
 proto.align = {
-	set: setSide
+	set: getSideValue
 };
 
 
@@ -307,6 +309,43 @@ proto.tip = {
 
 			//append tip to the container
 			this.$container.appendChild(this.$tip);
+		}
+	},
+	'top, bottom': {
+		updateTip: function(){
+			var self = this;
+
+			//tipSize is a size of tip diagonal
+			var containerOffsets = css.offsets(this.$container);
+			var targetOffsets = css.offsets(this);
+			var tipLimit = this.$tip.offsetHeight * .5,
+				tipSize = this.$tip.firstChild.offsetHeight * 1.414;
+
+			//place the tip according to the current tipAlign value
+			var tipOffset = Math.min(Math.max(
+				targetOffsets.top - containerOffsets.top + this.tipAlign * targetOffsets.height - tipLimit
+				, -tipLimit + tipSize * .5)
+				, containerOffsets.height - tipLimit);
+
+			css(this.$tip, 'left', tipOffset);
+		}
+	},
+	'left, right': {
+		updateTip: function(){
+			var self = this;
+
+			var containerOffsets = css.offsets(this.$container);
+			var targetOffsets = css.offsets(this);
+			var tipLimit = this.$tip.offsetWidth * .5,
+				tipSize = this.$tip.firstChild.offsetWidth * 1.414;
+
+			//place the tip according to the current tipAlign value
+			var tipOffset = Math.min(Math.max(
+				targetOffsets.left - containerOffsets.left + this.tipAlign * targetOffsets.width - tipLimit
+				, -tipLimit + tipSize * .5)
+				, containerOffsets.width - tipLimit);
+
+			css(this.$tip, 'left', tipOffset);
 		}
 	},
 	changed: function(newValue, old){
@@ -335,7 +374,8 @@ proto.tip = {
  */
 
 proto.tipAlign = {
-	set: setSide
+	init: 0.5,
+	set: getSideValue
 };
 
 
@@ -374,6 +414,7 @@ proto.show = function(e){
 
 	//place
 	self.place();
+	self.updateTip();
 
 	//switch state
 	self.state = 'visible';
@@ -410,12 +451,21 @@ proto.hide = function(){
 
 /**
  * Automatically called after show.
- * Implement this behaviour in instances - place container accordingly to the element.
+ * Override this behaviour in instances, if needed.
  *
  * @abstract
  */
 
 proto.place = function(){};
+
+
+/**
+ * Correct the tip according to the tipAlign value.
+ * Defined in tip state.
+ * @abstract
+ */
+
+proto.updateTip = function(){};
 
 
 /**
@@ -430,7 +480,7 @@ proto.state = {
 	_: undefined,
 	visible: {
 		/** Keep container updated on resize */
-		'window resize': 'place'
+		'window resize': 'place, updateTip'
 	},
 
 	/** Keep class on the container according to the visibility */
@@ -442,6 +492,7 @@ proto.state = {
 };
 
 
+
 /* ------------ H E L P E R S ------------- */
 
 
@@ -451,8 +502,8 @@ proto.state = {
  * @param {string|number} value Convert any value passed to float 0..1
  */
 
-function setSide(value){
-	if (typeof value === 'string') {
+function getSideValue(value){
+	if (type.isString(value)) {
 		switch (value) {
 			case 'left':
 			case 'top':
