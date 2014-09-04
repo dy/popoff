@@ -165,7 +165,9 @@ module.exports = Mod(Popup);
  *      if you want to init items dynamically. *
  */
 
-var items = document.querySelectorAll('[data-popup]');
-for(var i = items.length; i--;){
-	new Dropdown(items[i]);
-}
+document.addEventListener("DOMContentLoaded", function() {
+	var items = document.querySelectorAll('[data-popup]');
+	for(var i = items.length; i--;){
+		new Popup(items[i]);
+	}
+});

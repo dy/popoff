@@ -48,34 +48,6 @@ proto.created = function(){
 
 
 
-/* --------------------- E V E N T S ------------------------- */
-
-
-/**
- * Visibility state of popup.
- *
- * @enum {string}
- * @default 'hidden'
- * @abstract
- */
-
-proto.state = {
-	_: undefined,
-	visible: {
-		/** Keep container updated on resize */
-		'window resize': 'place'
-	},
-
-	/** Keep class on the container according to the visibility */
-	changed: function(newState, oldState){
-		//keep class updated
-		this.$container.classList.add(name + '-' + newState);
-		this.$container.classList.remove(name + '-' + oldState);
-	}
-};
-
-
-
 /* -------------------- E L E M E N T S ---------------------- */
 
 
@@ -95,8 +67,8 @@ proto.$container = {
 		$container.poppy = this;
 
 		//bind API
-		$container.show = this.show;
-		$container.hide = this.hide;
+		$container.show = this.show.bind(this);
+		$container.hide = this.hide.bind(this);
 
 		return $container;
 	}
@@ -384,24 +356,27 @@ proto.single = false;
  * @return {Poppy} Chaining
  */
 
-proto.show = function(){
+proto.show = function(e){
 	var self = this;
+	// console.log('show', e)
 
-	//set timeout in order to pass over current bubbling event
-	setTimeout(function(){
-		//eval content to show
-		if (self.content) {
-			self.$container.appendChild(self.content);
-		}
-		//append container to the holder
-		self.holder.appendChild(self.$container);
+	//set ignoring hide flag in order to pass over current bubbling event
+	this.ignoreHide = true;
+	setTimeout(function(){self.ignoreHide = false;});
 
-		//place
-		self.place();
+	//eval content to show
+	if (self.content) {
+		self.$container.appendChild(self.content);
+	}
 
-		//switch state
-		self.state = 'visible';
-	});
+	//append container to the holder
+	self.holder.appendChild(self.$container);
+
+	//place
+	self.place();
+
+	//switch state
+	self.state = 'visible';
 
 	return self;
 };
@@ -413,7 +388,10 @@ proto.show = function(){
  */
 
 proto.hide = function(){
-	// console.log('hide')
+	// console.log('hide');
+
+	//ignore, if flag is set
+	if (this.ignoreHide) return;
 
 	//remove container from the holder, if it is still there
 	this.holder.removeChild(this.$container);
@@ -439,6 +417,29 @@ proto.hide = function(){
 
 proto.place = function(){};
 
+
+/**
+ * Visibility state of popup.
+ *
+ * @enum {string}
+ * @default 'hidden'
+ * @abstract
+ */
+
+proto.state = {
+	_: undefined,
+	visible: {
+		/** Keep container updated on resize */
+		'window resize': 'place'
+	},
+
+	/** Keep class on the container according to the visibility */
+	changed: function(newState, oldState){
+		//keep class updated
+		this.$container.classList.add(name + '-' + newState);
+		this.$container.classList.remove(name + '-' + oldState);
+	}
+};
 
 
 /* ------------ H E L P E R S ------------- */

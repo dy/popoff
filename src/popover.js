@@ -87,8 +87,9 @@ proto.place = function(){
  * @see Use [selector-observer]{@link https://www.npmjs.org/package/selector-observer}
  *      if you want to init items dynamically. *
  */
-
-var items = document.querySelectorAll('[data-popover]');
-for(var i = items.length; i--;){
-	new Popover(items[i]);
-}
+ document.addEventListener("DOMContentLoaded", function() {
+	var items = document.querySelectorAll('[data-popover]');
+	for(var i = items.length; i--;){
+		new Popover(items[i]);
+	}
+});

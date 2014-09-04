@@ -56,7 +56,7 @@ h1, h2, h3, h4, h5, h6{
 	<h2>Shared content dropdowns</h2>
 	<div id="shared-content" hidden>Some content of dropdown</div>
 
-	<a id="1" class="target" data-dropdown href="#shared-content">1. Href</a>
+	<a id="1" class="target" data-dropdown data-for="#shared-content">1. Href</a>
 	<div  id="2" class="target" data-dropdown data-for="#shared-content">2. data-content</div>
 	<input id="3" class="target" data-dropdown data-content="#shared-content" type="button" value="3. DOMReady button input"></input>
 	<input id="4" class="dropdown-instant target" type="text" value="4. js opts text input"></input>
@@ -83,20 +83,24 @@ h1, h2, h3, h4, h5, h6{
 
 
 <!-- dev tests -->
-<!-- <script src="../node_modules/require-stub/index.js"></script>
+<script src="../node_modules/require-stub/index.js"></script>
 <script src="../node_modules/mucss/index.js"></script>
 <script src="../node_modules/placer/index.js"></script>
 <script src="../node_modules/extend/index.js"></script>
-<script src="../index.js" data-module-name="poppy"></script> -->
-<!-- <script src="../src/dropdown.js"></script> -->
+<script src="../index.js" data-module-name="poppy"></script>
+<script src="../src/dropdown.js"></script>
 
 <!-- prod tests -->
-<script src="../dist/dropdown.js"></script>
+<!-- <script src="../dist/dropdown.js"></script> -->
 
 <script type="text/javascript">
-	new Dropdown(document.querySelector('.dropdown-instant'), {
-		content: document.querySelector('#shared-content')
+
+	var dd = new Dropdown(document.querySelector('.dropdown-instant'), {
+		content: '#shared-content'
 	});
+
+	dd.show();
+	dd.hide();
 
 	setTimeout(function(){
 		new Dropdown(document.querySelector('.dropdown-deferred'), {
