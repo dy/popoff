@@ -1,6 +1,7 @@
 //FIXME: include Mod as a dependency
 var Mod = window.Mod || require('mod-constructor');
 var type = require("mutypes");
+var place = require("placer");
 
 /** @module Poppy */
 module.exports = Mod(Poppy);
@@ -290,7 +291,8 @@ proto.contentType = {
  */
 
 proto.align = {
-	set: getSideValue
+	init: 0,
+	set: place.getAlign
 };
 
 
@@ -375,7 +377,7 @@ proto.tip = {
 
 proto.tipAlign = {
 	init: 0.5,
-	set: getSideValue
+	set: place.getAlign
 };
 
 
@@ -496,30 +498,6 @@ proto.state = {
 
 
 /* ------------ H E L P E R S ------------- */
-
-
-/**
- * Alignment setter
- *
- * @param {string|number} value Convert any value passed to float 0..1
- */
-
-function getSideValue(value){
-	if (type.isString(value)) {
-		switch (value) {
-			case 'left':
-			case 'top':
-				return 0;
-			case 'right':
-			case 'bottom':
-				return 1;
-			default:
-				return 0.5;
-		}
-	}
-
-	return value;
-}
 
 
 /**
