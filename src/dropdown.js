@@ -61,26 +61,23 @@ proto.place = function(){
 		relativeTo: this,
 		side: side
 	});
+	this.tip = 'top';
 
-	var containerRect = this.$container.getBoundingClientRect();
 
 	//if placing bottom failed, try to place top (too close to the bottom of the page)
+	var containerRect = this.$container.getBoundingClientRect();
+
 	if (containerRect.bottom > window.innerHeight) {
 		side = 'top';
 		place(this.$container, {
 			relativeTo: this,
 			side: side
 		});
-	}
-
-	//if placing top failed, show the popup instead
-
-	//set tip according to the side
-	if (side === 'bottom'){
-		this.tip = 'top';
-	} else {
 		this.tip = 'bottom';
 	}
+
+
+	//TODO: if placing top failed, show the popup instead
 
 	return this;
 };

@@ -108,8 +108,9 @@ h1, h2, h3, h4, h5, h6{
 	dd.hide();
 
 	setTimeout(function(){
-		new Dropdown(document.querySelector('.dropdown-deferred'), {
+		var ddd = new Dropdown(document.querySelector('.dropdown-deferred'), {
 			content: document.querySelector('#shared-content')
 		});
+		ddd.show();
 	}, 1000);
 </script>

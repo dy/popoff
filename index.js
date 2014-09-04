@@ -401,8 +401,8 @@ proto.show = function(e){
 	// console.log('show', e)
 
 	//set ignoring hide flag in order to pass over current bubbling event
-	this.ignoreHide = true;
-	setTimeout(function(){self.ignoreHide = false;});
+	this.deferHide = true;
+	setTimeout(function(){self.deferHide = false;});
 
 	//eval content to show
 	if (self.content) {
@@ -431,11 +431,12 @@ proto.show = function(e){
 proto.hide = function(){
 	// console.log('hide');
 
-	//ignore, if flag is set
-	if (this.ignoreHide) return;
+	//postpone call, if flag is set
+	if (this.deferHide) this.emit('hide:defer');
 
 	//remove container from the holder, if it is still there
-	this.holder.removeChild(this.$container);
+	if (this.$container.parentNode === this.holder)
+		this.holder.removeChild(this.$container);
 
 	//remove content from the container
 	if (this.content && this.content.parentNode === this.$container) {
@@ -480,7 +481,8 @@ proto.state = {
 	_: undefined,
 	visible: {
 		/** Keep container updated on resize */
-		'window resize': 'place, updateTip'
+		'window resize': 'place, updateTip',
+		'document scroll:throttle(50)': 'place, updateTip'
 	},
 
 	/** Keep class on the container according to the visibility */
