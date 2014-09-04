@@ -60,7 +60,7 @@ proto.place = function(){
 	place(this.$container, {
 		relativeTo: this,
 		side: side,
-
+		within: this.holder
 	});
 	this.tip = 'top';
 
