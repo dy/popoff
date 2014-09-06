@@ -230,7 +230,7 @@ proto.content = {
 	},
 
 	changed: function(content){
-		//unhide content if it is hidden and if it is not in the popupper
+		//unhide content if it is hidden and if it is not in the container
 		if (content instanceof HTMLElement) {
 			if (content.parentNode && !content.parentNode.classList.contains(name + '-container')) {
 				content.parentNode.removeChild(content);

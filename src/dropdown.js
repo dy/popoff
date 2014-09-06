@@ -42,6 +42,7 @@ proto.$container.changed = function($container){
 
 proto.state.hidden = {
 	'click': 'show'
+	//TODO: preventDefault
 };
 extend(proto.state.visible, {
 	'document click:not(.poppy-dropdown)': 'hide'
