@@ -5,6 +5,7 @@ body{
 	font-family: sans-serif;
 	margin: 0 0;
 	padding: 0 15px;
+	text-align: center;
 }
 h1, h2, h3, h4, h5, h6{
 	padding: 0;
@@ -27,15 +28,12 @@ h1, h2, h3, h4, h5, h6{
 .target-container{
 	display: inline-block;
 }
+.poppy-dropdown{
+	max-width: 60%;
+}
 </style>
 
 <link rel="stylesheet" type="text/css" href="../index.css">
-<style type="text/css">
-	body{
-		text-align: center;
-	}
-</style>
-
 
 <script src="../node_modules/mod-constructor/dist/mod.min.js"></script>
 <script src="../node_modules/es6-collections/build/es6-collections.min.js"></script>
@@ -66,7 +64,7 @@ h1, h2, h3, h4, h5, h6{
 
 	<input id="4" class="dropdown-instant target" type="text" value="4. API text input tipAlign=.2"></input>
 
-	<div class="target-container"><span class="dropdown-deferred target" data-for="#shared-content">6. deferred</span></div>
+	<div class="target-container"><span class="dropdown-deferred target" data-for="#big-content">6. deferred</span></div>
 </section>
 
 
@@ -89,38 +87,38 @@ h1, h2, h3, h4, h5, h6{
 <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus</p>
 
 
-<p id="big-content">Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metusPellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metusPellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus</p>
+<div id="big-content">Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt <div>condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam </div>dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metusPellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu<strong>2134 libero <em><span>sit amet quam egestas semper. Aenean ultricies mi vitae</span></em> est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi</strong>, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis.</div>
 
 
 <!-- dev tests -->
-<!-- <script src="../node_modules/require-stub/index.js"></script>
+<script src="../node_modules/require-stub/index.js"></script>
 <script src="../node_modules/mucss/index.js"></script>
 <script src="../node_modules/mutypes/index.js"></script>
-<script src="../node_modules/placer/index.js"></script>
 <script src="../node_modules/extend/index.js"></script>
+<script src="../node_modules/placer/index.js"></script>
 <script src="../index.js" data-module-name="poppy"></script>
-<script src="../src/dropdown.js"></script> -->
+<script src="../src/dropdown.js"></script>
 
 <!-- prod tests -->
-<script src="../dist/dropdown.js"></script>
+<!-- <script src="../dist/dropdown.js"></script> -->
 
 
 <script type="text/javascript">
 
-	var dd = new Dropdown(document.querySelector('.dropdown-instant'), {
-		content: '#shared-content',
-		tipAlign: 0.8,
-		alignment: 1
-	});
+	// var dd = new Dropdown(document.querySelector('.dropdown-instant'), {
+	// 	content: '#shared-content',
+	// 	tipAlign: 0.8,
+	// 	alignment: 1
+	// });
 
-	dd.show();
+	// dd.show();
 	// dd.hide();
 
 	setTimeout(function(){
 		var ddd = new Dropdown(document.querySelector('.dropdown-deferred'), {
-			content: document.querySelector('#shared-content')
+			content: document.querySelector('#big-content')
 		});
-		// ddd.show();
-		// ddd.hide();
-	}, 1000);
+		ddd.show();
+	// 	// ddd.hide();
+	}, 100);
 </script>

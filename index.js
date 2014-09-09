@@ -327,24 +327,6 @@ proto.tip = {
 			//tipSize is a size of tip diagonal
 			var containerOffsets = css.offsets(this.$container);
 			var targetOffsets = css.offsets(this);
-			var tipLimit = this.$tip.offsetHeight * .5,
-				tipSize = this.$tip.firstChild.offsetHeight * 1.414;
-
-			//place the tip according to the current tipAlign value
-			var tipOffset = Math.min(Math.max(
-				targetOffsets.top - containerOffsets.top + this.tipAlign * targetOffsets.height - tipLimit
-				, -tipLimit + tipSize * .5)
-				, containerOffsets.height - tipLimit + tipSize * .5);
-
-			css(this.$tip, 'left', tipOffset);
-		}
-	},
-	'left, right': {
-		updateTip: function(){
-			var self = this;
-
-			var containerOffsets = css.offsets(this.$container);
-			var targetOffsets = css.offsets(this);
 			var tipLimit = this.$tip.offsetWidth * .5,
 				tipSize = this.$tip.firstChild.offsetWidth * 1.414;
 
@@ -354,7 +336,36 @@ proto.tip = {
 				, -tipLimit + tipSize * .5)
 				, containerOffsets.width - tipLimit + tipSize * .5);
 
-			css(this.$tip, 'left', tipOffset);
+			css(this.$tip, {
+				left: tipOffset,
+				top: null
+			});
+		}
+	},
+	'left, right': {
+		updateTip: function(){
+			var self = this;
+
+			var containerOffsets = css.offsets(this.$container);
+			var targetOffsets = css.offsets(this);
+			var tipLimit = this.$tip.offsetHeight * .5,
+				tipSize = this.$tip.firstChild.offsetHeight * 1.414;
+
+			//subtract page offsets, if fixed
+			if (css.isFixed(this.$container)) {
+				targetOffsets.top -= window.pageYOffset;
+			}
+
+			//place the tip according to the current tipAlign value
+			var tipOffset = Math.min(Math.max(
+				targetOffsets.top - containerOffsets.top + this.tipAlign * targetOffsets.height - tipLimit
+				, -tipLimit + tipSize * .5)
+				, containerOffsets.height - tipLimit + tipSize * .5);
+
+			css(this.$tip, {
+				top: tipOffset,
+				left: null
+			});
 		}
 	},
 	changed: function(newValue, old){

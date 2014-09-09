@@ -36,6 +36,8 @@
 /* Poppy container & in different tip modes */
 .poppy-container-tip-top{
 	margin-top: 8px;
+	margin-left: 8px;
+	margin-right: 8px;
 }
 .poppy-container-tip-top .poppy-tip-container{
 	top: -40px;
@@ -45,6 +47,8 @@
 }
 .poppy-container-tip-bottom{
 	margin-bottom: 8px;
+	margin-left: 8px;
+	margin-right: 8px;
 }
 .poppy-container-tip-bottom .poppy-tip-container{
 	bottom: -40px;
@@ -54,6 +58,8 @@
 }
 .poppy-container-tip-right{
 	margin-right: 8px;
+	margin-top: 8px;
+	margin-bottom: 8px;
 }
 .poppy-container-tip-right .poppy-tip-container{
 	right: -40px;
@@ -63,6 +69,8 @@
 }
 .poppy-container-tip-left{
 	margin-left: 8px;
+	margin-top: 8px;
+	margin-bottom: 8px;
 }
 .poppy-container-tip-left .poppy-tip-container{
 	left: -40px;
@@ -157,7 +165,6 @@
 	background: white;
 	box-shadow: 0 1px 6px rgba(40,50,55, .5);
 	padding: 10px 10px 10px 10px;
-	max-width: 90%;
 	-webkit-animation-duration: .25s;
 	-khtml-animation-duration: .25s;
 	-moz-animation-duration: .25s;

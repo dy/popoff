@@ -56,44 +56,21 @@ extend(proto.state.visible, {
 proto.alignment.init = 0.5;
 
 proto.place = function(){
-	var side = 'bottom';
-
-	place(this.$container, {
+	var opts = {
 		relativeTo: this,
-		side: side,
-		within: this.holder,
+		side: 'bottom',
+		within: window,
 		align: this.alignment
-	});
-	this.tip = 'top';
+	};
 
+	//place by the bottom-strategy
+	place(this.$container, opts);
 
-	//if placing bottom failed, try to place top (too close to the bottom of the page)
-	var containerRect = this.$container.getBoundingClientRect();
-	var thisRect = this.getBoundingClientRect();
-
-	if (containerRect.bottom > window.innerHeight) {
-		if (containerRect.height < thisRect.top) {
-			side = 'top';
-			place(this.$container, {
-				relativeTo: this,
-				side: side,
-				within: this.holder,
-				align: this.alignment
-			});
-			this.tip = 'bottom';
-		}
-
-		//if placing top failed, show the popup instead
-		else {
-			this.tip = false;
-			side = 'center';
-			place(this.$container, {
-				relativeTo: window,
-				side: side
-			});
-		}
-	}
-
+	//set tip inveted to the side (side could’ve changed in placing)
+	if (opts.side === 'bottom') this.tip = 'top';
+	if (opts.side === 'top') this.tip = 'bottom';
+	if (opts.side === 'left') this.tip = 'right';
+	if (opts.side === 'right') this.tip = 'left';
 
 	return this;
 };
@@ -103,7 +80,7 @@ proto.place = function(){
  * Show dropdown tip by default
  */
 
-proto.tip.init = true;
+proto.tip.init = 'top';
 
 
 /**
