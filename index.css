@@ -157,6 +157,7 @@
 	background: white;
 	box-shadow: 0 1px 6px rgba(40,50,55, .5);
 	padding: 10px 10px 10px 10px;
+	max-width: 90%;
 	-webkit-animation-duration: .25s;
 	-khtml-animation-duration: .25s;
 	-moz-animation-duration: .25s;
