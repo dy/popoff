@@ -328,24 +328,6 @@ proto.tip = {
 			//tipSize is a size of tip diagonal
 			var containerOffsets = css.offsets(this.$container);
 			var targetOffsets = css.offsets(this);
-			var tipLimit = this.$tip.offsetHeight * .5,
-				tipSize = this.$tip.firstChild.offsetHeight * 1.414;
-
-			//place the tip according to the current tipAlign value
-			var tipOffset = Math.min(Math.max(
-				targetOffsets.top - containerOffsets.top + this.tipAlign * targetOffsets.height - tipLimit
-				, -tipLimit + tipSize * .5)
-				, containerOffsets.height - tipLimit + tipSize * .5);
-
-			css(this.$tip, 'left', tipOffset);
-		}
-	},
-	'left, right': {
-		updateTip: function(){
-			var self = this;
-
-			var containerOffsets = css.offsets(this.$container);
-			var targetOffsets = css.offsets(this);
 			var tipLimit = this.$tip.offsetWidth * .5,
 				tipSize = this.$tip.firstChild.offsetWidth * 1.414;
 
@@ -355,7 +337,36 @@ proto.tip = {
 				, -tipLimit + tipSize * .5)
 				, containerOffsets.width - tipLimit + tipSize * .5);
 
-			css(this.$tip, 'left', tipOffset);
+			css(this.$tip, {
+				left: tipOffset,
+				top: null
+			});
+		}
+	},
+	'left, right': {
+		updateTip: function(){
+			var self = this;
+
+			var containerOffsets = css.offsets(this.$container);
+			var targetOffsets = css.offsets(this);
+			var tipLimit = this.$tip.offsetHeight * .5,
+				tipSize = this.$tip.firstChild.offsetHeight * 1.414;
+
+			//subtract page offsets, if fixed
+			if (css.isFixed(this.$container)) {
+				targetOffsets.top -= window.pageYOffset;
+			}
+
+			//place the tip according to the current tipAlign value
+			var tipOffset = Math.min(Math.max(
+				targetOffsets.top - containerOffsets.top + this.tipAlign * targetOffsets.height - tipLimit
+				, -tipLimit + tipSize * .5)
+				, containerOffsets.height - tipLimit + tipSize * .5);
+
+			css(this.$tip, {
+				top: tipOffset,
+				left: null
+			});
 		}
 	},
 	changed: function(newValue, old){
@@ -608,7 +619,7 @@ module.exports = function extend() {
 
 
 },{}],3:[function(require,module,exports){
-module['exports'] = css;
+module.exports = css;
 
 
 var win = window;
@@ -619,7 +630,7 @@ var fakeStyle = document.createElement('div').style;
 
 
 /** Detect vendor prefix. */
-var prefix = css['prefix'] = (function() {
+var prefix = css.prefix = (function() {
 	var regex = /^(webkit|moz|ms|O|khtml)[A-Z]/, prop;
 	for (prop in fakeStyle) {
 		if (regex.test(prop)) {
@@ -642,7 +653,7 @@ function pd(e){
  * @param    {Element}   $el   Target to make unselectable.
  */
 
-css['disableSelection'] = function($el){
+css.disableSelection = function($el){
 	css($el, {
 		'user-select': 'none',
 		'user-drag': 'none',
@@ -651,7 +662,7 @@ css['disableSelection'] = function($el){
 	$el.setAttribute('unselectable', 'on');
 	$el.addEventListener('selectstart', pd);
 };
-css['enableSelection'] = function($el){
+css.enableSelection = function($el){
 	css($el, {
 		'user-select': null,
 		'user-drag': null,
@@ -669,7 +680,7 @@ css['enableSelection'] = function($el){
  * @return   {Object}   Paddings object `{top:n, bottom:n, left:n, right:n}`.
  */
 
-css['paddings'] = function($el){
+css.paddings = function($el){
 	var style = win.getComputedStyle($el);
 
 	return {
@@ -688,7 +699,7 @@ css['paddings'] = function($el){
  * @return   {Object}   Paddings object `{top:n, bottom:n, left:n, right:n}`.
  */
 
-css['margins'] = function($el){
+css.margins = function($el){
 	var style = win.getComputedStyle($el);
 
 	return {
@@ -703,20 +714,21 @@ css['margins'] = function($el){
 /** Returns parsed css value. */
 function parseValue(str){
 	str += '';
-	return ~~str.slice(0,-2);
+	return parseFloat(str.slice(0,-2)) || 0;
 }
-css['parseValue'] = parseValue;
+css.parseValue = parseValue;
 
 
 /**
  * Return absolute offsets of any target passed
  *
+ * @todo   calc relativeTo
+ *
  * @param    {Element}   el   A target.
  * @return   {Object}   Offsets object with trbl, fromBottom, fromLeft.
  */
 
-css['offsets'] = function(el, relativeTo){
-	//TODO: handle relativeTo arg
+css.offsets = function(el, relativeTo){
 	if (!el) return false;
 
 	//calc client rect
@@ -732,7 +744,7 @@ css['offsets'] = function(el, relativeTo){
 	}
 
 	//whether element is or is in fixed
-	var isFixed = css['isFixed'](el);
+	var isFixed = css.isFixed(el);
 	var xOffset = isFixed ? 0 : win.pageXOffset;
 	var yOffset = isFixed ? 0 : win.pageYOffset;
 
@@ -755,7 +767,7 @@ css['offsets'] = function(el, relativeTo){
  * @return {boolean} Whether element is nested.
  */
 
-css['isFixed'] = function (el) {
+css.isFixed = function (el) {
 	var parentEl = el;
 
 	//window is fixed, btw
@@ -799,7 +811,6 @@ function css(el, obj){
 		obj[name] = value;
 	}
 
-
 	for (name in obj){
 		//convert numbers to px
 		if (typeof obj[name] === 'number') obj[name] += 'px';
@@ -824,6 +835,30 @@ function prefixize(name){
 	if (fakeStyle[prefix + uName] !== undefined) return prefix + uName;
 	return '';
 }
+
+
+/**
+ * Calc sb width
+ *
+ * @return {number} in pixels
+ */
+
+// Create the measurement node
+var scrollDiv = document.createElement("div");
+css(scrollDiv,{
+	width: 100,
+	height: 100,
+	overflow: 'scroll',
+	position: 'absolute',
+	top: -9999,
+});
+document.body.appendChild(scrollDiv);
+
+// Get the scrollbar width
+css.scrollbar = scrollDiv.offsetWidth - scrollDiv.clientWidth;
+
+// Delete the DIV
+document.body.removeChild(scrollDiv);
 },{}],4:[function(require,module,exports){
 /**
 * Trivial types checkers.
@@ -911,7 +946,10 @@ module.exports = place;
 var type = require('mutypes');
 var css = require('mucss');
 
+
+//shortcuts
 var win = window, doc = document, root = doc.documentElement, body = doc.body;
+
 
 /**
  * Default options
@@ -926,8 +964,11 @@ var defaults = {
 	//t/r/b/l, 'center' ( === undefined),
 	side: 'center',
 
+	//set of sides to ignore positioning, {top:true, ...}
+	ignore: {},
+
 	/**
-	 * side to align: trbl/0..1
+	 * Side to align: trbl/0..1/center
 	 *
 	 * @default  0
 	 * @type {(number|string)}
@@ -938,70 +979,17 @@ var defaults = {
 	avoid: undefined,
 
 	//selector/nodelist/node/[x,y]/window/function(el)
-	within: undefined
-};
+	within: undefined,
 
-
-/**
- * Set of position placers
- * @enum {Function}
- * @param {Element} placee Element to place
- * @param {object} rect Offsets rectangle (absolute position)
- */
-
-var placeBySide = {
-	center: function(placee, rect, within, align){
-		var center = [(rect.left + rect.right) *.5, (rect.bottom + rect.top) *.5];
-		var width = placee.offsetWidth;
-		var height = placee.offsetHeight;
-
-		css(placee, {
-			top: (center[1] - height*.5),
-			left: (center[0] - width*.5)
-		});
-	},
-
-	left: function(el, rect){
-
-	},
-
-	right: function(el, rect){
-
-	},
-
-	top: function(placee, rect, within, align){
-		var width = placee.offsetWidth;
-		var height = placee.offsetHeight;
-		var parent = placee.offsetParent;
-		var parentHeight = parent.offsetHeight;
-
-		//get reliable parent height
-		//body & html with position:static tend to set bottom:0 as a viewport bottom
-		//so take height for a vp height
-		if (parent === body || parent === root && win.getComputedStyle(parent).position === 'static') parentHeight = win.innerHeight;
-		css(placee, {
-			left: Math.max(Math.min(rect.left + rect.width*align - width*align, within.right - width), within.left),
-			bottom: parentHeight - rect.top,
-			top: 'auto'
-		});
-	},
-
-	bottom: function(placee, rect, within, align){
-		var width = placee.offsetWidth;
-		var height = placee.offsetHeight;
-
-		css(placee, {
-			//clamp position by min/max
-			left: Math.max(Math.min(rect.left + rect.width*align - width*align, within.right - width), within.left),
-			top: rect.bottom,
-			bottom: 'auto'
-		});
-	}
+	//TODO: whether to calc placement
+	fluidly: false
 };
 
 
 /**
  * Place element relative to the target by the side & params passed.
+ *
+ * @main
  *
  * @param {Element} element An element to place
  * @param {object} options Options object
@@ -1010,26 +998,270 @@ var placeBySide = {
  */
 
 function place(element, options){
-	options = options || {};
+	options = softExtend(options, defaults);
 
-	var relativeTo = options.relativeTo || defaults.relativeTo;
-	var within = options.within || defaults.within;
-	var side = options.side || defaults.side;
-	var align = getAlign(options.align !== undefined ? options.align : defaults.align);
+	//recalc align
+	options.align = getAlign(options.align);
+
+	//calc containers
+	var withinRect = getRect(options.within);
+	var relativeToRect = getRect(options.relativeTo);
+	var elementRect = getRect(element);
 
 
 	//set the position as of the target
-	if (relativeTo && css.isFixed(relativeTo)) element.style.position = 'fixed';
-	else element.style.position = 'absolute';
+	if (css.isFixed(options.relativeTo)) {
+		element.style.position = 'fixed';
+	}
+	else {
+		element.style.position = 'absolute';
+
+		//get proper win offsets
+		if (options.within === win) {
+			withinRect.top += win.pageYOffset;
+			withinRect.bottom += win.pageYOffset;
+			withinRect.left += win.pageXOffset;
+			withinRect.right += win.pageXOffset;
+		}
+	}
 
 
-	//place according to the position
-	placeBySide[side](element,
-		getRect(relativeTo),
-		getRect(within), align);
+	//check whether there’s enough place (avoid placing redirection loop)
+	// var margins = css.margins(element);
+	// var requiredWidth = elementRect.width + relativeToRect.width + (margins.left + margins.right) * 1.1;
+	// var requiredHeight = elementRect.height + relativeToRect.height + (margins.top + margins.bottom) * 1.1;
+
+
+	// //if not - place centered
+	// if (requiredWidth > withinRect.width && requiredHeight > withinRect.height)
+	// 	placeBySide.center(element, relativeToRect, withinRect, options);
+
+	//else place according to the position
+	placeBySide[options.side](element, relativeToRect, withinRect, options);
 
 
 	return element;
+}
+
+
+/**
+ * Set of position placers
+ * @enum {Function}
+ * @param {Element} placee Element to place
+ * @param {object} target Offsets rectangle (absolute position)
+ * @param {object} ignore Sides to avoid entering (usually, already tried)
+ */
+
+var placeBySide = {
+	center: function(placee, target, within, opts){
+		// console.log('place center');
+
+		var center = [(target.left + target.right) *.5, (target.bottom + target.top) *.5];
+		var width = placee.offsetWidth;
+		var height = placee.offsetHeight;
+
+		css(placee, {
+			top: (center[1] - height*.5),
+			left: (center[0] - width*.5)
+		});
+
+		//upd options
+		opts.side = 'center';
+	},
+
+	left: function(placee, target, within, opts){
+		// console.log('place left')
+
+		var width = placee.offsetWidth;
+		var height = placee.offsetHeight;
+
+		//check if there is enough place for placing from the left
+		// if (width > Math.abs(within.left - target.left)) {
+		// 	opts.ignore.left = true;
+
+		// 	//if not - compare left/bottom displacement and place whether vertically or inverse
+		// 	if (Math.abs(target.top - within.top) > Math.abs(within.left - target.left) && !opts.ignore.right){
+		// 		return placeBySide.right.apply(this, arguments);
+		// 	} else {
+		// 		return placeBySide.bottom.apply(this, arguments);
+		// 	}
+		// }
+
+
+		//get reliable parent width
+		var parent = placee.offsetParent;
+		var parentWidth = parent.offsetWidth;
+		if (parent === body || parent === root && win.getComputedStyle(parent).position === 'static') parentWidth = win.innerWidth;
+
+		//place left
+		css(placee, {
+			right: parentWidth - target.left - 18,
+			left: 'auto'
+		});
+
+		//place vertically properly
+		placeVertically.apply(this, arguments);
+
+		//upd options
+		opts.side = 'left';
+	},
+
+	right: function(placee, target, within, opts){
+		// console.log('place right')
+
+		var width = placee.offsetWidth;
+		var height = placee.offsetHeight;
+
+		//check if there is enough place for placing bottom
+		// if (width > Math.abs(within.right - target.right)) {
+		// 	opts.ignore.right = true;
+
+		// 	//if not - compare top/right displacement and place whether aside or inverse
+		// 	if (Math.abs(target.top - within.top) > Math.abs(within.right - target.right) && !opts.ignore.left){
+		// 		return placeBySide.left.apply(this, arguments);
+		// 	} else {
+		// 		return placeBySide.bottom.apply(this, arguments);
+		// 	}
+		// }
+
+		//place right
+		css(placee, {
+			left: target.right,
+			right: 'auto',
+		});
+
+		//place vertically properly
+		placeVertically.apply(this, arguments);
+
+		//upd options
+		opts.side = 'right';
+	},
+
+	top: function(placee, target, within, opts){
+		// console.log('place top');
+
+		var width = placee.offsetWidth;
+		var height = placee.offsetHeight;
+
+		//check if there is enough place for placing top
+		// if (height > Math.abs(within.top - target.top)) {
+		// 	opts.ignore.top = true;
+
+		// 	//if not - compare left/top displacement and place whether aside or inverse
+		// 	if (Math.abs(target.left - within.left) > Math.abs(within.top - target.top) && !opts.ignore.bottom){
+		// 		return placeBySide.bottom.apply(this, arguments);
+		// 	} else {
+		// 		return placeBySide.left.apply(this, arguments);
+		// 	}
+		// }
+
+		//place horizontally properly
+		placeHorizontally.apply(this, arguments);
+
+		//place top
+		var parent = placee.offsetParent;
+		var parentHeight = parent.offsetHeight;
+
+		//get reliable parent height
+		//body & html with position:static tend to consider bottom:0 as a viewport bottom
+		//so take the parentHeight for the vp height
+
+		if ((parent === body || parent === root) && win.getComputedStyle(parent).position === 'static') parentHeight = win.innerHeight;
+		css(placee, {
+			bottom: parentHeight - target.top,
+			top: 'auto'
+		});
+
+		//upd options
+		opts.side = 'top';
+	},
+
+	bottom: function(placee, target, within, opts){
+		// console.log('place bottom');
+
+		var height = placee.offsetHeight;
+		var width = placee.offsetWidth;
+		var margins = css.margins(placee);
+
+		//check if there is enough place for placing bottom
+		// if (height + margins.top + margins.bottom > Math.abs(within.bottom - target.bottom)) {
+		// 	opts.ignore.bottom = true;
+
+		// 	//if not - compare left/bottom displacement and place whether aside or inverse
+		// 	if (Math.abs(target.left - within.left) > Math.abs(within.bottom - target.bottom) && !opts.ignore.top){
+		// 		return placeBySide.top.apply(this, arguments);
+		// 	} else {
+		// 		return placeBySide.left.apply(this, arguments);
+		// 	}
+		// }
+
+		//calc body margin collapsing offset
+		var parent = placee.offsetParent;
+		var bodyOffsetY = 0;
+		if ((parent === body || parent === root) && win.getComputedStyle(parent).position !== 'static') bodyOffsetY = css.offsets(parent).top;
+
+		//place bottom
+		css(placee, {
+			top: target.bottom - bodyOffsetY,
+			bottom: 'auto',
+		});
+
+		//place horizontally properly
+		placeHorizontally.apply(this, arguments);
+
+		//upd options
+		opts.side = 'bottom';
+	}
+};
+
+
+/**
+ * Horizontal placer for the top and bottom sides
+ */
+
+function placeHorizontally(placee, target, within, opts){
+	var width = placee.offsetWidth;
+	var margins = css.margins(placee);
+	var desirableLeft = target.left + target.width*opts.align - width*opts.align;
+
+	//if too close to the within right - set right = 0
+	if (width + desirableLeft > within.right) {
+		css(placee, {
+			right: 0,
+			left: 'auto'
+		});
+	}
+	else {
+		css(placee, {
+			left: Math.max(desirableLeft, within.left),
+			right: 'auto'
+		});
+	}
+}
+
+
+/**
+ * Vertical placer for the left and right sides
+ */
+
+function placeVertically ( placee, target, within, opts ) {
+	var height = placee.offsetHeight;
+	var margins = css.margins(placee);
+	var desirableTop = target.top + target.height*opts.align - height*opts.align;
+
+	//if too close to the `within.right` - set right = 0
+	if (height + desirableTop > within.bottom) {
+		css(placee, {
+			bottom: 0,
+			top: 'auto'
+		});
+	}
+	else {
+		css(placee, {
+			top: Math.max(desirableTop, within.top),
+			bottom: 'auto'
+		});
+	}
 }
 
 
@@ -1043,19 +1275,22 @@ function place(element, options){
 
 function getRect(target){
 	var rect = target;
+
 	if (target === win) {
 		rect = {
 			top: 0,
 			left: 0,
-			right: win.innerWidth,
-			bottom: win.innerHeight
+			right: body.offsetWidth,
+			bottom: win.innerHeight,
 		};
+		rect.width = rect.right - rect.left;
+		rect.height = rect.bottom - rect.top;
 	}
 	else if (type.isElement(target)) {
 		rect = css.offsets(target);
 	}
 	else if (type.isString(target)) {
-		var targetEl = document.querySelector(target);
+		var targetEl = doc.querySelector(target);
 		if (!targetEl) throw Error('No element queried by `' + target + '`');
 
 		rect = css.offsets(targetEl);
@@ -1088,6 +1323,23 @@ function getAlign(value){
 
 	return num !== undefined ? num : 0.5;
 }
+
+
+/**
+ * Soft extender (appends lacking props)
+ */
+
+function softExtend(a,b){
+	//ensure object
+	if (!a) a = {};
+
+	for (var i in b){
+		if (a[i] === undefined) a[i] = b[i];
+	}
+
+	return a;
+}
+
 },{"mucss":3,"mutypes":4}],6:[function(require,module,exports){
 var Poppy = require('../index');
 var Mod = window.Mod || require('mod-constructor');
