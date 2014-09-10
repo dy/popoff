@@ -15,15 +15,17 @@ var Popup = module.exports = Mod({
 
 var name = Poppy.displayName;
 
-/**
-* Popup constructor
-*/
+//shortcuts
+var doc = document, body = doc.documentElement;
+
+
+
+/* ---------------------------------- I N I T ---------------------------------------- */
+
+
+/** Popup constructor */
 var proto = Popup.fn;
 
-
-/**
-* Lifecycle
-*/
 proto.init = function(){
 	// console.log('init popup')
 };
@@ -33,11 +35,29 @@ proto.created = function(){
 };
 
 
+/**
+ * Autoinit instances.
+ *
+ * @see Use [selector-observer]{@link https://www.npmjs.org/package/selector-observer}
+ *      if you want to init items dynamically. *
+ */
+
+document.addEventListener("DOMContentLoaded", function() {
+	var items = document.querySelectorAll('[data-popup]');
+	for(var i = items.length; i--;){
+		new Popup(items[i]);
+	}
+});
+
+
+
+/* -------------------------------- E L E M E N T S ---------------------------------- */
+
 
 /**
-* Elements
-*/
-//close button
+ * Close button element
+ */
+
 proto.$closeButton = {
 	init: function(){
 		//create button
@@ -46,33 +66,34 @@ proto.$closeButton = {
 
 		return $closeButton;
 	}
-}
+};
 
 //static overlay blind
-// console.log('---init blind')
 Popup.$blind = new Poppy({
 	created: function(){
-		this.$container.classList.add(name + '-blind')
+		this.$container.classList.add(name + '-blind');
 	}
 });
 proto.$blind = {
 	init: Popup.$blind
-}
+};
+
 proto.$blindContainer = {
 	init: Popup.$blind.$container
-}
+};
 
 
 //add proper class to the container
 proto.$container.changed = function($container){
 	$container.classList.add(name + '-popup');
-}
+};
 
 
-/**
-* Options
-*/
-//show close button
+
+/* ------------------------------- O P T I O N S --------------------------------------*/
+
+
+/** whether to show close button */
 proto.closeButton = {
 	'false': {
 
@@ -87,7 +108,8 @@ proto.closeButton = {
 	}
 };
 
-//show overlay along with popup
+
+/** show overlay along with popup */
 proto.blind = {
 	'false': {
 
@@ -97,7 +119,8 @@ proto.blind = {
 	}
 };
 
-//react on href change
+
+/** react on href change */
 proto.handleHref = {
 	_: {
 		'before, window hashchange': function(){
@@ -114,10 +137,9 @@ proto.handleHref = {
 
 
 
+/* ----------------------------- B E H A V I O U R ----------------------------------- */
 
-/**
-* Behaviour
-*/
+
 //FIXME: ? replace with Poppy.prototype.state
 proto.state = extend({}, Poppy.fn.state, {
 	hidden: {
@@ -132,6 +154,13 @@ proto.show = function(){
 	//show blind
 	this.$blind.show();
 
+	//add overflow:hidden class to the body
+	var initialWidth = css(body, 'width');
+	css(body, {
+		'overflow': 'hidden',
+		'width': body.offsetWidth
+	});
+
 	//show container
 	Poppy.fn.show.call(this);
 };
@@ -140,6 +169,12 @@ proto.hide = function(){
 	//show container
 	Poppy.fn.hide.call(this);
 
+	//remove overflow:hidden from the body
+	css(body, {
+		'overflow': '',
+		'width': this.initialWidth
+	});
+
 	//show blind
 	this.$blind.hide();
 };
@@ -147,27 +182,13 @@ proto.hide = function(){
 proto.place = function(){
 	//place properly (align by center)
 	place(this.$container, {
-		relativeTo: window,
-		align: 'center'
+		relativeTo: [window.innerWidth * .5, window.pageYOffset],
+		side: 'bottom',
+		within: body,
+		align: .5
 	});
 };
 
 
 //handle popup as a mod
 module.exports = Mod(Popup);
-
-
-
-/**
- * Autoinit instances.
- *
- * @see Use [selector-observer]{@link https://www.npmjs.org/package/selector-observer}
- *      if you want to init items dynamically. *
- */
-
-document.addEventListener("DOMContentLoaded", function() {
-	var items = document.querySelectorAll('[data-popup]');
-	for(var i = items.length; i--;){
-		new Popup(items[i]);
-	}
-});
