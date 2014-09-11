@@ -162,7 +162,7 @@ proto.content = {
 	set: function(value){
 		var res;
 
-		if (typeof value === 'string'){
+		if (type.isString(value)){
 			//try to get cached content
 			if (contentCache[value]) return contentCache[value];
 
@@ -425,7 +425,7 @@ proto.state = {
 	_: undefined,
 
 	/** Do open animation or whatever */
-	'opening': function(){
+	opening: function(){
 		var self = this;
 		setTimeout(function(){
 			self.state = 'visible';

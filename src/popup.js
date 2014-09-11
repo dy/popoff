@@ -143,7 +143,6 @@ proto.handleHref = {
 /* ----------------------------- B E H A V I O U R ----------------------------------- */
 
 
-//FIXME: ? replace with Poppy.prototype.state
 proto.state = extend({}, Poppy.fn.state, {
 	hidden: {
 		'click': 'show'
@@ -153,7 +152,7 @@ proto.state = extend({}, Poppy.fn.state, {
 	}
 });
 
-proto.show = function() {
+proto.show = function(e) {
 	//show blind
 	this.$blind.show();
 
@@ -168,7 +167,7 @@ proto.show = function() {
 	Poppy.fn.show.call(this);
 };
 
-proto.hide = function() {
+proto.hide = function () {
 	//show container
 	Poppy.fn.hide.call(this);
 
@@ -182,14 +181,20 @@ proto.hide = function() {
 	this.$blind.hide();
 };
 
-proto.place = function(){
+proto.place = function () {
+	var self = this;
 	//place properly (align by center)
 	place(this.$container, {
-		relativeTo: [window.innerWidth * .5, window.pageYOffset],
+		relativeTo: [win.innerWidth * .5, 0],
 		side: 'bottom',
-		within: body,
-		align: .5
+		align: .5,
+		within: this.$blind.$container
 	});
+
+	//prevent anchor jump
+	setTimeout(function(){
+		self.$blind.$container.scrollTop = 0;
+	})
 };
 
 
