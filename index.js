@@ -9,18 +9,16 @@ module.exports = Mod(Poppy);
 
 
 
-/* -------------------- I N I T ------------------- */
+/* ---------------------------------- I N I T ---------------------------------------- */
 
 
-/**
- * Poppy mod to extend.
+/** Poppy mod to extend.
  * Poppy is always a link/target to click to show the container.
  *
  * @constructor
  * @chainable
  * @augments {Element}
  */
-
 function Poppy(){
 	return this.constructor.apply(this, arguments);
 }
@@ -50,15 +48,13 @@ proto.created = function(){
 
 
 
-/* -------------------- E L E M E N T S ---------------------- */
+/* ----------------------------- E L E M E N T S ------------------------------------- */
 
 
-/**
- * Keeper of content.
+/** Keeper of content.
  *
  * @type {Element}
  */
-
 proto.$container = {
 	init: function(){
 		//create poppy container
@@ -77,8 +73,7 @@ proto.$container = {
 };
 
 
-/**
- * Small arrow aside the container.
+/** Small arrow aside the container.
  * Tip is a tip container indeed, but user shouldn’t care.
  *
  * @todo Think of placing tip via placer and placing to the holder
@@ -87,7 +82,6 @@ proto.$container = {
  *       Or try to pass relativeTo attribute to the placer for the tip.
  *       So try to use placer for tips anyway.
  */
-
 proto.$tip = {
 	init: function(){
 		//create tip container - overflow:hidden for the tip
@@ -105,13 +99,11 @@ proto.$tip = {
 
 
 
-/* ---------------------- O P T I O N S ----------------------- */
+/* ------------------------------ O P T I O N S -------------------------------------- */
 
 
-/**
- * Class to append to {@link $container}
+/** Class to append to {@link $container}
  */
-
 proto.containerClass = {
 	init: function(value){
 		if (value) this.$container.classList.add(value);
@@ -119,12 +111,10 @@ proto.containerClass = {
 };
 
 
-/**
- * Where to place popupped content-container
+/** Where to place popupped content-container
  *
  * @type {Element}
  */
-
 proto.holder = {
 	init: 'body',
 	get: function(value){
@@ -135,12 +125,10 @@ proto.holder = {
 };
 
 
-/**
- * Content to show in container.
+/** Content to show in container.
  *
  * @type {(string|Node|selector)}
  */
-
 proto.content = {
 	init: function(value){
 		//if specified - return it
@@ -250,8 +238,7 @@ var contentCache = {};
 proto['for'] = undefined;
 
 
-/**
- * Type of content to show
+/** Type of content to show
  *
  * @enum {string}
  * @default null
@@ -263,7 +250,6 @@ proto['for'] = undefined;
  * 'swf'
  * 'text'	Insert content as a plain test
  */
-
 proto.contentType = {
 	//target selector
 	_:{
@@ -291,25 +277,21 @@ proto.contentType = {
 };
 
 
-/**
- * Side to align the container relative to the target
+/** Side to align the container relative to the target
  * only meaningful range
  *
  */
-
 proto.alignment = {
 	init: 0,
 	set: place.getAlign
 };
 
 
-/**
- * Whether to show tip or not
+/** Whether to show tip or not
  *
  * @enum {boolean}
  * @default false
  */
-
 proto.tip = {
 	'top, left, bottom, right': {
 		before: function(){
@@ -386,38 +368,31 @@ proto.tip = {
 };
 
 
-/**
- * Side to align tip relative to the target but within the container
+/** Side to align tip relative to the target but within the container
  *
  * @enum {string|number}
  * @default .5
  */
-
 proto.tipAlign = {
 	init: 0.5,
 	set: place.getAlign
 };
 
 
-/**
- * Instantly close other dropdowns when the one shows
- */
-
+/** Instantly close other dropdowns when the one shows */
 proto.single = false;
 
 
 
-/* ------------------- A P I --------------------- */
+/* ---------------------------------- A P I ------------------------------------------ */
 
 
-/**
- * Visibility state of popup.
+/** Visibility state of popup.
  *
  * @enum {string}
  * @default 'hidden'
  * @abstract
  */
-
 proto.state = {
 	init: 'hidden',
 
@@ -448,12 +423,10 @@ proto.state = {
 };
 
 
-/**
- * Show the container.
+/** Show the container.
  *
  * @return {Poppy} Chaining
  */
-
 proto.show = function(e){
 	var self = this;
 	// console.log('show')
@@ -477,11 +450,9 @@ proto.show = function(e){
 };
 
 
-/**
- * Close the container
+/** Close the container
  * @return {Poppy} Chaining
  */
-
 proto.hide = function(){
 	// console.log('hide');
 
@@ -501,37 +472,31 @@ proto.hide = function(){
 };
 
 
-/**
- * Automatically called after show.
+/** Automatically called after show.
  * Override this behaviour in instances, if needed.
  *
  * @abstract
  */
-
 proto.place = function(){};
 
 
-/**
- * Correct the tip according to the tipAlign value.
+/** Correct the tip according to the tipAlign value.
  * Defined in tip state.
  * @abstract
  */
-
 proto.updateTip = function(){};
 
 
 
-/* ------------ H E L P E R S ------------- */
+/* -------------------------------- H E L P E R S ------------------------------------ */
 
 
-/**
- * Element setter - parse an argument passed, return element
+/** Element setter - parse an argument passed, return element
  *
  * @param {*} value New element
  * @param {*} oldValue Old element
  * @return {Element} Parsed element
  */
-
 function setElement(value, oldValue){
 	return value;
 }

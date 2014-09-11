@@ -149,7 +149,7 @@ proto.state = extend({}, Poppy.fn.state, {
 		'click': 'show'
 	},
 	visible: {
-		'click, this.$closeButton click, this.$blindContainer click': 'hide'
+		'this.$closeButton click, document click:not(.poppy-popup)': 'hide'
 	}
 });
 
