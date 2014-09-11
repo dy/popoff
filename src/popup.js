@@ -17,7 +17,7 @@ var Popup = module.exports = Mod({
 var name = Poppy.displayName;
 
 //shortcuts
-var win = window, doc = document, body = doc.documentElement;
+var win = window, doc = document, root = doc.documentElement;
 
 
 
@@ -158,11 +158,16 @@ proto.show = function(e) {
 	this.$blind.show();
 
 	//add overflow:hidden class to the body
-	var initialWidth = css(body, 'width');
-	css(body, {
-		'overflow': 'hidden',
-		'width': body.offsetWidth
+	css(doc.body, {
+		'overflow': 'hidden'
 	});
+	//in case if content is too high, add scrollbar
+	this.initialMargin = css(root, 'margin-right');
+	if (this.$container.offsetHeight > win.innerHeight) {
+		css(root, {
+			'margin-right': css.scrollbar
+		});
+	}
 
 	//show container
 	Poppy.fn.show.call(this);
@@ -173,9 +178,11 @@ proto.hide = function () {
 	Poppy.fn.hide.call(this);
 
 	//remove overflow:hidden from the body
-	css(body, {
-		'overflow': '',
-		'width': this.initialWidth
+	css(doc.body, {
+		'overflow': ''
+	});
+	css(root, {
+		'margin-right': this.initialMargin
 	});
 
 	//show blind

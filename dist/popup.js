@@ -622,11 +622,11 @@ module.exports = function extend() {
 module.exports = css;
 
 
-var win = window;
+var win = window, doc = document, root = doc.documentElement, body = doc.body;
 
 
 /** Get clean style. */
-var fakeStyle = document.createElement('div').style;
+var fakeStyle = doc.createElement('div').style;
 
 
 /** Detect vendor prefix. */
@@ -773,8 +773,8 @@ css.isFixed = function (el) {
 	//window is fixed, btw
 	if (el === win) return true;
 
-	//unlike the document
-	if (el === document) return false;
+	//unlike the doc
+	if (el === doc) return false;
 
 	while (parentEl) {
 		if (win.getComputedStyle(parentEl).position === 'fixed') return true;
@@ -844,7 +844,7 @@ function prefixize(name){
  */
 
 // Create the measurement node
-var scrollDiv = document.createElement("div");
+var scrollDiv = doc.createElement("div");
 css(scrollDiv,{
 	width: 100,
 	height: 100,
@@ -852,13 +852,13 @@ css(scrollDiv,{
 	position: 'absolute',
 	top: -9999,
 });
-document.body.appendChild(scrollDiv);
+root.appendChild(scrollDiv);
 
 // Get the scrollbar width
 css.scrollbar = scrollDiv.offsetWidth - scrollDiv.clientWidth;
 
 // Delete the DIV
-document.body.removeChild(scrollDiv);
+root.removeChild(scrollDiv);
 },{}],4:[function(require,module,exports){
 /**
 * Trivial types checkers.
@@ -1391,7 +1391,7 @@ var Popup = module.exports = Mod({
 var name = Poppy.displayName;
 
 //shortcuts
-var win = window, doc = document, body = doc.documentElement;
+var win = window, doc = document, root = doc.documentElement;
 
 
 
@@ -1532,11 +1532,16 @@ proto.show = function(e) {
 	this.$blind.show();
 
 	//add overflow:hidden class to the body
-	var initialWidth = css(body, 'width');
-	css(body, {
-		'overflow': 'hidden',
-		'width': body.offsetWidth
+	css(doc.body, {
+		'overflow': 'hidden'
 	});
+	//in case if content is too high, add scrollbar
+	this.initialMargin = css(root, 'margin-right');
+	if (this.$container.offsetHeight > win.innerHeight) {
+		css(root, {
+			'margin-right': css.scrollbar
+		});
+	}
 
 	//show container
 	Poppy.fn.show.call(this);
@@ -1547,9 +1552,11 @@ proto.hide = function () {
 	Poppy.fn.hide.call(this);
 
 	//remove overflow:hidden from the body
-	css(body, {
-		'overflow': '',
-		'width': this.initialWidth
+	css(doc.body, {
+		'overflow': ''
+	});
+	css(root, {
+		'margin-right': this.initialMargin
 	});
 
 	//show blind
