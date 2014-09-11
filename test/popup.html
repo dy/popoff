@@ -170,9 +170,11 @@
 <script>
 	document.querySelector("[data-popup]").addEventListener('hide', function(){
 		this.disable();
-		this.classList.add('disabled')
+		this.classList.add('disabled');
 	});
 	document.querySelector(".enable").addEventListener('click', function(){
-		document.querySelector("[data-popup]").enable().classList.remove('disabled')
+		var a = document.querySelector("[data-popup]");
+		a.classList.remove('disabled')
+		a.$container.enable();
 	});
 </script>

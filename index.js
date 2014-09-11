@@ -67,6 +67,8 @@ proto.$container = {
 		//bind API
 		$container.show = this.show.bind(this);
 		$container.hide = this.hide.bind(this);
+		$container.enable = this.enable.bind(this);
+		$container.disable = this.disable.bind(this);
 
 		return $container;
 	}
