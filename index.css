@@ -128,6 +128,8 @@
 		position: absolute;
 		top: 0;
 		left: 0;
+		right: 0;
+		margin: auto;
 		z-index: 999;
 		background: white;
 		box-shadow: 0 1px 6px rgba(40,50,55, .5);
@@ -180,10 +182,4 @@
 	}
 	.poppy-lightbox{
 
-	}
-	.poppy-overlay{
-		position: fixed;
-		min-height: 60%;
-		min-width: 60%;
-		text-align: center;
 	}

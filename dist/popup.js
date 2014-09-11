@@ -163,7 +163,7 @@ proto.content = {
 	set: function(value){
 		var res;
 
-		if (typeof value === 'string'){
+		if (type.isString(value)){
 			//try to get cached content
 			if (contentCache[value]) return contentCache[value];
 
@@ -426,7 +426,7 @@ proto.state = {
 	_: undefined,
 
 	/** Do open animation or whatever */
-	'opening': function(){
+	opening: function(){
 		var self = this;
 		setTimeout(function(){
 			self.state = 'visible';
@@ -943,6 +943,7 @@ var _ = module.exports = {
 */
 module.exports = place;
 
+
 var type = require('mutypes');
 var css = require('mucss');
 
@@ -1010,12 +1011,11 @@ function place(element, options){
 
 
 	//set the position as of the target
-	if (css.isFixed(options.relativeTo)) {
+	if (type.isElement(options.relativeTo) && css.isFixed(options.relativeTo)) {
 		element.style.position = 'fixed';
 	}
 	else {
 		element.style.position = 'absolute';
-
 		//get proper win offsets
 		if (options.within === win) {
 			withinRect.top += win.pageYOffset;
@@ -1035,6 +1035,7 @@ function place(element, options){
 	// //if not - place centered
 	// if (requiredWidth > withinRect.width && requiredHeight > withinRect.height)
 	// 	placeBySide.center(element, relativeToRect, withinRect, options);
+
 
 	//else place according to the position
 	placeBySide[options.side](element, relativeToRect, withinRect, options);
@@ -1090,7 +1091,7 @@ var placeBySide = {
 
 		//get reliable parent width
 		var parent = placee.offsetParent;
-		var parentWidth = parent.offsetWidth;
+		var parentWidth = parent && parent.offsetWidth || 0;
 		if (parent === body || parent === root && win.getComputedStyle(parent).position === 'static') parentWidth = win.innerWidth;
 
 		//place left
@@ -1160,7 +1161,7 @@ var placeBySide = {
 
 		//place top
 		var parent = placee.offsetParent;
-		var parentHeight = parent.offsetHeight;
+		var parentHeight = parent && parent.offsetHeight || 0;
 
 		//get reliable parent height
 		//body & html with position:static tend to consider bottom:0 as a viewport bottom
@@ -1222,21 +1223,22 @@ var placeBySide = {
 function placeHorizontally(placee, target, within, opts){
 	var width = placee.offsetWidth;
 	var margins = css.margins(placee);
+
 	var desirableLeft = target.left + target.width*opts.align - width*opts.align;
 
-	//if too close to the within right - set right = 0
-	if (width + desirableLeft > within.right) {
-		css(placee, {
-			right: 0,
-			left: 'auto'
-		});
-	}
-	else {
+	if (within && width + desirableLeft < within.right) {
 		css(placee, {
 			left: Math.max(desirableLeft, within.left),
 			right: 'auto'
 		});
+		return;
 	}
+
+	//if too close to the within right - set right = 0
+	css(placee, {
+		right: 0,
+		left: 'auto'
+	});
 }
 
 
@@ -1266,7 +1268,8 @@ function placeVertically ( placee, target, within, opts ) {
 
 
 /**
- * Return offsets rectangle of an element
+ * Return offsets rectangle of an element/array/any target passed.
+ * I. e. normalize offsets rect
  *
  * @param {*} el Element, selector, window, document, rect, array
  *
@@ -1294,6 +1297,34 @@ function getRect(target){
 		if (!targetEl) throw Error('No element queried by `' + target + '`');
 
 		rect = css.offsets(targetEl);
+	}
+	else if (type.isArray(target)){
+		//[left, top]
+		if (target.length === 2){
+			return {
+				top: target[1],
+				left: target[0],
+				bottom: target[1],
+				right: target[0],
+				width: 0,
+				height: 0
+			};
+		}
+		//[left,top,right,bottom]
+		else if (target.length === 4){
+			return {
+				left: target[0],
+				top: target[1],
+				right: target[2],
+				bottom: target[3],
+				width: target[2] - target[0],
+				height: target[3] - target[1]
+			};
+		}
+	}
+	else if (type.isObject(target)){
+		if (target.width === undefined) target.width = target.right - target.left;
+		if (target.height === undefined) target.height = target.bottom - target.top;
 	}
 
 	return rect;
@@ -1349,6 +1380,7 @@ var Poppy = require('../index');
 var Mod = window.Mod || require('mod-constructor');
 var place = require('placer');
 var extend = require('extend');
+var css = require('mucss');
 
 
 var Popup = module.exports = Mod({
@@ -1358,15 +1390,17 @@ var Popup = module.exports = Mod({
 
 var name = Poppy.displayName;
 
-/**
-* Popup constructor
-*/
+//shortcuts
+var win = window, doc = document, body = doc.documentElement;
+
+
+
+/* ---------------------------------- I N I T ---------------------------------------- */
+
+
+/** Popup constructor */
 var proto = Popup.fn;
 
-
-/**
-* Lifecycle
-*/
 proto.init = function(){
 	// console.log('init popup')
 };
@@ -1374,131 +1408,6 @@ proto.init = function(){
 proto.created = function(){
 	// console.log('created popup', this.$blind)
 };
-
-
-
-/**
-* Elements
-*/
-//close button
-proto.$closeButton = {
-	init: function(){
-		//create button
-		var $closeButton = document.createElement('div');
-		$closeButton.classList.add(name + '-close');
-
-		return $closeButton;
-	}
-}
-
-//static overlay blind
-// console.log('---init blind')
-Popup.$blind = new Poppy({
-	created: function(){
-		this.$container.classList.add(name + '-blind')
-	}
-});
-proto.$blind = {
-	init: Popup.$blind
-}
-proto.$blindContainer = {
-	init: Popup.$blind.$container
-}
-
-
-//add proper class to the container
-proto.$container.changed = function($container){
-	$container.classList.add(name + '-popup');
-}
-
-
-/**
-* Options
-*/
-//show close button
-proto.closeButton = {
-	'false': {
-
-	},
-	_: {
-		before: function(){
-			this.$container.appendChild(this.$closeButton);
-		},
-		after: function(){
-			this.$container.removeChild(this.$closeButton);
-		}
-	}
-};
-
-//show overlay along with popup
-proto.blind = {
-	'false': {
-
-	},
-	'true': {
-
-	}
-};
-
-//react on href change
-proto.handleHref = {
-	_: {
-		'before, window hashchange': function(){
-			//detect link in href
-			if (document.location.hash === this.hash) {
-				this.show();
-			}
-		}
-	},
-	'false' : {
-
-	}
-};
-
-
-
-
-/**
-* Behaviour
-*/
-//FIXME: ? replace with Poppy.prototype.state
-proto.state = extend({}, Poppy.fn.state, {
-	hidden: {
-		'click': 'show'
-	},
-	visible: {
-		'click, this.$closeButton click, this.$blindContainer click': 'hide'
-	}
-});
-
-proto.show = function(){
-	//show blind
-	this.$blind.show();
-
-	//show container
-	Poppy.fn.show.call(this);
-};
-
-proto.hide = function(){
-	//show container
-	Poppy.fn.hide.call(this);
-
-	//show blind
-	this.$blind.hide();
-};
-
-proto.place = function(){
-	//place properly (align by center)
-	place(this.$container, {
-		relativeTo: window,
-		align: 'center'
-	});
-};
-
-
-//handle popup as a mod
-module.exports = Mod(Popup);
-
 
 
 /**
@@ -1515,5 +1424,159 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 });
 
-},{"../index":1,"extend":2,"mod-constructor":"mod-constructor","placer":5}]},{},[6])(6)
+
+
+/* -------------------------------- E L E M E N T S ---------------------------------- */
+
+
+/**
+ * Close button element
+ */
+
+proto.$closeButton = {
+	init: function(){
+		//create button
+		var $closeButton = document.createElement('div');
+		$closeButton.classList.add(name + '-close');
+
+		return $closeButton;
+	}
+};
+
+/** static overlay blind */
+Popup.$blind = new Poppy({
+	created: function(){
+		this.$container.classList.add(name + '-blind');
+	}
+});
+proto.$blind = {
+	init: Popup.$blind
+};
+
+proto.$blindContainer = {
+	init: Popup.$blind.$container
+};
+
+//make blind the holder
+proto.holder.init = Popup.$blind.$container;
+
+
+/** add proper class to the container */
+proto.$container.changed = function($container){
+	$container.classList.add(name + '-popup');
+};
+
+
+
+/* ------------------------------- O P T I O N S --------------------------------------*/
+
+
+/** whether to show close button */
+proto.closeButton = {
+	'false': {
+
+	},
+	_: {
+		before: function(){
+			this.$container.appendChild(this.$closeButton);
+		},
+		after: function(){
+			this.$container.removeChild(this.$closeButton);
+		}
+	}
+};
+
+
+/** show overlay along with popup */
+proto.blind = {
+	'false': {
+
+	},
+	'true': {
+
+	}
+};
+
+
+/** react on href change */
+proto.handleHref = {
+	_: {
+		'before, window hashchange': function(){
+			//detect link in href
+			if (document.location.hash === this.hash) {
+				this.show();
+			}
+		}
+	},
+	'false' : {
+
+	}
+};
+
+
+
+/* ----------------------------- B E H A V I O U R ----------------------------------- */
+
+
+proto.state = extend({}, Poppy.fn.state, {
+	hidden: {
+		'click': 'show'
+	},
+	visible: {
+		'click, this.$closeButton click, this.$blindContainer click': 'hide'
+	}
+});
+
+proto.show = function(e) {
+	//show blind
+	this.$blind.show();
+
+	//add overflow:hidden class to the body
+	var initialWidth = css(body, 'width');
+	css(body, {
+		'overflow': 'hidden',
+		'width': body.offsetWidth
+	});
+
+	//show container
+	Poppy.fn.show.call(this);
+};
+
+proto.hide = function () {
+	//show container
+	Poppy.fn.hide.call(this);
+
+	//remove overflow:hidden from the body
+	css(body, {
+		'overflow': '',
+		'width': this.initialWidth
+	});
+
+	//show blind
+	this.$blind.hide();
+};
+
+proto.place = function () {
+	var self = this;
+
+	//place properly (align by center)
+	//@deprecated - popup style is set via css
+	// place(this.$container, {
+	// 	relativeTo: [win.innerWidth * .5, 0],
+	// 	side: 'bottom',
+	// 	align: .5,
+	// 	within: this.$blind.$container
+	// });
+
+	//prevent anchor jump
+	setTimeout(function(){
+		self.$blind.$container.scrollTop = 0;
+	});
+};
+
+
+//handle popup as a mod
+module.exports = Mod(Popup);
+
+},{"../index":1,"extend":2,"mod-constructor":"mod-constructor","mucss":3,"placer":5}]},{},[6])(6)
 });

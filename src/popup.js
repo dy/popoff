@@ -6,6 +6,7 @@ var Poppy = require('../index');
 var Mod = window.Mod || require('mod-constructor');
 var place = require('placer');
 var extend = require('extend');
+var css = require('mucss');
 
 
 var Popup = module.exports = Mod({
@@ -16,7 +17,7 @@ var Popup = module.exports = Mod({
 var name = Poppy.displayName;
 
 //shortcuts
-var doc = document, body = doc.documentElement;
+var win = window, doc = document, body = doc.documentElement;
 
 
 
@@ -183,18 +184,20 @@ proto.hide = function () {
 
 proto.place = function () {
 	var self = this;
+
 	//place properly (align by center)
-	place(this.$container, {
-		relativeTo: [win.innerWidth * .5, 0],
-		side: 'bottom',
-		align: .5,
-		within: this.$blind.$container
-	});
+	//@deprecated - popup style is set via css
+	// place(this.$container, {
+	// 	relativeTo: [win.innerWidth * .5, 0],
+	// 	side: 'bottom',
+	// 	align: .5,
+	// 	within: this.$blind.$container
+	// });
 
 	//prevent anchor jump
 	setTimeout(function(){
 		self.$blind.$container.scrollTop = 0;
-	})
+	});
 };
 
 
