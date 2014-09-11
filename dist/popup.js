@@ -68,6 +68,8 @@ proto.$container = {
 		//bind API
 		$container.show = this.show.bind(this);
 		$container.hide = this.hide.bind(this);
+		$container.enable = this.enable.bind(this);
+		$container.disable = this.disable.bind(this);
 
 		return $container;
 	}
@@ -415,8 +417,25 @@ proto.state = {
 		'document scroll:throttle(50)': 'place, updateTip'
 	},
 
+	/** Make popup inactive */
+	disabled: {
+		'show, hide': 'noop',
+		after: function(a,b){
+			//passing enabled state causes unlock
+			if (a === 'enabled') return 'hidden';
+			return false;
+		}
+	},
+
 	/** Keep class on the container according to the visibility */
 	changed: function(newState, oldState){
+		//FIXME: why container there might be undefined?
+		//FIXME: why hidden→hidden change fires?
+		// console.log('---', this.$container)
+		if (!this.$container) {
+			return;
+		}
+
 		//keep class updated
 		this.$container.classList.add(name + '-' + newState);
 		this.$container.classList.remove(name + '-' + oldState);
@@ -425,7 +444,7 @@ proto.state = {
 
 
 /** Show the container.
- *
+ * @chainable
  * @return {Poppy} Chaining
  */
 proto.show = function(e){
@@ -452,6 +471,7 @@ proto.show = function(e){
 
 
 /** Close the container
+ * @chainable
  * @return {Poppy} Chaining
  */
 proto.hide = function(){
@@ -487,6 +507,23 @@ proto.place = function(){};
  */
 proto.updateTip = function(){};
 
+
+/** Make popup inactive
+ * @chainable
+ */
+proto.disable = function(){
+	this.state = 'disabled';
+	return this;
+};
+
+
+/** Make popup active
+ * @chainable
+ */
+proto.enable = function(){
+	this.state = 'enabled';
+	return this;
+};
 
 
 /* -------------------------------- H E L P E R S ------------------------------------ */
