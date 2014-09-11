@@ -175,7 +175,7 @@ proto.show = function(e) {
 	}
 
 	//show container
-	Poppy.fn.show.call(this);
+	return Poppy.fn.show.call(this);
 };
 
 proto.hide = function () {
@@ -192,6 +192,8 @@ proto.hide = function () {
 
 	//show blind
 	this.$blind.hide();
+
+	return this;
 };
 
 proto.place = function () {
