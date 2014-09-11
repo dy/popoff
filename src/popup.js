@@ -68,7 +68,7 @@ proto.$closeButton = {
 	}
 };
 
-//static overlay blind
+/** static overlay blind */
 Popup.$blind = new Poppy({
 	created: function(){
 		this.$container.classList.add(name + '-blind');
@@ -82,8 +82,11 @@ proto.$blindContainer = {
 	init: Popup.$blind.$container
 };
 
+//make blind the holder
+proto.holder.init = Popup.$blind.$container;
 
-//add proper class to the container
+
+/** add proper class to the container */
 proto.$container.changed = function($container){
 	$container.classList.add(name + '-popup');
 };
@@ -150,7 +153,7 @@ proto.state = extend({}, Poppy.fn.state, {
 	}
 });
 
-proto.show = function(){
+proto.show = function() {
 	//show blind
 	this.$blind.show();
 
@@ -165,7 +168,7 @@ proto.show = function(){
 	Poppy.fn.show.call(this);
 };
 
-proto.hide = function(){
+proto.hide = function() {
 	//show container
 	Poppy.fn.hide.call(this);
 
