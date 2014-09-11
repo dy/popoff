@@ -1,7 +1,7 @@
 <!doctype html>
 
 <link rel="stylesheet" type="text/css" href="../index.css">
-<script src="../node_modules/mod-constructor/dist/mod.js"></script>
+<script src="../node_modules/mod-constructor/dist/mod.min.js"></script>
 <script src="../node_modules/es6-collections/build/es6-collections.min.js"></script>
 
 
@@ -71,7 +71,7 @@
 
 
 
-<a href="#form" data-popup class="target" data-container-class="form-popup">Show me that huuuge form, baby!</a>
+<a href="#form" class="target" data-container-class="form-popup">Show me that huuuge form, baby!</a>
 
 <a class="enable">Enable</a>
 
@@ -168,12 +168,16 @@
 
 
 <script>
-	document.querySelector("[data-popup]").addEventListener('hide', function(){
+	var a = document.querySelector(".target");
+
+	new Popup(a);
+
+	a.addEventListener('hide', function(){
 		this.disable();
 		this.classList.add('disabled');
 	});
 	document.querySelector(".enable").addEventListener('click', function(){
-		var a = document.querySelector("[data-popup]");
+		var a = document.querySelector(".target");
 		a.classList.remove('disabled')
 		a.$container.enable();
 	});

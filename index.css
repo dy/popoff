@@ -100,7 +100,8 @@
 		cursor: pointer;
 		line-height: 40px;
 		text-align: center;
-		opacity: .5;
+		opacity: .3;
+		font-size: 26px;
 	}
 	.poppy-close:after{
 		content: '×';

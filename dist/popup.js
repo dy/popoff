@@ -61,15 +61,12 @@ proto.$container = {
 		//create poppy container
 		var $container = document.createElement('div');
 		$container.classList.add(name + '-container');
-
 		//set reference to poppy
 		$container.poppy = this;
 
 		//bind API
 		$container.show = this.show.bind(this);
 		$container.hide = this.hide.bind(this);
-		$container.enable = this.enable.bind(this);
-		$container.disable = this.disable.bind(this);
 
 		return $container;
 	}
@@ -508,7 +505,7 @@ proto.place = function(){};
 proto.updateTip = function(){};
 
 
-/** Make popup inactive
+/** Make inactive
  * @chainable
  */
 proto.disable = function(){
@@ -517,7 +514,7 @@ proto.disable = function(){
 };
 
 
-/** Make popup active
+/** Make active
  * @chainable
  */
 proto.enable = function(){
@@ -1384,7 +1381,12 @@ var place = require('placer');
 var extend = require('extend');
 var css = require('mucss');
 
-
+/**
+ * Popup module
+ * @constructor
+ * @chainable
+ * @module popup
+ */
 var Popup = module.exports = Mod({
 	mixins: [Poppy]
 });

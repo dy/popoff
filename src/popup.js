@@ -8,7 +8,12 @@ var place = require('placer');
 var extend = require('extend');
 var css = require('mucss');
 
-
+/**
+ * Popup module
+ * @constructor
+ * @chainable
+ * @module popup
+ */
 var Popup = module.exports = Mod({
 	mixins: [Poppy]
 });
