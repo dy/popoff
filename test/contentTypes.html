@@ -1,0 +1,62 @@
+<!doctype html>
+
+<link rel="stylesheet" type="text/css" href="../index.css">
+<script src="../node_modules/mod-constructor/dist/mod.min.js"></script>
+<script src="../node_modules/es6-collections/build/es6-collections.min.js"></script>
+
+<style type="text/css">
+	body{
+		font-family: cursive;
+	}
+	.target{
+		display: inline-block;
+		background: black;
+		color: white;
+		padding: 5px 10px;
+		-webkit-appearance: none;
+		appearance: none;
+		border: none;
+		outline: none;
+		margin: 0;
+		line-height: 20px;
+		vertical-align: top;
+		font-size: 14px;
+	}
+	.target-container{
+		display: inline-block;
+	}
+	.poppy-popup{
+		max-width: 60%;
+		margin-top: 20px;
+	}
+	iframe{
+		width: 400px;
+		height: 800px;
+	}
+</style>
+
+
+<!-- dev tests -->
+<!-- <script src="../node_modules/require-stub/index.js"></script>
+<script src="../node_modules/mucss/index.js"></script>
+<script src="../node_modules/mutypes/index.js"></script>
+<script src="../node_modules/extend/index.js"></script>
+<script src="../node_modules/placer/index.js"></script>
+<script src="../index.js" data-module-name="poppy"></script>
+<script src="../src/popup.js"></script> -->
+
+
+<!-- prod tests -->
+<script src="../dist/popup.js"></script>
+
+
+<header>
+	<h1>Content type test</h1>
+</header>
+
+
+<section id="shared-content-case" class="case">
+
+	<a class="target" href="http://artlebedev.com" data-popup data-content-type="iframe">1. Open iframe</a>
+
+</section>

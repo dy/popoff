@@ -151,7 +151,7 @@ proto.handleHref = {
 
 proto.state = extend({}, Poppy.fn.state, {
 	hidden: {
-		'click': 'show'
+		'click': 'preventDefault, show'
 	},
 	visible: {
 		'this.$closeButton click, document click:not(.poppy-popup)': 'hide'

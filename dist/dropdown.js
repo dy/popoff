@@ -125,7 +125,7 @@ proto.holder = {
 };
 
 
-/** Content to show in container.
+/** Content to show in the container.
  *
  * @type {(string|Node|selector)}
  */
@@ -143,94 +143,15 @@ proto.content = {
 		if (this.href) {
 			return this.href;
 		}
-	},
 
-	//FIXME: scope it within contentType states
-	//FIXME: simplify this (too unclear)
-	set: function(value){
-		var res;
-
-		if (type.isString(value)){
-			//try to get cached content
-			if (contentCache[value]) return contentCache[value];
-
-			//if pathname is current - shorten selector
-			var linkElements = value.split('#');
-			if (linkElements[0] === location.origin + location.pathname){
-				var q = '#' + linkElements[1];
-				//try to save queried element
-				res = document.querySelector(q);
-				if (res) {
-					//save queried content
-					contentCache[q] = res;
-					return res;
-				}
-
-				//if not - save query string
-				return q;
-			}
-
-			//try to query element
-			try {
-				res = document.querySelector(value);
-				if (res) {
-					//save queried content
-					contentCache[value] = res;
-					return res;
-				}
-			} catch (e) {
-			}
-
-			//if not - create element with content
-			res = document.createElement('div');
-			res.innerHTML = value;
-
-			return res;
-		}
-
-		return value;
-	},
-
-	//FIXME: place it to the contentType scope
-	//eval content each time it is going to be get
-	get: function(v){
-		var content;
-		// console.log('get content', v)
-
-		if (v instanceof HTMLElement){
-			return v;
-		}
-
-		else if (typeof v === 'string'){
-			try {
-				content = document.querySelector(v);
-				return content;
-			} catch (e){
-
-			}
-		}
-
-		//return absent target stub
-		// content = document.createElement('div');
-		// content.innerHTML = v;
-
-		return content;
-	},
-
-	changed: function(content){
-		//unhide content if it is hidden and if it is not in the container
-		if (content instanceof HTMLElement) {
-			if (content.parentNode && !content.parentNode.classList.contains(name + '-container')) {
-				content.parentNode.removeChild(content);
-			}
-
-			content.removeAttribute('hidden');
-		}
+		return '';
 	}
 };
 
 
-/** Content selector ←→ poppy-instance */
+/** Content selector ←→ poppy-instance
+ * To share content between poppies
+ */
 var contentCache = {};
 
 
@@ -253,19 +174,128 @@ proto['for'] = undefined;
 proto.contentType = {
 	//target selector
 	_:{
+		content: {
+			//eval content each time it is going to be get
+			get: function(v){
+				var content;
 
+				if (v instanceof HTMLElement){
+					return v;
+				}
+
+				else if (typeof v === 'string'){
+					try {
+						content = document.querySelector(v);
+						return content;
+					} catch (e){
+
+					}
+				}
+
+				return content;
+			},
+
+			//FIXME: scope it within contentType states
+			//FIXME: simplify this (too unclear)
+			set: function(value){
+				var res;
+
+				if (type.isString(value)){
+					//try to get cached content
+					if (contentCache[value]) return contentCache[value];
+
+					//if pathname is current - shorten selector
+					var linkElements = value.split('#');
+					if (linkElements[0] === location.origin + location.pathname){
+						var q = '#' + linkElements[1];
+						//try to save queried element
+						res = document.querySelector(q);
+						if (res) {
+							//save queried content
+							contentCache[q] = res;
+							return res;
+						}
+
+						//if not - save query string
+						return q;
+					}
+
+					//try to query element
+					try {
+						res = document.querySelector(value);
+						if (res) {
+							//save queried content
+							contentCache[value] = res;
+							return res;
+						}
+					} catch (e) {
+					}
+
+					//if not - create element with content
+					res = document.createElement('div');
+					res.innerHTML = value;
+
+					return res;
+				}
+
+				return value;
+			},
+
+			//remove the element from the DOM and prepare to be used as a poppy content
+			changed: function(content){
+				//unhide the content if it is hidden and if it is not in the container
+				if (content instanceof HTMLElement) {
+					if (content.parentNode && !content.parentNode.classList.contains(name + '-container')) {
+						content.parentNode.removeChild(content);
+					}
+
+					content.removeAttribute('hidden');
+				}
+			}
+		}
 	},
+
 	//image href
 	image: {
 
 	},
+
 	//remote href
 	ajax: {
 
 	},
+
 	//iframe href
 	iframe: {
+		content: {
+			//any time content is changed, redirect an iframe to the url passed
+			changed: function(url){
+				if (type.isString(url)) {
+					this.iframe.src = url;
+				}
+				else if (type.isElement(url)){
+					this.iframe = url;
+				}
+			},
 
+			get: function(){
+				return this.iframe;
+			}
+		},
+
+		//iframe to init
+		iframe: {
+			init: function(){
+				var iframe = document.createElement('iframe');
+				iframe.setAttribute('margin', '0');
+				iframe.setAttribute('frameborder', '0');
+				iframe.setAttribute('scrolling', 'no');
+
+				//iframe hook to set up attributes, e.g. w/h
+				this.emit('initIframe', {iframe: iframe});
+				return iframe;
+			}
+		}
 	},
 	swf: {
 
@@ -279,7 +309,6 @@ proto.contentType = {
 
 /** Side to align the container relative to the target
  * only meaningful range
- *
  */
 proto.alignment = {
 	init: 0,
@@ -410,7 +439,7 @@ proto.state = {
 	/** Visible state */
 	visible: {
 		/** Keep container updated on resize */
-		'window resize': 'place, updateTip',
+		'window resize:throttle(50)': 'place, updateTip',
 		'document scroll:throttle(50)': 'place, updateTip'
 	},
 
