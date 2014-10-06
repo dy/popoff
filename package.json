@@ -1,6 +1,6 @@
 {
   "name": "poppy",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Popups, tooltips and overlays blossom",
   "main": "index.js",
   "directories": {
