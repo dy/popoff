@@ -105,7 +105,11 @@ proto.$tip = {
  */
 proto.containerClass = {
 	init: function(value){
-		if (value) this.$container.classList.add(value);
+		if (value) {
+			value.split(/\s/).forEach(function(value){
+				this.$container.classList.add(value);
+			});
+		}
 	}
 };
 
