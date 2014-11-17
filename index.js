@@ -1,5 +1,4 @@
 //FIXME: include Mod as a dependency
-var Mod = window.Mod || require('mod-constructor');
 var type = require("mutypes");
 var css = require("mucss");
 var place = require("placer");
@@ -101,7 +100,8 @@ proto.$tip = {
 /* ------------------------------ O P T I O N S -------------------------------------- */
 
 
-/** Class to append to {@link $container}
+/**
+ * Class to append to {@link $container}
  */
 proto.containerClass = {
 	init: function(value){

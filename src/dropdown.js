@@ -1,5 +1,4 @@
 var Poppy = require('../index');
-var Mod = window.Mod || require('mod-constructor');
 var place = require('placer');
 var extend = require('extend');
 
