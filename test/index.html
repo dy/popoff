@@ -8,15 +8,26 @@
 <title>Poppy — popups, tooltips and overlays blossom.</title>
 
 
-<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css">
+<link rel="stylesheet" href="normalize.css">
+<link rel="stylesheet" href="TextareaDecorator.css"/>
+<script src="Parser.js"></script>
+<script src="TextareaDecorator.js"></script>
+
 
 <style>
 	* {
 		box-sizing: border-box;
 	}
+	html{
+		position: relative;
+	}
 	body{
 		padding: 1em;
 		color: black;
+		min-height: 100vh;
+		position: relative;
+		margin: 0 auto;
+		max-width: 800px;
 	}
 
 	a {
@@ -85,41 +96,44 @@
 	}
 	.case-playground{
 		display: block;
-		min-height: 200px;
+		min-height: 50px;
 	}
 	.case-demo{
 		display: block;
-		width: 50%;
-		min-height: 200px;
+		margin-right: 1rem;
+		min-height: 50px;
 		float: left;
 		position: relative;
 	}
-	.case-demo:after{
+	.case-code{
+		padding: 0 1rem;
+		height: 100px;
+		float: left;
+		overflow: inherit;
+		/*display: block;
+		width: 50%;
+		float: left;
+		min-height: 50px;
+		font-family: monospace;*/
+	}
+	.case-code:before{
 		content: '';
 		position: absolute;
 		top: 0rem;
 		bottom: 0rem;
 		width: 2px;
-		right: -1px;
+		left: 0px;
 		background: lightgray;
 	}
-	.case-code{
-		display: block;
-		width: 50%;
-		float: left;
-		min-height: 200px;
-		font-family: monospace;
-		padding: .6rem 1rem;
-	}
-
 	.dropdown{
 		display: inline-block;
 		border: .1rem solid black;
 		border-bottom-width: .2rem;
 		color: lightgray;
 		text-transform: uppercase;
-		padding: .15rem .3rem .15rem .5rem;
-		letter-spacing: .3rem;
+		padding: .2rem .3rem .15rem .5rem;
+		letter-spacing: 3px;
+		font-size: .8rem;
 		/*font-weight: bolder;*/
 	}
 	.dropdown:after{
@@ -137,7 +151,7 @@
 		left: 0;
 		right: 0;
 		padding: 1rem;
-		font-size: .5rem;
+		font-size: .7rem;
 	}
 	.footer-right{
 		float: right;
@@ -147,11 +161,21 @@
 	}
 
 
-
+	/* Syntax highlighters */
+	.ldt {
+	}
+	.ldt .comment {
+		color: red;
+	}
+	.ldt label{
+		padding: 0 1rem;
+	}
+	.ldt textarea{
+		min-height: 0;
+	}
 </style>
 
 
-<link rel="stylesheet" type="text/css" href="../index.css">
 
 
 <script src="../node_modules/require-stub/index.js"></script>
@@ -163,7 +187,7 @@
 
 
 <nav>
-	<a href="#" class="logo-link" title="Poppy.js — intro">.js</a>
+	<a href="#" class="logo-link" title="poppy.js">.js</a>
 	<a href="#dropdown" class="nav-link">Dropdown</a>
 	<a href="#tooltip" class="nav-link">Tooltip</a>
 	<a href="#overlay" class="nav-link">Overlay</a>
@@ -186,10 +210,12 @@
 				<div class="dropdown">Simple</div>
 			</div>
 
-			<script class="case-code" for="#simple-case-demo" contenteditable>
-				var el = document.querySelector('.dropdown');
+			<textarea class="case-code" for="#simple-case-demo">
+//query element
+var el = document.querySelector('#simple-dropdown');
 
-			</script>
+
+			</textarea>
 		</div>
 	</article>
 
@@ -220,6 +246,18 @@
 </footer>
 
 
-<script>
 
+<script>
+	//syntax highlighter
+	var parser = new Parser(
+	{
+		whitespace: /\s+/,
+		comment: /\/\/[^\r\n]*/,
+		other: /\S+/
+	});
+	var $codes = document.querySelectorAll('.case-code');
+	for (var i = $codes.length, ldt; i--;){
+		//for each case code create fake highlighter
+		ldt = new TextareaDecorator( $codes[i], parser );
+	}
 </script>
