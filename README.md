@@ -43,7 +43,7 @@ var dropdown = new Dropdown({
 | Parameter | Type | Default | Description |
 |----|----|----|----|
 | `target` | _selector_, _element_, _element list_ (optional) | `undefined` | A target or list of targets which by click show the popup container. Can vary depending on poppy type. |
-| `content` | _string_, _element_, _function_ | `undefined` | Content to show within the container. If function defined—it will be invoked and result considered as content. |
+| `content` | _string_, _element_, _function_ | `undefined` | Content to show in the container. If a function defined—it’s result will be taken as content. |
 | `contentType` | _string_ | `'element'` | `'element'`—show other element in the container.<br/>`'text'`—show content as plain text.<br/>`'html'`—show content as inner html. |
 | `containerClass` | _string_ | `undefined` | A class to add to the popup container |
 | `holder` | _selector_, _element_ | `<body>` | A holder of container |
@@ -54,26 +54,26 @@ var dropdown = new Dropdown({
 
 ## API
 
-| Property/method | Type | Default | Description |
-|----|----|----|----|
-| `show(target)` |  |  | Make the container visible. |
-| `hide()` |  |  | Make container disappear. |
-| `enable()` |  |  | Make container active. |
-| `disable()` |  |  | Disable any interactions. |
-| `container` |  |  | Visible poppy container. |
-| `state` |  |  | Current state of poppy: `closed`, `opened`, `opening`, `closing`, `disabled`. |
+| Property/method | Description |
+|----|----|
+| `show(target)` | Make the container visible. |
+| `hide()` | Make container disappear. |
+| `enable()` | Make container active. |
+| `disable()` | Disable any interactions. |
+| `container` | Visible poppy container. |
+| `state` | Current state of poppy: `closed`, `opened`, `opening`, `closing`, `disabled`. |
 
 
 ## Events
 
-| Name | Description |
+| Name | Called when |
 |----|----|----|----|
-| `beforeShow` | Called when container is going to show |
-| `show` |  |
-| `beforeHide` |  |
-| `hide` |  |
-| `enable` |  |
-| `disable` |  |
+| `beforeShow` | Container is going to show |
+| `show` | Container became visible |
+| `beforeHide` | Container is going to hide |
+| `hide` | Container became invisible |
+| `enable` | Entered active state |
+| `disable` | Became inactive |
 
 
 ## License
