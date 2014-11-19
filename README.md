@@ -1,17 +1,16 @@
-# Poppy [demo](http://dfcreative.github.io/poppy)
+# Poppy
 
-Poppy is a versatile and reliable popups constructor. It provides basic kinds of popups:
+Poppy is a popups provider. With poppy you can easily use any basic kind of popup or build your own popup as well. [Demo](http://dfcreative.github.io/poppy).
 
-* overlay
-* tooltip
-* dropdown
-* notifier
-* popover
-* slide-nav
-* modal
-* balloon
+Kinds of popups:
 
-With poppy you can easily build your own popups as well.
+* Overlay
+* Tooltip
+* Dropdown
+* Notifier
+* Popover
+* Modal
+
 
 [![NPM](https://nodei.co/npm/poppy.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/poppy/)
 
@@ -20,10 +19,10 @@ With poppy you can easily build your own popups as well.
 
 ### Install
 
-Get the latest version from [builds](todo) or [CDN](todo). Insert script on the page:
+Grab the [latest version](todo) or [CDN](todo). Insert script on the page:
 
 ```html
-<script src="CDN/poppy.js"></script>
+<script src="cdn_url/poppy.js"></script>
 ```
 
 Poppy is also available as a component for browserify, component or duo:
@@ -32,16 +31,18 @@ Poppy is also available as a component for browserify, component or duo:
 
 ```js
 var Dropdown = require('poppy/dropdown');
+var Tooltip = require('poppy/tooltip');
 ```
 
 ### Use
 
-Create new dropdown instance:
+Create new instance:
 
 ```js
 var dropdown = new Dropdown({
-	target: document.queryElement('#dropdown'),
-	content: '<ul><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>'
+	target: document.querySelector('#dropdown'),
+	content: '<ul><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>',
+	contentType: 'html'
 });
 ```
 
@@ -64,24 +65,24 @@ var dropdown = new Dropdown({
 
 | Property/method | Type | Default | Description |
 |----|----|----|----|
-| `show()` |  |  |  |
-| `hide`() |  |  |  |
-| `enable()` |  |  |  |
-| `disable()` |  |  |  |
-| `container` |  |  |  |
-| `state` |  |  |  |
+| `show(target)` |  |  | Make the container visible. |
+| `hide()` |  |  | Make container disappear. |
+| `enable()` |  |  | Make container active. |
+| `disable()` |  |  | Disable any interactions. |
+| `container` |  |  | Visible poppy container. |
+| `state` |  |  | Current state of poppy: `closed`, `opened`, `opening`, `closing`, `disabled`. |
 
 
 ## Events
 
-| Property/method | Type | Default | Description |
+| Name | Description |
 |----|----|----|----|
-| `beforeShow` |  |  |  |
-| `show` |  |  |  |
-| `beforeHide` |  |  |  |
-| `hide` |  |  |  |
-| `enable` |  |  |  |
-| `disable` |  |  |  |
+| `beforeShow` | Called when container is going to show |
+| `show` |  |
+| `beforeHide` |  |
+| `hide` |  |
+| `enable` |  |
+| `disable` |  |
 
 
 ## License
