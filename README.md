@@ -52,11 +52,7 @@ var dropdown = new Dropdown({
 |----|----|----|----|
 | `target` | _selector_, _Element_, _NodeList_, `undefiend`  | `undefined` | A target or list of targets which by click show the popup container. Can vary depending on poppy type. |
 | `content` | _string_, _Element_, _function_ | `undefined` | Content to show within the container. If function defined—it will be invoked and result considered as content. |
-| `contentType` | _string_ | `element` | <dl>
-<dt>`'element'`</dt><dd>Show other element in the container</dd>
-<dt>`'text'`</dt><dd>Show content as plain text</dd>
-<dt>`'html'`</dt><dd>Show content as inner html</dd>
-</dl> |
+| `contentType` | _string_ | `element` | <dl><dt>`'element'`</dt><dd>Show other element in the container</dd><dt>`'text'`</dt><dd>Show content as plain text</dd><dt>`'html'`</dt><dd>Show content as inner html</dd></dl> |
 | `containerClass` | _string_ | `''` | A class to add to the popup container |
 | `holder` | _selector_, _Element_ | `<body>` | A holder of container |
 | `tip` | `'top'`, `'left'`, `'bottom'`, `'right'`, `undefined` | `false` | Show tip — a little triangle on the edge of the container. |
