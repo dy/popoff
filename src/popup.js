@@ -1,5 +1,6 @@
 /**
 * Extend poppy with popup behaviour
+* Popup is a modal-like overlay.
 */
 
 var Poppy = require('../index');
