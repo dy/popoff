@@ -1,6 +1,6 @@
 # Poppy
 
-Poppy is a popups provider. [Demo](http://dfcreative.github.io/poppy).
+Popups constructor and provider: tooltips, dropdowns, overlays, notifiers, etc. [Demo](http://dfcreative.github.io/poppy).
 
 [![NPM](https://nodei.co/npm/poppy.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/poppy/)
 
