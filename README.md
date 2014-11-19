@@ -42,12 +42,12 @@ var dropdown = new Dropdown({
 
 | Parameter | Type | Default | Description |
 |----|----|----|----|
-| `target` | _selector_, _element_, _elements list_ — optional | `undefined` | A target or list of targets which by click show the popup container. Can vary depending on poppy type. |
+| `target` | _selector_, _element_, _element list_ (optional) | `undefined` | A target or list of targets which by click show the popup container. Can vary depending on poppy type. |
 | `content` | _string_, _element_, _function_ | `undefined` | Content to show within the container. If function defined—it will be invoked and result considered as content. |
-| `contentType` | _string_ | `element` | `'element'`—show other element in the container. `'text'`—show content as plain text.`'html'`—show content as inner html. |
+| `contentType` | _string_ | `'element'` | `'element'`—show other element in the container.<br/>`'text'`—show content as plain text.<br/>`'html'`—show content as inner html. |
 | `containerClass` | _string_ | `undefined` | A class to add to the popup container |
 | `holder` | _selector_, _element_ | `<body>` | A holder of container |
-| `tip` | _string_ — optional | `false` | A little triangle on the edge of the container. Possible values: `'top'`, `'left'`, `'bottom'`, `'right'`, `undefined`. |
+| `tip` | _string_ (optional) | `false` | A little triangle on the edge of the container. Possible values: `'top'`, `'left'`, `'bottom'`, `'right'`, `undefined`. |
 | `tipAlign` | _string_, _number_ | `'center'` | Tip alignment relative to the container. |
 | `single` | _boolean_ | `false` | Hide other containers when this one becomes visible |
 
