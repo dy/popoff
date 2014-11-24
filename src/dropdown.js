@@ -1,6 +1,12 @@
-var Poppy = require('../index');
+var Poppy = require('poppy');
 var place = require('placer');
 var extend = require('extend');
+
+
+/**
+ * @module dropdown
+ */
+module.exports = Dropdown;
 
 
 /**
@@ -8,62 +14,82 @@ var extend = require('extend');
  *
  * @constructor
  * @extends {Poppy}
- * @module dropdown
  */
+function Dropdown(options){
+	//take over dropdown options
+	Poppy.call(this, options);
 
-var Dropdown = module.exports = Poppy.extend();
-
-
-/** Parent component name to use as class identifier */
-var name = Poppy.displayName;
-
-
-var proto = Dropdown.prototype;
+	//append dropdown class
+	this.container.classList.add('poppy-dropdown');
+}
 
 
-proto.created = function(){
-	// console.log('dropdown created');
-};
+/**
+ * Go options after Poppy options
+ */
+var opts = Dropdown.options = Object.create(Poppy.options);
+
+
+
+/**
+ * Inherit from Poppy
+ */
+var proto = Dropdown.prototype = Object.create(Poppy.prototype);
+proto.constructor = Dropdown;
 
 
 /**
  * Add dropdown class to the container
  */
-
-proto.$container.changed = function($container){
-	$container.classList.add(name + '-dropdown');
-};
+// proto.options.container.changed = function($container){
+// 	$container.classList.add(name + '-dropdown');
+// };
 
 
 /**
  * Behaviour
  */
+opts.state.hidden = {
+	'@target click': function(e){
+		//save current target reference (to use in resize)
+		this.currentTarget = e.currentTarget;
 
-proto.state.hidden = {
-	'click': 'show'
+		this.show(e.currentTarget);
+	}
 	//TODO: preventDefault
 };
-extend(proto.state.visible, {
-	'document click:not(.poppy-dropdown)': 'hide'
-});
+
+opts.state.visible = {
+	/** Hide on click outside the container */
+	':root click:not(.poppy-dropdown)': function(){
+		//clear current target reference
+		this.currentTarget = null;
+		this.hide();
+	},
+
+	/** Keep container updated on resize */
+	'window resize:throttle(50), :root scroll:throttle(50)': function(e){
+		this.place(this.currentTarget);
+	}
+};
+
 
 
 /**
 * Dropdowns are usually placed below the element, except for border cases
 */
+proto.alignment = 0.5;
 
-proto.alignment.init = 0.5;
-
-proto.place = function(){
+proto.place = function(target){
 	var opts = {
-		relativeTo: this,
+		relativeTo: target,
 		side: 'bottom',
 		within: window,
 		align: this.alignment
 	};
 
 	//place by the bottom-strategy
-	place(this.$container, opts);
+	place(this.container, opts);
 
 	//set tip inveted to the side (side could’ve changed in placing)
 	if (opts.side === 'bottom') this.tip = 'top';
@@ -75,23 +101,21 @@ proto.place = function(){
 };
 
 
-/**
- * Show dropdown tip by default
- */
+// /**
+//  * Show dropdown tip by default
+//  */
+// proto.tip.init = 'top';
 
-proto.tip.init = 'top';
 
-
-/**
- * Autoinit instances.
- *
- * @see Use [selector-observer]{@link https://www.npmjs.org/package/selector-observer}
- *      if you want to init items dynamically. *
- */
-
-document.addEventListener("DOMContentLoaded", function() {
-	var items = document.querySelectorAll('[data-dropdown]');
-	for(var i = items.length; i--;){
-		new Dropdown(items[i]);
-	}
-});
+// /**
+//  * Autoinit instances.
+//  *
+//  * @see Use [selector-observer]{@link https://www.npmjs.org/package/selector-observer}
+//  *      if you want to init items dynamically. *
+//  */
+// document.addEventListener("DOMContentLoaded", function() {
+// 	var items = document.querySelectorAll('[data-dropdown]');
+// 	for(var i = items.length; i--;){
+// 		new Dropdown(items[i]);
+// 	}
+// });

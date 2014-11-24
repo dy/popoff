@@ -2,11 +2,11 @@
 * Extend poppy with popup behaviour
 */
 
-var Poppy = require('index');
+var Poppy = require('poppy');
 
-var Tooltip = Poppy.extend({
+var Tooltip = function(){
 
-});
+}
 
 
 

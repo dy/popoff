@@ -1,0 +1,64 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Poppy tests</title>
+
+
+<style>
+	body{
+		font-family: sans-serif;
+		min-height: 1000px;
+	}
+	#playground{
+		margin: 60px 50px;
+	}
+	.target{
+		background: black;
+		color: white;
+		text-transform: uppercase;
+		padding: 4px 8px;
+		display: inline-block;
+		letter-spacing: 2px;
+		font-size: 12px;
+		margin: 15px;
+		cursor: pointer;
+	}
+	.container-lorem{
+		max-width: 60%;
+		margin: 10px;
+	}
+</style>
+
+<link rel="stylesheet" href="../index.css"/>
+
+
+<link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+
+<div id="playground"></div>
+<div id="mocha"></div>
+
+<script src="../node_modules/mocha/mocha.js"></script>
+<script src="../node_modules/polymer-weakmap/weakmap.js"></script>
+<script src="../node_modules/chai/chai.js"></script>
+
+<script>
+	mocha.setup('bdd');
+	assert = chai.assert;
+</script>
+
+
+<script src="../node_modules/require-stub/index.js"></script>
+<!-- <script src="../dist/poppy.js"></script> -->
+<!-- <script src="../requirements.js"></script> -->
+
+<script src="index.js"></script>
+
+
+<script>
+	if (window.mochaPhantomJS) {
+		mochaPhantomJS.run();
+	}
+	else {
+		mocha.run();
+		mocha.checkLeaks();
+	}
+</script>

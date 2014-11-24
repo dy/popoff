@@ -6,28 +6,35 @@
   "directories": {
     "test": "test"
   },
+  "browser": {
+    "dropdown": "src/dropdown",
+    "tooltip": "src/tooltip"
+  },
   "dependencies": {
     "placer": "*",
     "selector-observer": "*",
     "mucss": "*",
     "extend": "~1.3.0",
     "emmy": "~1.x",
-    "enot": "*"
+    "enot": "*",
+    "muparse": "0.x",
+    "st8": "~0.x",
+    "mutype": "~0.x"
   },
   "devDependencies": {
     "mocha": "~1.21.4",
     "phantomjs": "~1.9.7-15",
     "mocha-phantomjs": "~3.5.0",
-    "require-stub": "0.0.13",
+    "require-stub": "*",
     "browserify": "~5.10.1",
-    "closurecompiler": "~1.3.2"
+    "closurecompiler": "~1.3.2",
+    "polymer-weakmap": "~1.0.0",
+    "chai": "~1.10.0"
   },
   "scripts": {
     "test": "mocha-phantomjs test/index.html",
-    "build": "npm run build-popup & npm run build-popover & npm run build-dropdown",
-    "build-popup": "browserify -x mod-constructor --standalone Popup ./src/popup.js > dist/popup.js",
-    "build-popover": "browserify -x mod-constructor --standalone Popover ./src/popover.js > dist/popover.js",
-    "build-dropdown": "browserify -x mod-constructor --standalone Dropdown ./src/dropdown.js > dist/dropdown.js"
+    "build": "",
+    "build-test": "browserify -r "
   },
   "repository": {
     "type": "git",
