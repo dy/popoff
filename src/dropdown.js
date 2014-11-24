@@ -53,7 +53,7 @@ opts.state.hidden = {
 };
 opts.state.visible = {
 	/** Hide on click outside the container */
-	':root click:not(.poppy-dropdown)': function(){
+	'document click:not(.poppy-dropdown), @target click': function(){
 		//clear current target reference
 		this.currentTarget = null;
 		this.hide();

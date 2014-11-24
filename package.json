@@ -18,7 +18,7 @@
     "emmy": "~1.x",
     "enot": "*",
     "muparse": "0.x",
-    "st8": "~0.x",
+    "st8": "*",
     "mutype": "~0.x"
   },
   "devDependencies": {

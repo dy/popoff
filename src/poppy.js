@@ -102,15 +102,9 @@ Poppy.options = {
 		init: false,
 		//by default - hide link
 		_: function(){
-			if (this.tipEl.parentNode) {
-				this.holder.removeChild(this.tipEl);
-			}
-
 			this.container.classList.remove('poppy-container-tip');
 		},
 		'true': function(){
-			this.holder.appendChild(this.tipEl);
-
 			this.container.classList.add('poppy-container-tip');
 		}
 	},
@@ -134,7 +128,9 @@ Poppy.options = {
 	 *
 	 * @type {(string|Node|selector)}
 	 */
-	content: null,
+	content: {
+		init: ''
+	},
 
 
 	/**
@@ -156,25 +152,29 @@ Poppy.options = {
 
 		//some external element/selector
 		_:{
-			getContentElement: function(val){
-				return q(val);
-			},
+			content: {
+				changed: function(val){
+					return q(val);
+				}
+			}
 		},
 
 		//innerHTML
 		html: {
-			getContentElement: function(val){
-				var el;
-				//ensure content holder exists
-				if (!this.contentElement) {
-					el = this.contentElement = document.createElement('div');
-					this.container.appendChild(el);
+			content: {
+				changed: function(val){
+					var el;
+					//ensure content holder exists
+					if (!this.contentElement) {
+						el = this.contentElement = document.createElement('div');
+						this.container.appendChild(el);
+					}
+					else {
+						el = this.contentElement;
+					}
+					el.innerHTML = val;
+					return el;
 				}
-				else {
-					el = this.contentElement;
-				}
-				el.innerHTML = val;
-				return el;
 			}
 		}
 	},
@@ -264,11 +264,11 @@ var proto = Poppy.prototype;
 proto.show = function(target){
 	var self = this;
 
-	//get real content evaled
-	var contentEl = self.getContentElement(self.content);
-
 	//append container to the holder
 	self.holder.appendChild(self.container);
+
+	//append tip, if needed
+	if (this.tip && !this.tipEl.parentNode) self.holder.appendChild(this.tipEl)
 
 	//place
 	self.place(target);
@@ -289,13 +289,12 @@ proto.hide = function(){
 	// console.log('hide');
 
 	//remove container from the holder, if it is still there
-	if (this.$container.parentNode === this.holder)
-		this.holder.removeChild(this.$container);
+	if (this.container.parentNode)
+		this.holder.removeChild(this.container);
 
-	//remove content from the container
-	if (this.content && this.content.parentNode === this.$container) {
-		this.$container.removeChild(this.content);
-	}
+	//remove tip
+	if (this.tipEl.parentNode)
+		this.holder.removeChild(this.tipEl);
 
 	//switch state
 	this.state = 'hidden';
