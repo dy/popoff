@@ -8,17 +8,19 @@
 
 /* Tip */
 .poppy-tip{
-	width: 2em;
-	height: 2em;
+	width: 1em;
+	height: 1em;
 	position: absolute;
-	z-index: 999;
+	z-index: 1000;
+	overflow: hidden;
+	/*outline: 1px dotted gray;*/
 }
 .poppy-tip:after{
 	content: '';
 	border-top-left-radius: 1px;
 	position: absolute;
 	background: white;
-	box-shadow: 0px 0px 1px rgba(40,50,55, .5);
+	box-shadow: 0px 0px 2px rgba(40,50,55, .3);
 	-webkit-transform: rotate(45deg);
 	-khtml-transform: rotate(45deg);
 	-moz-transform: rotate(45deg);
@@ -26,13 +28,29 @@
 	-o-transform: rotate(45deg);
 	transform: rotate(45deg);
 	/* Change these values to alter tip size */
-	width: 1.5em;
-	height: 1.5em;
+	width: 1em;
+	height: 1em;
+}
+.poppy-tip[data-side=top]:after{
+	top: auto;
+	bottom: .5em;
+}
+.poppy-tip[data-side=left]:after{
+	left: auto;
+	right: .5em;
+}
+.poppy-tip[data-side=bottom]:after{
+	top: .5em;
+	bottom: auto;
+}
+.poppy-tip[data-side=right]:after{
+	left: .5em;
+	right: auto;
 }
 
 
 .poppy-container-tip{
-	margin: 1em;
+	margin: .8em;
 }
 
 

@@ -97,6 +97,7 @@ proto.place = function(target){
 		align: this.tipAlign,
 		side: opts.side
 	});
+	this.tipEl.setAttribute('data-side', opts.side);
 
 	return this;
 };
