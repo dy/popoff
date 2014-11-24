@@ -41,6 +41,8 @@ function Poppy(options){
 	this.tipEl = document.createElement('div');
 	this.tipEl.className = 'poppy-tip';
 
+	//create content element
+	this.contentEl;
 
 	//apply params
 	state(this, this.constructor.options);
@@ -154,7 +156,10 @@ Poppy.options = {
 		_:{
 			content: {
 				changed: function(val){
-					return q(val);
+					var el = q(val);
+					el.removeAttribute('hidden');
+
+					this.contentEl = el;
 				}
 			}
 		},
@@ -165,12 +170,12 @@ Poppy.options = {
 				changed: function(val){
 					var el;
 					//ensure content holder exists
-					if (!this.contentElement) {
-						el = this.contentElement = document.createElement('div');
+					if (!this.contentEl) {
+						el = this.contentEl = document.createElement('div');
 						this.container.appendChild(el);
 					}
 					else {
-						el = this.contentElement;
+						el = this.contentEl;
 					}
 					el.innerHTML = val;
 					return el;
@@ -263,6 +268,10 @@ var proto = Poppy.prototype;
  */
 proto.show = function(target){
 	var self = this;
+
+	//append content element to the container
+	if (this.contentEl.parentNode !== this.container)
+		this.container.appendChild(this.contentEl);
 
 	//append container to the holder
 	self.holder.appendChild(self.container);
