@@ -6,76 +6,6 @@
 }
 
 
-/* Tip */
-.poppy-tip{
-	width: 1em;
-	height: 1em;
-	position: absolute;
-	z-index: 1000;
-	overflow: hidden;
-	/*outline: 1px dotted gray;*/
-}
-.poppy-tip:after{
-	content: '';
-	border-top-left-radius: 1px;
-	position: absolute;
-	background: white;
-	box-shadow: 0px 0px 2px rgba(40,50,55, .3);
-	-webkit-transform: rotate(45deg);
-	-khtml-transform: rotate(45deg);
-	-moz-transform: rotate(45deg);
-	-ms-transform: rotate(45deg);
-	-o-transform: rotate(45deg);
-	transform: rotate(45deg);
-	/* Change these values to alter tip size */
-	width: 1em;
-	height: 1em;
-}
-.poppy-tip[data-side=top]:after{
-	top: auto;
-	bottom: .5em;
-}
-.poppy-tip[data-side=left]:after{
-	left: auto;
-	right: .5em;
-}
-.poppy-tip[data-side=bottom]:after{
-	top: .5em;
-	bottom: auto;
-}
-.poppy-tip[data-side=right]:after{
-	left: .5em;
-	right: auto;
-}
-
-
-.poppy-container-tip{
-	margin: .8em;
-}
-
-
-
-/* Close button */
-.poppy-close{
-	position: absolute;
-	right: 0;
-	top: 0;
-	width: 40px;
-	height: 40px;
-	cursor: pointer;
-	line-height: 40px;
-	text-align: center;
-	opacity: .3;
-	font-size: 26px;
-}
-.poppy-close:after{
-	content: '×';
-}
-.poppy-close:hover{
-	opacity: 1;
-}
-
-
 
 /* Specific containers */
 .poppy-blind{
@@ -99,7 +29,7 @@
 	background: white;
 	box-shadow: 0 1px 6px rgba(40,50,55, .5);
 	min-height: 20px;
-	padding: 10px 40px 10px 10px;
+	padding: 1em 1em 1em 1em;
 	-webkit-animation-duration: .25s;
 	-khtml-animation-duration: .25s;
 	-moz-animation-duration: .25s;
@@ -114,7 +44,7 @@
 	z-index: 999;
 	background: white;
 	box-shadow: 0 1px 6px rgba(40,50,55, .5);
-	padding: 10px 10px 10px 10px;
+	padding: 1em 1em 1em 1em;
 	-webkit-animation-duration: .25s;
 	-khtml-animation-duration: .25s;
 	-moz-animation-duration: .25s;
@@ -128,7 +58,7 @@
 	left: 0;
 	background: white;
 	box-shadow: 0 1px 6px rgba(40,50,55, .5);
-	padding: 10px 10px 10px 10px;
+	padding: 1em 1em 1em 1em;
 	-webkit-animation-duration: .25s;
 	-khtml-animation-duration: .25s;
 	-moz-animation-duration: .25s;
@@ -137,8 +67,8 @@
 	animation-duration: .25s;
 }
 .poppy-tooltip{
-	box-shadow: 0 0 0 10px #ddd;
-	padding: 10px 10px;
+	box-shadow: 0 0 0 1em #ddd;
+	padding: 1em 1em;
 	border-radius: 8px;
 }
 .poppy-dialog{
@@ -147,3 +77,79 @@
 .poppy-lightbox{
 
 }
+
+
+
+
+
+/* Tip */
+.poppy-tip{
+	width: 1rem;
+	height: 1rem;
+	position: absolute;
+	z-index: 1000;
+	overflow: hidden;
+	/*outline: 1px dotted gray;*/
+}
+.poppy-tip:after{
+	content: '';
+	border-top-left-radius: 1px;
+	position: absolute;
+	background: white;
+	box-shadow: 0px 0px 2px rgba(40,50,55, .3);
+	-webkit-transform: rotate(45deg);
+	-khtml-transform: rotate(45deg);
+	-moz-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	-o-transform: rotate(45deg);
+	transform: rotate(45deg);
+	/* Change these values to alter tip size */
+	width: 1rem;
+	height: 1rem;
+}
+.poppy-tip[data-side=top]:after{
+	top: auto;
+	bottom: .5rem;
+}
+.poppy-tip[data-side=left]:after{
+	left: auto;
+	right: .5rem;
+}
+.poppy-tip[data-side=bottom]:after{
+	top: .5rem;
+	bottom: auto;
+}
+.poppy-tip[data-side=right]:after{
+	left: .5rem;
+	right: auto;
+}
+.poppy-container-tip{
+	margin: .8rem;
+}
+
+
+
+/* Close button */
+.poppy-close{
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 3rem;
+	height: 3rem;
+	cursor: pointer;
+	line-height: 3rem;
+	text-align: center;
+	opacity: .3;
+	font-size: 2rem;
+}
+.poppy-close:after{
+	content: '×';
+}
+.poppy-close:hover{
+	opacity: 1;
+}
+.poppy-container-close{
+	min-height: 1rem;
+	padding-right: 2.5rem;
+}
+

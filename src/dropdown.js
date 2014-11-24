@@ -59,8 +59,8 @@ opts.state.visible = {
 		this.hide();
 	},
 
-	/** Keep container updated on resize */
-	'window resize:throttle(50), :root scroll:throttle(50)': function(e){
+	/** Keep container updated on resize/scroll */
+	'window resize:throttle(50), document scroll:throttle(15)': function(e){
 		this.place(this.currentTarget);
 	}
 };
@@ -71,6 +71,12 @@ opts.state.visible = {
  * Show dropdown tip by default
  */
 opts.tip.init = true;
+
+
+/**
+ * Show close cross by default
+ */
+opts.close.init = true;
 
 
 

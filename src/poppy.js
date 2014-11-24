@@ -5,6 +5,17 @@ var q = require('query-relative');
 var parse = require('muparse');
 var extend = require('extend');
 var state = require('st8');
+var Emitter = require('emmy');
+
+
+//TODO: add close setting
+//TODO: build & min
+//TODO: bower, component
+//TODO: replace kudago dropdowns
+//TODO: tests page
+//TODO: demo page
+//TODO: fix tip position on dropdown edges (re-place container not including margins)
+//TODO: fix :root trouble
 
 
 /**
@@ -33,6 +44,8 @@ module.exports = Poppy;
  * @constructor
  */
 function Poppy(options){
+	var self = this;
+
 	//take over all props
 	extend(this, options);
 
@@ -43,6 +56,13 @@ function Poppy(options){
 
 	//create content element
 	this.contentEl;
+
+	//close button
+	this.closeEl = document.createElement('div');
+	this.closeEl.className = 'poppy-close';
+	Emitter.on(this.closeEl, 'click', function(){
+		self.hide();
+	});
 
 	//apply params
 	state(this, this.constructor.options);
@@ -58,6 +78,10 @@ Poppy.options = {
 	 * Redefine in exact instance of poppy.
 	 */
 	target: {},
+
+
+	/** Align container left by default */
+	align: 'left',
 
 	/**
 	 * A container instance.
@@ -86,8 +110,6 @@ Poppy.options = {
 	containerClass: '',
 
 
-	/** Align container left by default */
-	align: 'left',
 
 
 	/**
@@ -110,6 +132,14 @@ Poppy.options = {
 			this.container.classList.add('poppy-container-tip');
 		}
 	},
+
+
+	/** Side to align tip relative to the target but within the container
+	 *
+	 * @enum {string|number}
+	 * @default .5
+	 */
+	tipAlign: 0.5,
 
 
 	/**
@@ -157,6 +187,9 @@ Poppy.options = {
 			content: {
 				changed: function(val){
 					var el = q(val);
+
+					//remove from doc
+					if (el.parentNode) el.parentNode.removeChild(el);
 					el.removeAttribute('hidden');
 
 					this.contentEl = el;
@@ -185,16 +218,24 @@ Poppy.options = {
 	},
 
 
-	/** Side to align tip relative to the target but within the container
-	 *
-	 * @enum {string|number}
-	 * @default .5
-	 */
-	tipAlign: 0.5,
-
-
 	/** Instantly close other dropdowns when the one shows */
 	single: false,
+
+
+	/** Show close button or not */
+	close: {
+		init: false,
+		//don’t show close
+		_: function(){
+			this.container.replaceChild(this.closeEl);
+			this.container.classList.remove('poppy-container-close');
+		},
+		//show close
+		'true': function(){
+			this.container.appendChild(this.closeEl);
+			this.container.classList.add('poppy-container-close');
+		}
+	},
 
 
 	/**
