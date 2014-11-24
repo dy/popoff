@@ -8,10 +8,22 @@ var body = document.body, doc = document, root = doc.documentElement, p = doc.qu
 
 
 
+function createSection(name){
+	var h = document.createElement('h1');
+	h.innerHTML = name;
+	h.className = 'section-title';
+	p.appendChild(h);
+}
+
+
+
 describe('content', function(){
 	var content;
 
+
 	before(function(){
+		createSection('Content');
+
 		//create shareable content
 		content = document.createElement('div');
 		content.id = "content";
@@ -57,5 +69,27 @@ describe('content', function(){
 			target: target,
 			content: content
 		});
+	});
+});
+
+
+describe('options', function(){
+	before(function(){
+		createSection('Options');
+	});
+
+	it('close', function(){
+
+	});
+});
+
+
+describe('dropdown', function(){
+	before(function(){
+		createSection('Dropdown');
+	});
+
+	it('', function(){
+
 	});
 });
