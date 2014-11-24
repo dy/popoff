@@ -25,25 +25,18 @@ function Dropdown(options){
 
 
 /**
- * Go options after Poppy options
- */
-var opts = Dropdown.options = Object.create(Poppy.options);
-
-
-
-/**
  * Inherit from Poppy
  */
 var proto = Dropdown.prototype = Object.create(Poppy.prototype);
 proto.constructor = Dropdown;
 
 
+
 /**
- * Add dropdown class to the container
+ * Go options after Poppy options
  */
-// proto.options.container.changed = function($container){
-// 	$container.classList.add(name + '-dropdown');
-// };
+var opts = Dropdown.options = Object.create(Poppy.options);
+
 
 
 /**
@@ -58,7 +51,6 @@ opts.state.hidden = {
 	}
 	//TODO: preventDefault
 };
-
 opts.state.visible = {
 	/** Hide on click outside the container */
 	':root click:not(.poppy-dropdown)': function(){
@@ -76,35 +68,39 @@ opts.state.visible = {
 
 
 /**
+ * Show dropdown tip by default
+ */
+opts.tip.init = true;
+
+
+
+/**
 * Dropdowns are usually placed below the element, except for border cases
 */
-proto.alignment = 0.5;
+opts.align = 0.5;
 
 proto.place = function(target){
 	var opts = {
 		relativeTo: target,
 		side: 'bottom',
 		within: window,
-		align: this.alignment
+		align: this.align
 	};
 
 	//place by the bottom-strategy
 	place(this.container, opts);
 
-	//set tip inveted to the side (side could’ve changed in placing)
-	if (opts.side === 'bottom') this.tip = 'top';
-	if (opts.side === 'top') this.tip = 'bottom';
-	if (opts.side === 'left') this.tip = 'right';
-	if (opts.side === 'right') this.tip = 'left';
+
+	//place tip
+	place(this.tipEl, {
+		relativeTo: target,
+		align: this.tipAlign,
+		side: opts.side
+	});
 
 	return this;
 };
 
-
-// /**
-//  * Show dropdown tip by default
-//  */
-// proto.tip.init = 'top';
 
 
 // /**

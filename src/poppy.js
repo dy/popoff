@@ -36,6 +36,12 @@ function Poppy(options){
 	//take over all props
 	extend(this, options);
 
+
+	//create tip element
+	this.tipEl = document.createElement('div');
+	this.tipEl.className = 'poppy-tip';
+
+
 	//apply params
 	state(this, this.constructor.options);
 }
@@ -78,6 +84,10 @@ Poppy.options = {
 	containerClass: '',
 
 
+	/** Align container left by default */
+	align: 'left',
+
+
 	/**
 	 * Small arrow aside the container.
 	 * Tip is a tip container indeed, but user shouldn’t care.
@@ -89,12 +99,19 @@ Poppy.options = {
 	 *       So try to use placer for tips anyway.
 	 */
 	tip: {
-		init: function(){
-			//create tip - a container with overflow:hidden, and :after - a white rectangle pseudo inside.
-			var $tip = document.createElement('div');
-			$tip.className = 'popp-tip';
+		init: false,
+		//by default - hide link
+		_: function(){
+			if (this.tipEl.parentNode) {
+				this.holder.removeChild(this.tipEl);
+			}
 
-			return $tip;
+			this.container.classList.remove('poppy-container-tip');
+		},
+		'true': function(){
+			this.holder.appendChild(this.tipEl);
+
+			this.container.classList.add('poppy-container-tip');
 		}
 	},
 
@@ -135,6 +152,8 @@ Poppy.options = {
 	 * 'text'	Insert content as a plain text
 	 */
 	contentType: {
+		init: null,
+
 		//some external element/selector
 		_:{
 			getContentElement: function(val){
@@ -159,87 +178,6 @@ Poppy.options = {
 			}
 		}
 	},
-
-
-	/** Whether to show tip or not
-	 *
-	 * @enum {boolean}
-	 * @default false
-	 */
-	// tip: {
-	// 	'top, left, bottom, right': {
-	// 		before: function(){
-	// 			//add tip class
-	// 			this.$container.classList.add(name + '-container-tip');
-
-	// 			//append tip to the container
-	// 			this.$container.appendChild(this.$tip);
-	// 		}
-	// 	},
-	// 	'top, bottom': {
-	// 		updateTip: function(){
-	// 			var self = this;
-
-	// 			//tipSize is a size of tip diagonal
-	// 			var containerOffsets = css.offsets(this.$container);
-	// 			var targetOffsets = css.offsets(this);
-	// 			var tipLimit = this.$tip.offsetWidth * .5,
-	// 				tipSize = this.$tip.firstChild.offsetWidth * 1.414;
-
-	// 			//place the tip according to the current tipAlign value
-	// 			var tipOffset = Math.min(Math.max(
-	// 				targetOffsets.left - containerOffsets.left + this.tipAlign * targetOffsets.width - tipLimit
-	// 				, -tipLimit + tipSize * .5)
-	// 				, containerOffsets.width - tipLimit + tipSize * .5);
-
-	// 			css(this.$tip, {
-	// 				left: tipOffset,
-	// 				top: null
-	// 			});
-	// 		}
-	// 	},
-	// 	'left, right': {
-	// 		updateTip: function(){
-	// 			var self = this;
-
-	// 			var containerOffsets = css.offsets(this.$container);
-	// 			var targetOffsets = css.offsets(this);
-	// 			var tipLimit = this.$tip.offsetHeight * .5,
-	// 				tipSize = this.$tip.firstChild.offsetHeight * 1.414;
-
-	// 			//subtract page offsets, if fixed
-	// 			if (css.isFixed(this.$container)) {
-	// 				targetOffsets.top -= window.pageYOffset;
-	// 			}
-
-	// 			//place the tip according to the current tipAlign value
-	// 			var tipOffset = Math.min(Math.max(
-	// 				targetOffsets.top - containerOffsets.top + this.tipAlign * targetOffsets.height - tipLimit
-	// 				, -tipLimit + tipSize * .5)
-	// 				, containerOffsets.height - tipLimit + tipSize * .5);
-
-	// 			css(this.$tip, {
-	// 				top: tipOffset,
-	// 				left: null
-	// 			});
-	// 		}
-	// 	},
-	// 	changed: function(newValue, old){
-	// 		//keep tip direction class updated
-	// 		this.container.classList.remove(name + '-container-tip-' + old);
-	// 		this.container.classList.add(name + '-container-tip-' + newValue);
-	// 	},
-	// 	_: {
-	// 		before: function(){
-	// 			//remove tip from the container
-	// 			if (this.container.contains(this.$tip))
-	// 				this.container.removeChild(this.$tip);
-
-	// 			//remove tip class
-	// 			this.container.classList.remove(name + '-container-tip');
-	// 		}
-	// 	}
-	// },
 
 
 	/** Side to align tip relative to the target but within the container
