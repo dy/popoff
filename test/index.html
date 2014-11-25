@@ -16,18 +16,19 @@
 		font-family: sans-serif;
 		border-bottom: 1px solid rgba(220,220,220,1);
 		line-height: 1.5;
-		font-size: 1.5rem;
-		margin: 10px 10px;
+		font-size: 1.6rem;
+		margin: 1.6rem .8rem .8rem;
 	}
 	.target{
 		background: black;
 		color: white;
 		text-transform: uppercase;
-		padding: 4px 8px;
+		padding: .4rem .8rem;
 		display: inline-block;
 		letter-spacing: 2px;
 		font-size: 12px;
-		margin: 10px;
+		/*font-weight: bolder;*/
+		margin: 0rem 0 0rem .8rem;
 		cursor: pointer;
 	}
 	.container-lorem{
@@ -40,14 +41,12 @@
 <link rel="stylesheet" href="../index.css"/>
 
 
-<link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+<link rel="stylesheet" href="mocha.css" />
+<script src="mocha.js"></script>
 
 <div id="playground"></div>
 <div id="mocha"></div>
 
-<script src="../node_modules/mocha/mocha.js"></script>
-<script src="../node_modules/polymer-weakmap/weakmap.js"></script>
-<script src="../node_modules/chai/chai.js"></script>
 
 <script>
 	mocha.setup('bdd');

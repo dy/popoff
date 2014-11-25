@@ -1,6 +1,6 @@
 # Poppy
 
-Popups constructor and provider: tooltips, dropdowns, overlays, notifiers, etc. [Demo](http://dfcreative.github.io/poppy).
+Popups constructor and provider: tooltips, dropdowns, overlays, notifiers, etc. [Demo](http://dfcreative.github.io/poppy), [tests](https://rawgit.com/dfcreative/poppy/master/test/index.html).
 
 [![NPM](https://nodei.co/npm/poppy.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/poppy/)
 
@@ -9,7 +9,7 @@ Popups constructor and provider: tooltips, dropdowns, overlays, notifiers, etc. 
 
 ### Install
 
-Grab the [latest version](todo) or [CDN](todo). Insert it on the page:
+Grab the [latest version](todo) or [CDN](todo). Insert it in the page:
 
 ```html
 <script src="cdn_url/poppy.js"></script>
@@ -27,7 +27,19 @@ var Tooltip = require('poppy/tooltip');
 
 ### Use
 
-Create a new instance:
+#### In document:
+
+```html
+<div data-poppy="dropdown" data-content="#menu">Dropdown</div>
+
+<ul id="menu" hidden>
+	<li>Item 1</li>
+	<li>Item 2</li>
+	<li>Item 3</li>
+</ul>
+```
+
+#### In code:
 
 ```js
 var dropdown = new Dropdown({
@@ -78,4 +90,4 @@ var dropdown = new Dropdown({
 
 ## License
 
-MIT
+<a href="http://unlicense.org/UNLICENSE"><img src="http://upload.wikimedia.org/wikipedia/commons/6/62/PD-icon.svg" width="40"/></a>
