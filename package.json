@@ -6,10 +6,6 @@
   "directories": {
     "test": "test"
   },
-  "browser": {
-    "dropdown": "src/dropdown",
-    "tooltip": "src/tooltip"
-  },
   "dependencies": {
     "placer": "*",
     "selector-observer": "*",
@@ -19,7 +15,8 @@
     "enot": "*",
     "muparse": "0.x",
     "st8": "*",
-    "mutype": "~0.x"
+    "mutype": "~0.x",
+    "query-relative": "~1.x"
   },
   "devDependencies": {
     "mocha": "~1.21.4",
@@ -33,8 +30,8 @@
   },
   "scripts": {
     "test": "mocha-phantomjs test/index.html",
-    "build": "",
-    "build-test": "browserify -r "
+    "build": "browserify ./index.js --standalone poppy > dist/poppy.js",
+    "build-test": "browserify -r ./index.js:poppy > test/test.bundle.js"
   },
   "repository": {
     "type": "git",
@@ -48,10 +45,9 @@
     "overlay",
     "tooltip",
     "dropdown",
-    "mod",
     "DOM"
   ],
-  "author": "Deema Evanov",
+  "author": "Deema Ywanow",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/dfcreative/poppy/issues"

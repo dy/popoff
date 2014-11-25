@@ -1,4 +1,4 @@
-var Poppy = require('poppy');
+var Poppy = require('./poppy');
 var place = require('placer');
 var extend = require('extend');
 
