@@ -1,25 +1,10 @@
-* REFACTOR
-	* Make popup a separate controller, as well as a target
-
-
-
 * Think how to implement hover on dropdown target after being showed
-
-* Name plugin jquery.popup and init as data-popup="dropdown", data-popup-content="#link". Feel not comfortable with popupper.
-
-* Fluid-fixed hiding element behaviour (kudago-pagination-like)
-
-* BUG: dropdown sometimes excessively hides after show (kudago search). Why?
 
 * BUG: dropdown fucks up on outer click
 
 * Precisely-positioned element instant overlay, as lebedev makes. `position: [-10, -10]`, probably.
 
-* Suggester behaviour
-
 * Think of getting rid of overlay, animating it by css
-
-* Change class init to data-popup init: better naming (avoid popupper class), no class-clattering.
 
 * Form error/warning/success styles of balloons
 
@@ -77,5 +62,3 @@
 * Test position:center when the position is absolute, not fixed
 
 * Centrize when window resized
-
-* Rewrite without jquery

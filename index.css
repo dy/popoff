@@ -1,85 +1,49 @@
-﻿.poppy-container [hidden]{
-	display: none;
-}
-.poppy-container {
+﻿.poppy {
 	z-index: 999;
-}
-
-
-
-/* Specific containers */
-.poppy-blind{
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	min-height: 100%;
-	z-index: 998;
-	background: rgba(80,80,80,.6);
-	overflow: auto;
-}
-.poppy-popup{
 	position: absolute;
 	top: 0;
 	left: 0;
-	right: 0;
-	margin-left: auto;
-	margin-right: auto;
-	z-index: 999;
 	background: white;
 	box-shadow: 0 1px 6px rgba(40,50,55, .5);
 	min-height: 20px;
-	padding: 1em 1em 1em 1em;
-	-webkit-animation-duration: .25s;
-	-khtml-animation-duration: .25s;
-	-moz-animation-duration: .25s;
-	-ms-animation-duration: .25s;
-	-o-animation-duration: .25s;
+	padding: 1rem 1rem 1rem 1rem;
+}
+
+.poppy-hidden {
+	visibility: hidden;
+	opacity: 0;
+}
+
+.poppy-animating {
 	animation-duration: .25s;
-}
-.poppy-popover{
-	position: absolute;
-	top: 0;
-	left: 0;
-	z-index: 999;
-	background: white;
-	box-shadow: 0 1px 6px rgba(40,50,55, .5);
-	padding: 1em 1em 1em 1em;
-	-webkit-animation-duration: .25s;
-	-khtml-animation-duration: .25s;
-	-moz-animation-duration: .25s;
-	-ms-animation-duration: .25s;
-	-o-animation-duration: .25s;
-	animation-duration: .25s;
-}
-.poppy-dropdown{
-	position: absolute;
-	top: 0;
-	left: 0;
-	background: white;
-	box-shadow: 0 1px 6px rgba(40,50,55, .5);
-	padding: 1em 1em 1em 1em;
-	-webkit-animation-duration: .25s;
-	-khtml-animation-duration: .25s;
-	-moz-animation-duration: .25s;
-	-ms-animation-duration: .25s;
-	-o-animation-duration: .25s;
-	animation-duration: .25s;
-}
-.poppy-tooltip{
-	box-shadow: 0 0 0 1em #ddd;
-	padding: 1em 1em;
-	border-radius: 8px;
-}
-.poppy-dialog{
-
-}
-.poppy-lightbox{
-
+	animation-fill-mode: both;
 }
 
 
+@keyframes fade-in {
+	0% {
+		opacity: 0;
+	}
 
+	100% {
+		opacity: 1;
+	}
+}
+@keyframes fade-out {
+	0% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+.poppy-fade-in {
+	animation-name: fade-in;
+}
+.poppy-fade-out {
+	animation-name: fade-out;
+}
 
 
 /* Tip */
