@@ -1,31 +1,13 @@
-Poppy is a base component for building any kind of popups: modal, tooltip, popup, dropdown, confirm, notifier, popover, lightbox, balloon etc.
+Poppy is a base component for building any kind of popups: modal, tooltip, popup, dropdown, confirm, notifier, popover, lightbox, balloon etc. [Demo](http://dfcreative.github.io/poppy).
+
+
+[![npm install poppy](https://nodei.co/npm/poppy.png?mini=true)](https://npmjs.org/package/poppy/)
+
 
 ```js
 var Poppy = require('poppy');
 
-
 var popup = new Poppy({
-
-});
-popup.show(target);
-
-
-var tooltip = new Poppy({
-
-});
-
-
-var notification = new Poppy({
-
-});
-
-
-var dropdown = new Poppy({
-	tip: true
-});
-
-
-var modal = new Poppy({
 	closable: true,
 	escapable: true,
 	overlay: true,
@@ -33,7 +15,14 @@ var modal = new Poppy({
 	placement: 'free',
 	draggable: true
 });
+
+popup.show();
 ```
+
+| Option | Default | Description |
+|---|---|---|
+| closable | `false` | Show close button within the popup. |
+
 
 ## Why not component/tip, component/dialog etc?
 
