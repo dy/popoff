@@ -1,4 +1,4 @@
-var Poppy = require('poppy');
+var Poppy = require('popoff');
 var ipsum = require('lorem-ipsum');
 var Draggable = require('draggy');
 var Resizable = require('resizable');
@@ -17,7 +17,7 @@ describe('type', function(){
 		target.className = 'target';
 		p.appendChild(target);
 
-		var poppy = new Poppy(ipsum({count: 3, units: 'paragraph', format: 'html'}), {
+		var popoff = new Poppy(ipsum({count: 3, units: 'paragraph', format: 'html'}), {
 			target: target,
 			type: 'dropdown'
 		});
@@ -29,7 +29,7 @@ describe('type', function(){
 		target.className = 'target';
 		p.appendChild(target);
 
-		var poppy = new Poppy(ipsum({count: 3, units: 'paragraph', format: 'html'}), {
+		var popoff = new Poppy(ipsum({count: 3, units: 'paragraph', format: 'html'}), {
 			target: target,
 			type: 'tooltip'
 		});
@@ -44,13 +44,13 @@ describe('type', function(){
 		var el = document.createElement('div');
 		el.innerHTML = ipsum({count: 3, units: 'paragraph', format: 'html'});
 
-		var poppy = new Poppy(el, {
+		var popoff = new Poppy(el, {
 			closable: true,
 			escapable: true
 		});
 
 		target.onclick = function () {
-			poppy.show();
+			popoff.show();
 		}
 
 		Draggable(el);

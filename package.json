@@ -1,5 +1,5 @@
 {
-  "name": "poppy",
+  "name": "popoff",
   "version": "1.0.1",
   "description": "Popups, tooltips and overlays",
   "main": "index.js",
@@ -27,13 +27,13 @@
     "watchify": "^3.3.0"
   },
   "scripts": {
-    "watch": "watchify -t babelify -r ./index.js:poppy -r lorem-ipsum -r draggy -r resizable -d -o test/bundle.js",
+    "watch": "watchify -t babelify -r ./index.js:popoff -r lorem-ipsum -r draggy -r resizable -d -o test/bundle.js",
     "css": "postcss -u autoprefixer ./index.css > ./test/bundle.css"
   },
   "style": "index.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dfcreative/poppy"
+    "url": "https://github.com/dfcreative/popoff"
   },
   "keywords": [
     "component",
@@ -48,7 +48,7 @@
   "author": "Deema Ywanow",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dfcreative/poppy/issues"
+    "url": "https://github.com/dfcreative/popoff/issues"
   },
-  "homepage": "https://dfcreative.github.io/poppy"
+  "homepage": "https://dfcreative.github.io/popoff"
 }

@@ -18,16 +18,16 @@ const ANIM_END = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationen
 
 
 /**
- * @class  Poppy
+ * @class  Popup
  */
-class Poppy extends Emitter {
+class Popup extends Emitter {
 	/**
 	 * @constructor
 	 *
 	 * @param {Element} el An element to take as a content
 	 * @param {Object} options Showing options
 	 *
-	 * @return {Poppy} A poppy controller
+	 * @return {Popup} A poppy controller
 	 */
 	constructor (el, options) {
 		super();
@@ -151,7 +151,7 @@ class Poppy extends Emitter {
 }
 
 
-var proto = Poppy.prototype;
+var proto = Popup.prototype;
 
 
 /** Show overlay */
@@ -345,4 +345,4 @@ proto.state = {
 proto.effect = 'fade';
 
 
-module.exports = Poppy;
+module.exports = Popup;
