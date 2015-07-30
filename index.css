@@ -87,9 +87,6 @@
 	left: .5rem;
 	right: auto;
 }
-.poppy-container-tip{
-	margin: .8rem;
-}
 
 
 
@@ -112,8 +109,3 @@
 .poppy-close:hover{
 	opacity: 1;
 }
-.poppy-container-close{
-	min-height: 1rem;
-	padding-right: 2.5rem;
-}
-
