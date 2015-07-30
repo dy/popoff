@@ -1,13 +1,13 @@
-Poppy is a base component for building any kind of popups: modal, tooltip, popup, dropdown, confirm, notifier, popover, lightbox, balloon etc. [Demo](http://dfcreative.github.io/popoff).
+Popoff is a base component for building any kind of popups: modal, tooltip, popup, dropdown, confirm, notifier, popover, lightbox, balloon etc. [Demo](http://dfcreative.github.io/popoff).
 
 
 [![npm install popoff](https://nodei.co/npm/popoff.png?mini=true)](https://npmjs.org/package/popoff/)
 
 
 ```js
-var Poppy = require('popoff');
+var Popoff = require('popoff');
 
-var popup = new Poppy({
+var popup = new Popoff({
 	closable: true,
 	escapable: true,
 	overlay: true
