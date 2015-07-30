@@ -28,6 +28,7 @@
   },
   "scripts": {
     "watch": "watchify -t babelify -r ./index.js:popoff -r lorem-ipsum -r draggy -r resizable -d -o test/bundle.js",
+    "build": "browserify -t babelify -r ./index.js:popoff -r lorem-ipsum -r draggy -r resizable -o test/bundle.js",
     "css": "postcss -u autoprefixer ./index.css > ./test/bundle.css"
   },
   "style": "index.css",
