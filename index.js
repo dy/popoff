@@ -77,10 +77,8 @@ class Poppy extends Emitter {
 
 	/**
 	 * Show popup near to the target
-	 *
-	 * @param {Element|number} target An element or coordinates to show the popup
 	 */
-	show (target) {
+	show () {
 		var self = this;
 
 		self.state = 'animIn';
@@ -102,8 +100,15 @@ class Poppy extends Emitter {
 
 
 	/** Place popup next to the target */
-	place (target) {
+	place (how) {
 		var self = this;
+
+		place(self.element, extend({
+			to: self.target,
+			side: 'bottom',
+			align: 'left',
+			within: window
+		}, how));
 
 		return self;
 	}
@@ -141,7 +146,9 @@ proto.target = document;
 proto.type = {
 	//undefined - implement showing strategy manually
 	_: {
-
+		before: function () {
+			var self = this;
+		}
 	},
 
 	//dropdown
@@ -151,7 +158,15 @@ proto.type = {
 
 			//show on click
 			on(self.target, 'click', function (e) {
+				//ignore instant bubbling
+				if (self.state !== 'hidden') {
+					return;
+				}
+
 				self.show();
+				self.place({
+
+				});
 			});
 
 			//hide on unfocus

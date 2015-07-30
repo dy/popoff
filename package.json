@@ -13,7 +13,7 @@
   "dependencies": {
     "define-state": "^1.1.0",
     "emmy": "^5.3.2",
-    "placer": "^1.0.1",
+    "placer": "^1.0.4",
     "xtend": "^4.0.0"
   },
   "devDependencies": {
