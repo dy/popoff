@@ -31,6 +31,9 @@
     "build": "browserify -t babelify -r ./index.js:popoff -r lorem-ipsum -r draggy -r resizable -o test/bundle.js",
     "css": "postcss -u autoprefixer ./index.css > ./test/bundle.css"
   },
+  "browserify": {
+    "transform": [ "babelify" ]
+  },
   "style": "index.css",
   "repository": {
     "type": "git",
