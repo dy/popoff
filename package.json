@@ -1,6 +1,6 @@
 {
   "name": "popoff",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Popups, tooltips and overlays",
   "main": "index.js",
   "directories": {
@@ -32,7 +32,9 @@
     "css": "postcss -u autoprefixer ./index.css > ./test/bundle.css"
   },
   "browserify": {
-    "transform": [ "babelify" ]
+    "transform": [
+      "babelify"
+    ]
   },
   "style": "index.css",
   "repository": {
