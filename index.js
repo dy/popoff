@@ -141,8 +141,8 @@ class Popup extends Emitter {
 
 		place(self.element, extend({
 			to: self.target,
-			side: 'bottom',
-			align: 'left',
+			side: 'center',
+			align: 'center',
 			within: window
 		}, how));
 
