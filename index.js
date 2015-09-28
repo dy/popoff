@@ -117,6 +117,8 @@ class Popup extends Emitter {
 
 		self.place();
 
+		self.emit('show');
+
 		return self;
 	}
 
@@ -130,6 +132,8 @@ class Popup extends Emitter {
 		if (self.state !== 'visible') return;
 
 		self.state = 'animOut';
+
+		self.emit('hide');
 
 		return self;
 	}
