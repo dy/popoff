@@ -15,6 +15,8 @@ const fs = require('fs');
 insertCss(fs.readFileSync('./index.css', 'utf-8'));
 
 
+module.exports = Popup;
+
 /**
  * @class  Popup
  *
@@ -28,7 +30,8 @@ insertCss(fs.readFileSync('./index.css', 'utf-8'));
 function Popup (opts) {
 	if (!(this instanceof Popup)) return new Popup(opts);
 
-	extend(this, opts);
+	//take over type’s options first
+	extend(this, this.types[opts.type], opts);
 
 	//generate unique id
 	this.id = uid();
@@ -46,7 +49,15 @@ function Popup (opts) {
 	if (!this.element) this.element = document.createElement('div');
 	this.element.classList.add('popoff-popup');
 	this.element.classList.add('popoff-hidden');
-	this.element.innerHTML = this.content;
+	this.element.classList.add(`popoff-${this.type}`);
+
+	if (this.content instanceof HTMLElement) {
+		this.element.appendChild(this.content);
+	}
+	else if (typeof this.content === 'string') {
+		this.element.innerHTML = this.content;
+	}
+
 	this.container.appendChild(this.element);
 
 	//create close element
@@ -59,6 +70,7 @@ function Popup (opts) {
 		this.element.appendChild(this.closeElement);
 	}
 
+
 	if (this.escapable) {
 		document.addEventListener('keyup', e => {
 			if (e.which === 27) {
@@ -67,25 +79,24 @@ function Popup (opts) {
 		});
 	}
 
-	if (/modal|popup|dialog|confirm/.test(this.type)) {
-		this.element.classList.add('big');
-	}
-	else {
-		this.element.classList.add('small');
-	}
-
 	window.addEventListener('resize', () => {
 		this.update();
 	});
 
-	//ensure element is in the document
-	document.body.appendChild(this.element);
+	//take over options events as well
+	if (this.onInit) this.on('init', this.onInit);
+	if (this.onShow) this.on('show', this.onShow);
+	if (this.onHide) this.on('hide', this.onHide);
+	if (this.onAfterShow) this.on('afterShow', this.onAfterShow);
+	if (this.onAfterHide) this.on('afterHide', this.onAfterHide);
+
+	this.emit('init');
 }
 
 inherits(Popup, Emitter);
 
 extend(Popup.prototype, {
-	/** Show overlay */
+	/** Show overlay, will be detected based off type */
 	overlay: true,
 
 	/** Show close button */
@@ -97,146 +108,69 @@ extend(Popup.prototype, {
 	/** Show tip */
 	tip: false,
 
+	/** Place popup relative to the element, like dropdown */
+	target: null,
+
 	/** Whether to show only one popup */
 	single: true,
 
 	/** A target to bind default placing */
 	container: document.body || document.documentElement,
 
-	/** Animation effect */
+	/** Animation effect, can be a list */
 	effect: 'fade',
 
-	//default type is modal
+	/** Default module type to take over the options */
 	type: 'modal',
+
+	/** Placing settings */
+	side: 'center',
+	align: 'center',
 
 	//default anim fallback
 	animTimeout: 1000
 });
 
 
-/**
- * Show popup near to the target
- */
-Popup.prototype.show = function () {
-	this.emit('show');
-
-	//in some way it needs to be called in timeout, otherwise animation fails
-	setTimeout(() => {
-		this.element.classList.remove('popoff-hidden');
-		this.element.classList.add(`popoff-${ this.effect }`);
-		// this.element.classList.add(`popoff-${ this.effect }-in`);
-		this.update();
-	});
-
-	if (this.overlay) {
-		this._overlay = createOverlay({closable: this.closable})
-		.on('hide', e => {
-			this._overlay = null;
-			this.hide();
-		})
-		.show();
-	}
-
-	this.animend((e) => {
-		//in case if something happened with content during the animation
-		this.update();
-	});
-
-	return this;
-}
-
-
-/**
- * Hide popup
- */
-Popup.prototype.hide = function () {
-	//overlay recurrently calls this.hide, so just drop it here
-	if (this._overlay) return this._overlay.hide();
-
-	this.emit('hide');
-
-	this.element.classList.add('popoff-hidden');
-	this.element.classList.remove(`popoff-${ this.effect }`);
-
-	this.animend(() => {
-		this._overlay = null;
-	});
-
-	return this;
-}
-
-
-/** Place popup next to the target */
-Popup.prototype.update = function (how) {
-	if (/modal|popup|dialog|confirm/.test(this.type)) {
-		place(this.element, extend({
-			target: window,
-			side: 'center',
-			align: 'center'
-		}, how));
-	}
-	else {
-		place(this.element, extend({
-			target: this.container,
-			side: 'center',
-			align: 'center',
-			within: window
-		}, how));
-	}
-
-	return this;
-}
-
-
-/** Trigger callback once on anim end */
-Popup.prototype.animend = function (cb) {
-	var to = setTimeout(() => {
-		cb.call(this);
-	}, this.animTimeout);
-
-	this.element.addEventListener('transitionend', end);
-	this.element.addEventListener('webkitTransitionEnd', end);
-	this.element.addEventListener('otransitionend', end);
-	this.element.addEventListener('oTransitionEnd', end);
-	this.element.addEventListener('msTransitionEnd', end);
-
-	var that = this;
-	function end () {
-		clearTimeout(to);
-
-		// that.element.removeEventListener('animationend', end);
-		// that.element.removeEventListener('mozAnimationEnd', end);
-		// that.element.removeEventListener('webkitAnimationEnd', end);
-		// that.element.removeEventListener('oanimationend', end);
-		// that.element.removeEventListener('MSAnimationEnd', end);
-		that.element.removeEventListener('transitionend', end);
-		that.element.removeEventListener('webkitTransitionEnd', end);
-		that.element.removeEventListener('otransitionend', end);
-		that.element.removeEventListener('oTransitionEnd', end);
-		that.element.removeEventListener('msTransitionEnd', end);
-
-		cb.call(that);
-	}
-}
 
 /** Type of default interactions */
 Popup.prototype.types = {
-	//undefined - implement showing strategy manually
-	_: {
-		before: function () {
-			var that = this;
-		}
+	modal: {
+		overlay: false,
+		closable: true,
+		escapable: true,
+		tip: false,
+		single: true,
+		side: 'center',
+		align: 'center',
+		target: null
 	},
 
-	//dropdown
 	dropdown: {
-		before: function () {
+		overlay: false,
+		closable: false,
+		escapable: true,
+		target: null,
+		tip: true,
+		single: true,
+		side: 'bottom',
+		align: 'center',
+		onInit: function () {
+			if (this.target) {
+				this.target.addEventListener('click', (e) => {
+					if (this.isVisible) return this.hide();
+
+					else return this.show();
+				});
+			}
+		},
+		onShow: function () {
 			var that = this;
 
 			//show on click
-			on(this.target, `click`, function (e) {
+			this.target.addEventListener('click', e => {
 				//ignore instant bubbling
-				if (this.state !== 'hidden') {
+				if (!this.isVisible) {
 					return;
 				}
 
@@ -244,24 +178,20 @@ Popup.prototype.types = {
 			});
 
 			//hide on unfocus
-			document.addEventListener('click', () => {
-				//ignore instant bubbling
-				if (this.state !== 'visible') {
+			document.addEventListener('click', e => {
+				if (!this.isVisible) {
 					return;
 				}
-				//ignore this clicks
+
+				//ignore contain clicks
 				if (this.element.contains(e.target)) {
 					return;
 				}
 
+				//ignore self clicks
 				this.hide();
 			})
-		},
-		after: function () {
-			var that = this;
 
-			off(this.target, `click.${ this.id }`);
-			off(document, `click.${ this.id }`);
 		}
 	},
 
@@ -304,4 +234,118 @@ Popup.prototype.types = {
 };
 
 
-module.exports = Popup;
+/**
+ * Show popup near to the target
+ */
+Popup.prototype.show = function (target) {
+	this._target = target || this.target;
+
+	this._target.classList.add('popoff-active');
+
+	this.emit('show', this._target);
+
+	//in some way it needs to be called in timeout, otherwise animation fails
+	setTimeout(() => {
+		this.element.classList.remove('popoff-hidden');
+		var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
+		effects.forEach((effect) => {
+			this.element.classList.add(`popoff-${ effect }`);
+		});
+		this.update();
+	});
+
+	if (this.overlay) {
+		this._overlay = createOverlay({closable: this.closable})
+		.on('hide', e => {
+			this._overlay = null;
+			this.hide();
+		})
+		.show();
+	}
+
+	this.isAnimating = true;
+	this.animend((e) => {
+		//in case if something happened with content during the animation
+		// this.update();
+		this.isAnimating = false;
+		this.isVisible = true;
+		this.emit('afterShow');
+	});
+
+	return this;
+}
+
+
+/**
+ * Hide popup
+ */
+Popup.prototype.hide = function () {
+	//overlay recurrently calls this.hide, so just drop it here
+	if (this._overlay) return this._overlay.hide();
+
+	this._target && this._target.classList.remove('popoff-active');
+
+	this.emit('hide');
+	this.isVisible = false;
+
+	this.element.classList.add('popoff-hidden');
+
+	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
+	effects.forEach((effect) => {
+		this.element.classList.remove(`popoff-${ effect }`);
+	});
+
+	this.isAnimating = true;
+	this.animend(() => {
+		this.isAnimating = false;
+		this._overlay = null;
+		this.emit('afterHide');
+	});
+
+	return this;
+}
+
+
+/** Place popup next to the target */
+Popup.prototype.update = function (how) {
+	place(this.element, extend({
+		target: this._target || this.target,
+		side: this.side,
+		align: this.align,
+		within: window
+	}, how));
+
+	return this;
+}
+
+
+/** Trigger callback once on anim end */
+Popup.prototype.animend = function (cb) {
+	var to = setTimeout(() => {
+		cb.call(this);
+	}, this.animTimeout);
+
+	this.element.addEventListener('transitionend', end);
+	this.element.addEventListener('webkitTransitionEnd', end);
+	this.element.addEventListener('otransitionend', end);
+	this.element.addEventListener('oTransitionEnd', end);
+	this.element.addEventListener('msTransitionEnd', end);
+
+	var that = this;
+	function end () {
+		clearTimeout(to);
+
+		// that.element.removeEventListener('animationend', end);
+		// that.element.removeEventListener('mozAnimationEnd', end);
+		// that.element.removeEventListener('webkitAnimationEnd', end);
+		// that.element.removeEventListener('oanimationend', end);
+		// that.element.removeEventListener('MSAnimationEnd', end);
+		that.element.removeEventListener('transitionend', end);
+		that.element.removeEventListener('webkitTransitionEnd', end);
+		that.element.removeEventListener('otransitionend', end);
+		that.element.removeEventListener('oTransitionEnd', end);
+		that.element.removeEventListener('msTransitionEnd', end);
+
+		cb.call(that);
+	}
+}

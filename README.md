@@ -1,6 +1,6 @@
 # popoff
 
-Popoff runs modals, tooltips, popups, dropdowns, confirms, notifiers, popovers, lightboxes, balloons, dialogs, alerts, overlays etc.
+Popoff runs modals, tooltips, popups, dropdowns, confirms, notifiers, popovers, lightboxes, balloons, dialogs, alerts, overlays, sidebars etc.
 
 
 [![npm install popoff](https://nodei.co/npm/popoff.png?mini=true)](https://npmjs.org/package/popoff/)
@@ -9,7 +9,7 @@ Popoff runs modals, tooltips, popups, dropdowns, confirms, notifiers, popovers, 
 ```js
 var createPopup = require('popoff');
 
-var popup = createPopup({
+var modal = createPopup({
 	closable: true,
 	escapable: true,
 	overlay: true,
@@ -23,7 +23,15 @@ var popup = createPopup({
 	`
 });
 
-popup.show();
-popup.hide();
-popup.update();
+modal.show();
+modal.hide();
+modal.update();
+
+
+var dropdown = createPopup({
+	type: 'dopdown',
+	content: document.querySelector('#content')
+});
+
+dropdown.show(document.querySelector('#menu'));
 ```

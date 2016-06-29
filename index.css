@@ -17,18 +17,9 @@
 	margin: auto;
 	min-width: 4rem;
 	min-height: 1rem;
-	max-width: 660px;
 	background: white;
-	box-shadow: 0 .666vh 3.333vw -.333vh rgba(19, 16, 27, 0.39);
-	padding: 1.6rem 2rem;
 	opacity: 1;
 	transition: opacity .35s;
-}
-
-@media (max-width: 640px) {
-	.popoff-popup {
-		max-width: 80%;
-	}
 }
 
 .popoff-closable {
@@ -43,10 +34,28 @@
 
 
 /* Types */
-.popoff-big {
+.popoff-modal,
+.popoff-dialog,
+.popoff-popup,
+.popoff-confirm,
+.popoff-alert {
+	max-width: 660px;
+	padding: 1.6rem 2rem;
 	box-shadow: 0 .666vh 3.333vw -.333vh rgba(19, 16, 27, 0.45);
 }
-.popoff-small {
+@media (max-width: 640px) {
+	.popoff-modal,
+	.popoff-dialog,
+	.popoff-popup,
+	.popoff-confirm,
+	.popoff-alert {
+		max-width: 80%;
+	}
+}
+.popoff-dropdown,
+.popoff-tooltip {
+	max-width: 320px;
+	padding: .8rem 1.2rem;
 	box-shadow: 0 1px 12px rgba(19, 16, 27, 0.25);
 }
 

@@ -29,7 +29,7 @@ test('overlay', function (done) {
 });
 
 
-test.only('modal', function () {
+test('modal', function () {
 	this.timeout(Infinity);
 
 	var p = Popup({
@@ -41,23 +41,47 @@ test.only('modal', function () {
 		`
 	});
 	p.show();
-	// document.addEventListener('click', () => {
-
-	// });
 
 });
 
 
-test('dropdown', () => {
-	var target = document.createElement('div');
-	target.innerHTML = this.test.title;
-	target.className = 'target';
-	p.appendChild(target);
+test('sidebar', function () {
+	this.timeout(Infinity);
 
-	var popoff = new Popup(ipsum({count: 3, units: 'paragraph', format: 'html'}), {
+	var p = Popup({
+		overlay: true,
+		type: 'sidebar',
+		content: `
+			<h2>Settings</h2>
+			<br/>
+			${ipsum({count: 3, units: 'paragraph', format: 'html'})}
+		`
+	});
+	p.show();
+
+});
+
+
+test.only('dropdown', () => {
+	var target = document.createElement('span');
+	target.innerHTML = 'Dropdown';
+	target.className = 'target';
+	target.style.background = 'black';
+	target.style.color = 'white';
+	target.style.padding = '10px';
+	document.querySelectorAll('p')[2].appendChild(target);
+
+	var content = document.createElement('div');
+	content.innerHTML = ipsum({count: 1, units: 'paragraph', format: 'html'});
+	document.body.appendChild(content);
+
+	var dropdown = new Popup({
+		content: content,
 		target: target,
 		type: 'dropdown'
 	});
+
+	// dropdown.show();
 });
 
 test('tooltip', () => {
