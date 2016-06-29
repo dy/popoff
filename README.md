@@ -23,4 +23,5 @@ var popup = createPopup({
 
 popup.show();
 popup.hide();
+popup.update();
 ```

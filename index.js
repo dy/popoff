@@ -32,7 +32,7 @@ function Popup (opts) {
 	this.id = uid();
 
 	//FIXME: :'(
-	this.place = this.place.bind(this);
+	this.update = this.update.bind(this);
 
 	//take over a target first
 	if (!this.container) {
@@ -107,7 +107,7 @@ Popup.prototype.show = function () {
 	setTimeout(() => {
 		this.element.classList.remove('hidden');
 		this.element.classList.add(`${ this.effect }-in`);
-		this.place();
+		this.update();
 	});
 
 	if (this.overlay) {
@@ -135,7 +135,7 @@ Popup.prototype.show = function () {
 
 	function end () {
 		that.element.classList.remove(`${ that.effect }-in`);
-		window.addEventListener('resize', that.place);
+		window.addEventListener('resize', that.update);
 
 		clearTimeout(to);
 		// that.element.removeEventListener('animationend', end);
@@ -185,7 +185,7 @@ Popup.prototype.hide = function () {
 		that.container.removeEventListener('webkitAnimationEnd', end);
 		that.container.removeEventListener('oanimationend', end);
 		that.container.removeEventListener('MSAnimationEnd', end);
-		window.removeEventListener('resize', that.place);
+		window.removeEventListener('resize', that.update);
 	}
 
 	return this;
@@ -193,7 +193,7 @@ Popup.prototype.hide = function () {
 
 
 /** Place popup next to the target */
-Popup.prototype.place = function (how) {
+Popup.prototype.update = function (how) {
 	place(this.element, extend({
 		target: this.container,
 		side: 'center',
