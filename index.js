@@ -9,8 +9,10 @@ const extend = require('xtend/mutable');
 const uid = require('get-uid');
 const inherits = require('inherits');
 const createOverlay = require('./overlay');
-var sf = require('sheetify');
-var className = sf('./index.css');
+const insertCss = require('insert-css');
+const fs = require('fs');
+
+insertCss(fs.readFileSync('./index.css', 'utf-8'));
 
 
 /**
@@ -38,18 +40,18 @@ function Popup (opts) {
 	if (!this.container) {
 		this.container = document.body || document.documentElement;
 	}
-	this.container.classList.add(className);
+	this.container.classList.add('popoff-container');
 
 	//ensure element
 	if (!this.element) this.element = document.createElement('div');
-	this.element.classList.add('popup');
-	this.element.classList.add('hidden');
+	this.element.classList.add('popoff-popup');
+	this.element.classList.add('popoff-hidden');
 	this.element.innerHTML = this.content;
 	this.container.appendChild(this.element);
 
 	//create close element
 	this.closeElement = document.createElement('div');
-	this.closeElement.classList.add('close');
+	this.closeElement.classList.add('popoff-close');
 	if (this.closable) {
 		this.closeElement.addEventListener('click', e => {
 			this.hide();
@@ -64,6 +66,17 @@ function Popup (opts) {
 			}
 		});
 	}
+
+	if (/modal|popup|dialog|confirm/.test(this.type)) {
+		this.element.classList.add('big');
+	}
+	else {
+		this.element.classList.add('small');
+	}
+
+	window.addEventListener('resize', () => {
+		this.update();
+	});
 
 	//ensure element is in the document
 	document.body.appendChild(this.element);
@@ -93,6 +106,10 @@ extend(Popup.prototype, {
 	/** Animation effect */
 	effect: 'fade',
 
+	//default type is modal
+	type: 'modal',
+
+	//default anim fallback
 	animTimeout: 1000
 });
 
@@ -105,9 +122,9 @@ Popup.prototype.show = function () {
 
 	//in some way it needs to be called in timeout, otherwise animation fails
 	setTimeout(() => {
-		this.element.classList.remove('hidden');
-		this.element.classList.add(`${ this.effect }`);
-		// this.element.classList.add(`${ this.effect }-in`);
+		this.element.classList.remove('popoff-hidden');
+		this.element.classList.add(`popoff-${ this.effect }`);
+		// this.element.classList.add(`popoff-${ this.effect }-in`);
 		this.update();
 	});
 
@@ -120,36 +137,10 @@ Popup.prototype.show = function () {
 		.show();
 	}
 
-	var that = this;
-
-	// this.element.addEventListener('animationend', end);
-	// this.element.addEventListener('mozAnimationEnd', end);
-	// this.element.addEventListener('webkitAnimationEnd', end);
-	// this.element.addEventListener('oanimationend', end);
-	// this.element.addEventListener('MSAnimationEnd', end);
-	this.element.addEventListener('transitionend', end);
-	this.element.addEventListener('webkitTransitionEnd', end);
-	this.element.addEventListener('otransitionend', end);
-	this.element.addEventListener('oTransitionEnd', end);
-	this.element.addEventListener('msTransitionEnd', end);
-	var to = setTimeout(end, this.animTimeout);
-
-	function end () {
-		// that.element.classList.remove(`${ that.effect }-in`);
-		window.addEventListener('resize', that.update);
-
-		clearTimeout(to);
-		// that.element.removeEventListener('animationend', end);
-		// that.element.removeEventListener('mozAnimationEnd', end);
-		// that.element.removeEventListener('webkitAnimationEnd', end);
-		// that.element.removeEventListener('oanimationend', end);
-		// that.element.removeEventListener('MSAnimationEnd', end);
-		that.element.removeEventListener('transitionend', end);
-		that.element.removeEventListener('webkitTransitionEnd', end);
-		that.element.removeEventListener('otransitionend', end);
-		that.element.removeEventListener('oTransitionEnd', end);
-		that.element.removeEventListener('msTransitionEnd', end);
-	}
+	this.animend((e) => {
+		//in case if something happened with content during the animation
+		this.update();
+	});
 
 	return this;
 }
@@ -164,31 +155,12 @@ Popup.prototype.hide = function () {
 
 	this.emit('hide');
 
-	this.element.classList.add('hidden');
-	this.element.classList.remove(`${ this.effect }`);
-	// this.element.classList.add(`${ this.effect }-out`);
+	this.element.classList.add('popoff-hidden');
+	this.element.classList.remove(`popoff-${ this.effect }`);
 
-	this.container.addEventListener('animationend', end);
-	this.container.addEventListener('mozAnimationEnd', end);
-	this.container.addEventListener('webkitAnimationEnd', end);
-	this.container.addEventListener('oanimationend', end);
-	this.container.addEventListener('MSAnimationEnd', end);
-	var to = setTimeout(end, this.animTimeout);
-
-	var that = this;
-
-	function end () {
-		// that.element.classList.remove(`${ that.effect }-out`);
-		that._overlay = null;
-
-		clearTimeout(to);
-		that.container.removeEventListener('animationend', end);
-		that.container.removeEventListener('mozAnimationEnd', end);
-		that.container.removeEventListener('webkitAnimationEnd', end);
-		that.container.removeEventListener('oanimationend', end);
-		that.container.removeEventListener('MSAnimationEnd', end);
-		window.removeEventListener('resize', that.update);
-	}
+	this.animend(() => {
+		this._overlay = null;
+	});
 
 	return this;
 }
@@ -196,18 +168,59 @@ Popup.prototype.hide = function () {
 
 /** Place popup next to the target */
 Popup.prototype.update = function (how) {
-	place(this.element, extend({
-		target: this.container,
-		side: 'center',
-		align: 'center'
-	}, how));
+	if (/modal|popup|dialog|confirm/.test(this.type)) {
+		place(this.element, extend({
+			target: window,
+			side: 'center',
+			align: 'center'
+		}, how));
+	}
+	else {
+		place(this.element, extend({
+			target: this.container,
+			side: 'center',
+			align: 'center',
+			within: window
+		}, how));
+	}
 
 	return this;
 }
 
 
+/** Trigger callback once on anim end */
+Popup.prototype.animend = function (cb) {
+	var to = setTimeout(() => {
+		cb.call(this);
+	}, this.animTimeout);
+
+	this.element.addEventListener('transitionend', end);
+	this.element.addEventListener('webkitTransitionEnd', end);
+	this.element.addEventListener('otransitionend', end);
+	this.element.addEventListener('oTransitionEnd', end);
+	this.element.addEventListener('msTransitionEnd', end);
+
+	var that = this;
+	function end () {
+		clearTimeout(to);
+
+		// that.element.removeEventListener('animationend', end);
+		// that.element.removeEventListener('mozAnimationEnd', end);
+		// that.element.removeEventListener('webkitAnimationEnd', end);
+		// that.element.removeEventListener('oanimationend', end);
+		// that.element.removeEventListener('MSAnimationEnd', end);
+		that.element.removeEventListener('transitionend', end);
+		that.element.removeEventListener('webkitTransitionEnd', end);
+		that.element.removeEventListener('otransitionend', end);
+		that.element.removeEventListener('oTransitionEnd', end);
+		that.element.removeEventListener('msTransitionEnd', end);
+
+		cb.call(that);
+	}
+}
+
 /** Type of default interactions */
-Popup.prototype.type = {
+Popup.prototype.types = {
 	//undefined - implement showing strategy manually
 	_: {
 		before: function () {

@@ -1,15 +1,17 @@
-﻿.overlay {
-	position: absolute;
+.popoff-overlay {
+	position: fixed;
 	top: 0;
 	left: 0;
+	bottom: 0;
+	right: 0;
 	opacity: 1;
-	width: 100%;
-	height: 100%;
-	background: rgba(0,0,0,.75);
+	background-color: rgba(85,85,85,.85);
+	background: linear-gradient(160deg, rgba(103, 98, 105, 0.85), rgba(73, 70, 82, 0.85));
 	transition: opacity 350ms;
 	z-index: 500;
 }
-.popup {
+
+.popoff-popup {
 	z-index: 999;
 	position: absolute;
 	margin: auto;
@@ -17,37 +19,47 @@
 	min-height: 1rem;
 	max-width: 660px;
 	background: white;
-	box-shadow: 0 1px 6px rgba(40,50,55, .5);
-	padding: 1rem 3rem 1rem 1rem;
+	box-shadow: 0 .666vh 3.333vw -.333vh rgba(19, 16, 27, 0.39);
+	padding: 1.6rem 2rem;
 	opacity: 1;
-	transition: all .35s;
+	transition: opacity .35s;
 }
 
 @media (max-width: 640px) {
-	.popup {
+	.popoff-popup {
 		max-width: 80%;
 	}
 }
 
-.closable {
+.popoff-closable {
 	cursor: pointer;
 }
 
-.hidden {
+.popoff-hidden {
 	/*visibility: hidden;*/
 	pointer-events: none;
 	opacity: 0;
 }
 
 
-.fade {
+/* Types */
+.popoff-big {
+	box-shadow: 0 .666vh 3.333vw -.333vh rgba(19, 16, 27, 0.45);
+}
+.popoff-small {
+	box-shadow: 0 1px 12px rgba(19, 16, 27, 0.25);
+}
+
+
+/* Effects */
+.popoff-fade {
 	opacity: 1;
 }
 
 
 
 /* Tip */
-.tip{
+.popoff-tip{
 	width: 1rem;
 	height: 1rem;
 	position: absolute;
@@ -55,7 +67,7 @@
 	overflow: hidden;
 	/*outline: 1px dotted gray;*/
 }
-.tip:after{
+.popoff-tip:after{
 	content: '';
 	border-top-left-radius: 1px;
 	position: absolute;
@@ -66,19 +78,19 @@
 	width: 1rem;
 	height: 1rem;
 }
-.tip[data-side=top]:after{
+.popoff-tip[data-side=top]:after{
 	top: auto;
 	bottom: .5rem;
 }
-.tip[data-side=left]:after{
+.popoff-tip[data-side=left]:after{
 	left: auto;
 	right: .5rem;
 }
-.tip[data-side=bottom]:after{
+.popoff-tip[data-side=bottom]:after{
 	top: .5rem;
 	bottom: auto;
 }
-.tip[data-side=right]:after{
+.popoff-tip[data-side=right]:after{
 	left: .5rem;
 	right: auto;
 }
@@ -86,21 +98,23 @@
 
 
 /* Close button */
-.close {
+.popoff-close {
 	position: absolute;
 	right: 0;
 	top: 0;
-	width: 3rem;
-	height: 3rem;
+	width: 3.2rem;
+	height: 3.2rem;
 	cursor: pointer;
-	line-height: 3rem;
+	line-height: 3.2rem;
 	text-align: center;
-	opacity: .3;
 	font-size: 1.5rem;
+	color: rgb(40,40,40);
+	background: transparent;
 }
-.close:after {
+.popoff-close:after {
 	content: '✕';
 }
-.close:hover{
-	opacity: 1;
+.popoff-close:hover{
+	background: black;
+	color: white;
 }

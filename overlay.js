@@ -8,8 +8,6 @@
 const Emitter = require('events').EventEmitter;
 const inherits = require('inherits');
 const extend = require('xtend/mutable');
-var sf = require('sheetify');
-var className = sf('./index.css');
 
 
 module.exports = Overlay;
@@ -32,18 +30,17 @@ function Overlay(options) {
 	if (!this.container) {
 		this.container = document.body || document.documentElement;
 	}
-	this.container.classList.add(className);
 
 	//create overlay element
 	this.element = document.createElement('div');
-	this.element.classList.add('overlay');
-	this.element.classList.add('hidden');
+	this.element.classList.add('popoff-overlay');
+	this.element.classList.add('popoff-hidden');
 
 	if (this.closable) {
 		this.element.addEventListener('click', e => {
 			this.hide();
 		});
-		this.element.classList.add('closable');
+		this.element.classList.add('popoff-closable');
 	}
 }
 
@@ -70,7 +67,7 @@ Overlay.prototype.show = function () {
 
 	//class removed in a timeout to save animation
 	setTimeout( () => {
-		this.element.classList.remove('hidden');
+		this.element.classList.remove('popoff-hidden');
 		this.emit('afterShow');
 	});
 
@@ -90,7 +87,7 @@ Overlay.prototype.show = function () {
 Overlay.prototype.hide = function () {
 	this.emit('hide');
 
-	this.element.classList.add('hidden');
+	this.element.classList.add('popoff-hidden');
 
 	this.element.addEventListener('transitionend', end);
 	this.element.addEventListener('webkitTransitionEnd', end);
