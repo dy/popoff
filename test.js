@@ -16,7 +16,7 @@ body.style.fontFamily = 'sans-serif';
 body.innerHTML = `${ipsum({count: 15, units: 'paragraph', format: 'html'})}`;
 
 
-test('overlay', function (done) {
+test.skip('overlay', function (done) {
 	this.timeout(Infinity);
 
 	var o = Overlay();
@@ -30,7 +30,13 @@ test('overlay', function (done) {
 
 
 test('modal', function () {
-	this.timeout(Infinity);
+	var target = document.createElement('span');
+	target.innerHTML = 'Modal';
+	target.className = 'target';
+	target.style.background = 'black';
+	target.style.color = 'white';
+	target.style.padding = '10px';
+	document.querySelectorAll('p')[1].appendChild(target);
 
 	var p = Popup({
 		overlay: true,
@@ -40,13 +46,22 @@ test('modal', function () {
 			${ipsum({count: 3, units: 'paragraph', format: 'html'})}
 		`
 	});
-	p.show();
 
+	// p.show();
+	target.addEventListener('click', e => {
+		p.show(target);
+	});
 });
 
 
-test('sidebar', function () {
-	this.timeout(Infinity);
+test.skip('sidebar', function () {
+	var target = document.createElement('span');
+	target.innerHTML = 'Sidebar';
+	target.className = 'target';
+	target.style.background = 'black';
+	target.style.color = 'white';
+	target.style.padding = '10px';
+	document.querySelectorAll('p')[2].appendChild(target);
 
 	var p = Popup({
 		overlay: true,
@@ -57,19 +72,19 @@ test('sidebar', function () {
 			${ipsum({count: 3, units: 'paragraph', format: 'html'})}
 		`
 	});
-	p.show();
 
+	// p.show();
 });
 
 
-test.only('dropdown', () => {
+test('dropdown', () => {
 	var target = document.createElement('span');
 	target.innerHTML = 'Dropdown';
 	target.className = 'target';
 	target.style.background = 'black';
 	target.style.color = 'white';
 	target.style.padding = '10px';
-	document.querySelectorAll('p')[2].appendChild(target);
+	document.querySelectorAll('p')[3].appendChild(target);
 
 	var content = document.createElement('div');
 	content.innerHTML = ipsum({count: 1, units: 'paragraph', format: 'html'});
@@ -84,7 +99,7 @@ test.only('dropdown', () => {
 	// dropdown.show();
 });
 
-test('tooltip', () => {
+test.skip('tooltip', () => {
 	var target = document.createElement('div');
 	target.innerHTML = this.test.title;
 	target.className = 'target';
@@ -97,7 +112,7 @@ test('tooltip', () => {
 });
 
 
-test('dialog draggable & resizable', () => {
+test.skip('dialog draggable & resizable', () => {
 	var target = document.createElement('div');
 	target.innerHTML = this.test.title;
 	target.className = 'target';

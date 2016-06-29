@@ -31,7 +31,7 @@ function Popup (opts) {
 	if (!(this instanceof Popup)) return new Popup(opts);
 
 	//take over type’s options first
-	extend(this, this.types[opts.type], opts);
+	extend(this, this.types[opts.type || this.type], opts);
 
 	//generate unique id
 	this.id = uid();
@@ -143,7 +143,23 @@ Popup.prototype.types = {
 		single: true,
 		side: 'center',
 		align: 'center',
-		target: null
+		target: null,
+		onInit: function () {
+			if (this.target) {
+				this.target.addEventListener('click', (e) => {
+					if (this.isVisible) return;
+
+					return this.show();
+				});
+			}
+			else {
+				this.target = window;
+			}
+		},
+		onShow: function () {
+			//FIXME: maybe not really good pattern, but the modal is always placed relative to window viewport. Easies than managing alignTo property.
+			this._target = window;
+		}
 	},
 
 	dropdown: {
@@ -283,7 +299,7 @@ Popup.prototype.hide = function () {
 	//overlay recurrently calls this.hide, so just drop it here
 	if (this._overlay) return this._overlay.hide();
 
-	this._target && this._target.classList.remove('popoff-active');
+	this._target && this._target.classList && this._target.classList.remove('popoff-active');
 
 	this.emit('hide');
 	this.isVisible = false;
