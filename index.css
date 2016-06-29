@@ -20,7 +20,7 @@
 	box-shadow: 0 1px 6px rgba(40,50,55, .5);
 	padding: 1rem 3rem 1rem 1rem;
 	opacity: 1;
-	transition: opacity .35s;
+	transition: all .35s;
 }
 
 @media (max-width: 640px) {
@@ -39,6 +39,10 @@
 	opacity: 0;
 }
 
+
+.fade {
+	opacity: 1;
+}
 
 
 

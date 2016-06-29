@@ -106,7 +106,8 @@ Popup.prototype.show = function () {
 	//in some way it needs to be called in timeout, otherwise animation fails
 	setTimeout(() => {
 		this.element.classList.remove('hidden');
-		this.element.classList.add(`${ this.effect }-in`);
+		this.element.classList.add(`${ this.effect }`);
+		// this.element.classList.add(`${ this.effect }-in`);
 		this.update();
 	});
 
@@ -134,7 +135,7 @@ Popup.prototype.show = function () {
 	var to = setTimeout(end, this.animTimeout);
 
 	function end () {
-		that.element.classList.remove(`${ that.effect }-in`);
+		// that.element.classList.remove(`${ that.effect }-in`);
 		window.addEventListener('resize', that.update);
 
 		clearTimeout(to);
@@ -164,7 +165,8 @@ Popup.prototype.hide = function () {
 	this.emit('hide');
 
 	this.element.classList.add('hidden');
-	this.element.classList.add(`${ this.effect }-out`);
+	this.element.classList.remove(`${ this.effect }`);
+	// this.element.classList.add(`${ this.effect }-out`);
 
 	this.container.addEventListener('animationend', end);
 	this.container.addEventListener('mozAnimationEnd', end);
@@ -176,7 +178,7 @@ Popup.prototype.hide = function () {
 	var that = this;
 
 	function end () {
-		that.element.classList.remove(`${ that.effect }-out`);
+		// that.element.classList.remove(`${ that.effect }-out`);
 		that._overlay = null;
 
 		clearTimeout(to);

@@ -14,7 +14,9 @@ var popup = createPopup({
 	escapable: true,
 	overlay: true,
 	single: true,
-	type: 'modal', 'dropdown', 'tooltip',
+	type: 'modal',
+	tip: false,
+	effect: 'fade',
 	content: `
 		<h2>Blah</h2>
 		<p>blah</p>
