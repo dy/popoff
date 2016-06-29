@@ -3,7 +3,7 @@ var Draggable = require('draggy');
 var Resizable = require('resizable');
 var test = require('tst');
 var Overlay = require('./overlay');
-// var Popup = require('./');
+var Popup = require('./');
 
 var body = document.body,
 	doc = document,
@@ -12,8 +12,9 @@ var body = document.body,
 body.style.position = 'relative';
 body.style.margin = 0;
 body.style.minHeight = '100vh';
+body.style.fontFamily = 'sans-serif';
 
-test.only('overlay', function (done) {
+test('overlay', function (done) {
 	this.timeout(Infinity);
 
 	var o = Overlay();
@@ -23,6 +24,25 @@ test.only('overlay', function (done) {
 	// setTimeout(() => {
 		o.on('hide', done);
 	// }, 1000);
+});
+
+
+test.only('modal', function () {
+	this.timeout(Infinity);
+
+	var p = Popup({
+		overlay: true,
+		content: `
+			<h2>Settings</h2>
+			<br/>
+			${ipsum({count: 3, units: 'paragraph', format: 'html'})}
+		`
+	});
+	p.show();
+	// document.addEventListener('click', () => {
+
+	// });
+
 });
 
 
@@ -50,9 +70,6 @@ test('tooltip', () => {
 	});
 });
 
-test('modal', () => {
-
-});
 
 test('dialog draggable & resizable', () => {
 	var target = document.createElement('div');

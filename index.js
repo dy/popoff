@@ -8,10 +8,9 @@ const place = require('placer');
 const extend = require('xtend/mutable');
 const uid = require('get-uid');
 const inherits = require('inherits');
-
-
-/** Animation end event */
-const ANIM_END = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+const createOverlay = require('./overlay');
+var sf = require('sheetify');
+var className = sf('./index.css');
 
 
 /**
@@ -24,61 +23,63 @@ const ANIM_END = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationen
  *
  * @return {Popup} A popup controller
  */
-function Popup () {
-	var self = this;
+function Popup (opts) {
+	if (!(this instanceof Popup)) return new Popup(opts);
 
-	//ensure opts
-	options = options || {};
+	extend(this, opts);
 
 	//generate unique id
-	self.id = uid();
+	this.id = uid();
+
+	//FIXME: :'(
+	this.place = this.place.bind(this);
 
 	//take over a target first
-	self.target = options.target;
+	if (!this.container) {
+		this.container = document.body || document.documentElement;
+	}
+	this.container.classList.add(className);
 
 	//ensure element
-	if (!(el instanceof HTMLElement)) {
-		self.element = document.createElement('div');
-
-		//think of element as a string
-		if (el) {
-			self.element.innerHTML = el;
-		}
-	} else {
-		self.element = el;
-	}
-
-	self.element.classList.add('popup');
-
-	//ensure element is in the document
-	document.body.appendChild(self.element);
+	if (!this.element) this.element = document.createElement('div');
+	this.element.classList.add('popup');
+	this.element.classList.add('hidden');
+	this.element.innerHTML = this.content;
+	this.container.appendChild(this.element);
 
 	//create close element
-	self.closeElement = document.createElement('div');
-	self.closeElement.classList.add('popup-close');
+	this.closeElement = document.createElement('div');
+	this.closeElement.classList.add('close');
+	if (this.closable) {
+		this.closeElement.addEventListener('click', e => {
+			this.hide();
+		});
+		this.element.appendChild(this.closeElement);
+	}
 
-	//take over all props
-	extend(self, options);
+	if (this.escapable) {
+		document.addEventListener('keyup', e => {
+			if (e.which === 27) {
+				this.hide();
+			}
+		});
+	}
 
-	//go initial hidden state
-	self.state = 'hidden';
-
-	//bind events etc
-	self.enable();
-
+	//ensure element is in the document
+	document.body.appendChild(this.element);
 }
 
 inherits(Popup, Emitter);
 
 extend(Popup.prototype, {
 	/** Show overlay */
-	overlay: false,
+	overlay: true,
 
 	/** Show close button */
-	closable: false,
+	closable: true,
 
 	/** Close by escape */
-	escapable: false,
+	escapable: true,
 
 	/** Show tip */
 	tip: false,
@@ -87,61 +88,69 @@ extend(Popup.prototype, {
 	single: true,
 
 	/** A target to bind default placing */
-	target: window,
+	container: document.body || document.documentElement,
 
 	/** Animation effect */
-	effect: 'fade'
+	effect: 'fade',
+
+	animTimeout: 1000
 });
-
-
-/** Undisable */
-Popup.prototype.enable = function (target) {
-	var self = this;
-
-	//hook up closable
-	if (self.closable) {
-		self.element.appendChild(self.closeElement);
-	}
-
-	on(self.closeElement, `click.${ self.id }`, function () {
-		self.hide();
-	});
-
-	//hook up escapable
-	if (self.escapable) {
-		on(document, 'keyup', function (e) {
-			if (e.which === 27) {
-				self.hide();
-			}
-		});
-	}
-
-	return self;
-}
 
 
 /**
  * Show popup near to the target
  */
 Popup.prototype.show = function () {
-	var self = this;
+	this.emit('show');
 
-	if (self.state !== 'hidden') return;
-
-	self.element.classList.remove('popup-hidden');
-
-	self.element.classList.add('popup-animating');
-	self.element.classList.add(`popup-${ self.effect }-in`);
-
-	self.element.addEventListener(ANIM_END, () => {
-		self.element.classList.add('popup-visible');
+	//in some way it needs to be called in timeout, otherwise animation fails
+	setTimeout(() => {
+		this.element.classList.remove('hidden');
+		this.element.classList.add(`${ this.effect }-in`);
+		this.place();
 	});
 
-	self.place();
+	if (this.overlay) {
+		this._overlay = createOverlay({closable: this.closable})
+		.on('hide', e => {
+			this._overlay = null;
+			this.hide();
+		})
+		.show();
+	}
 
-	self.emit('show');
+	var that = this;
 
-	return self;
+	// this.element.addEventListener('animationend', end);
+	// this.element.addEventListener('mozAnimationEnd', end);
+	// this.element.addEventListener('webkitAnimationEnd', end);
+	// this.element.addEventListener('oanimationend', end);
+	// this.element.addEventListener('MSAnimationEnd', end);
+	this.element.addEventListener('transitionend', end);
+	this.element.addEventListener('webkitTransitionEnd', end);
+	this.element.addEventListener('otransitionend', end);
+	this.element.addEventListener('oTransitionEnd', end);
+	this.element.addEventListener('msTransitionEnd', end);
+	var to = setTimeout(end, this.animTimeout);
+
+	function end () {
+		that.element.classList.remove(`${ that.effect }-in`);
+		window.addEventListener('resize', that.place);
+
+		clearTimeout(to);
+		// that.element.removeEventListener('animationend', end);
+		// that.element.removeEventListener('mozAnimationEnd', end);
+		// that.element.removeEventListener('webkitAnimationEnd', end);
+		// that.element.removeEventListener('oanimationend', end);
+		// that.element.removeEventListener('MSAnimationEnd', end);
+		that.element.removeEventListener('transitionend', end);
+		that.element.removeEventListener('webkitTransitionEnd', end);
+		that.element.removeEventListener('otransitionend', end);
+		that.element.removeEventListener('oTransitionEnd', end);
+		that.element.removeEventListener('msTransitionEnd', end);
+	}
+
+	return this;
 }
 
 
@@ -149,154 +158,135 @@ Popup.prototype.show = function () {
  * Hide popup
  */
 Popup.prototype.hide = function () {
-	var self = this;
+	//overlay recurrently calls this.hide, so just drop it here
+	if (this._overlay) return this._overlay.hide();
 
-	self.element.classList.add('popup-hidden');
+	this.emit('hide');
 
-	self.state = 'animOut';
+	this.element.classList.add('hidden');
+	this.element.classList.add(`${ this.effect }-out`);
 
-	self.emit('hide');
+	this.container.addEventListener('animationend', end);
+	this.container.addEventListener('mozAnimationEnd', end);
+	this.container.addEventListener('webkitAnimationEnd', end);
+	this.container.addEventListener('oanimationend', end);
+	this.container.addEventListener('MSAnimationEnd', end);
+	var to = setTimeout(end, this.animTimeout);
 
-	return self;
+	var that = this;
+
+	function end () {
+		that.element.classList.remove(`${ that.effect }-out`);
+		that._overlay = null;
+
+		clearTimeout(to);
+		that.container.removeEventListener('animationend', end);
+		that.container.removeEventListener('mozAnimationEnd', end);
+		that.container.removeEventListener('webkitAnimationEnd', end);
+		that.container.removeEventListener('oanimationend', end);
+		that.container.removeEventListener('MSAnimationEnd', end);
+		window.removeEventListener('resize', that.place);
+	}
+
+	return this;
 }
 
 
 /** Place popup next to the target */
 Popup.prototype.place = function (how) {
-	var self = this;
-
-	place(self.element, extend({
-		to: self.target,
+	place(this.element, extend({
+		target: this.container,
 		side: 'center',
-		align: 'center',
-		within: window
+		align: 'center'
 	}, how));
 
-	return self;
+	return this;
 }
 
 
 /** Type of default interactions */
-proto.type = {
+Popup.prototype.type = {
 	//undefined - implement showing strategy manually
 	_: {
 		before: function () {
-			var self = this;
+			var that = this;
 		}
 	},
 
 	//dropdown
 	dropdown: {
 		before: function () {
-			var self = this;
+			var that = this;
 
 			//show on click
-			on(self.target, `click`, function (e) {
+			on(this.target, `click`, function (e) {
 				//ignore instant bubbling
-				if (self.state !== 'hidden') {
+				if (this.state !== 'hidden') {
 					return;
 				}
 
-				self.show();
+				this.show();
 			});
 
 			//hide on unfocus
 			document.addEventListener('click', () => {
 				//ignore instant bubbling
-				if (self.state !== 'visible') {
+				if (this.state !== 'visible') {
 					return;
 				}
-				//ignore self clicks
-				if (self.element.contains(e.target)) {
+				//ignore this clicks
+				if (this.element.contains(e.target)) {
 					return;
 				}
 
-				self.hide();
+				this.hide();
 			})
 		},
 		after: function () {
-			var self = this;
+			var that = this;
 
-			off(self.target, `click.${ self.id }`);
-			off(document, `click.${ self.id }`);
+			off(this.target, `click.${ this.id }`);
+			off(document, `click.${ this.id }`);
 		}
 	},
 
 	//tooltip
 	tooltip: {
 		before: function () {
-			var self = this;
+			var that = this;
 
-			on(self.target, `mouseenter.${ self.id }`, function () {
-				if (self.state !== 'hidden') {
+			on(this.target, `mouseenter.${ this.id }`, function () {
+				if (this.state !== 'hidden') {
 					return;
 				}
 
-				self.show();
+				this.show();
 			});
 
-			on(self.target, `mouseleave.${ self.id }`, function () {
-				if (self.state !== 'visible') {
+			on(this.target, `mouseleave.${ this.id }`, function () {
+				if (this.state !== 'visible') {
 					return;
 				}
 
-				self.hide();
+				this.hide();
 			});
 
-			on(self.element, `mouseleave.${ self.id }`, function () {
-				if (self.state !== 'visible') {
+			on(this.element, `mouseleave.${ this.id }`, function () {
+				if (this.state !== 'visible') {
 					return;
 				}
 
-				self.hide();
+				this.hide();
 			});
 		},
 		after: function () {
-			var self = this;
+			var that = this;
 
-			off(self.target, `.${ self.id }`);
-			off(document, `.${ self.id }`);
+			off(this.target, `.${ this.id }`);
+			off(document, `.${ this.id }`);
 		}
 	}
 };
-
-
-/** Current visibility state */
-proto.state = {
-	animIn: {
-
-		after: function () {
-			var self = this;
-
-			self.element.classList.remove('popup-animating');
-			self.element.classList.remove(`popup-${ self.effect }-in`);
-
-			off(self.element, ANIM_END);
-		}
-	},
-	animOut: {
-		before: function () {
-			var self = this;
-
-			self.element.classList.add('popup-animating');
-			self.element.classList.add(`popup-${ self.effect }-out`);
-
-			once(self.element, ANIM_END, function () {
-				self.state = 'hidden';
-			});
-		},
-
-		after: function () {
-			var self = this;
-
-			self.element.classList.remove('popup-animating');
-			self.element.classList.remove(`popup-${ self.effect }-out`);
-
-			off(self.element, ANIM_END);
-		}
-	},
-};
-
 
 
 module.exports = Popup;

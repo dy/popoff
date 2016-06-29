@@ -9,67 +9,41 @@
 	transition: opacity 350ms;
 	z-index: 500;
 }
+.popup {
+	z-index: 999;
+	position: absolute;
+	margin: auto;
+	min-width: 4rem;
+	min-height: 1rem;
+	max-width: 660px;
+	background: white;
+	box-shadow: 0 1px 6px rgba(40,50,55, .5);
+	padding: 1rem 3rem 1rem 1rem;
+	opacity: 1;
+	transition: opacity .35s;
+}
 
-.overlay.hidden {
+@media (max-width: 640px) {
+	.popup {
+		max-width: 80%;
+	}
+}
+
+.closable {
+	cursor: pointer;
+}
+
+.hidden {
+	/*visibility: hidden;*/
 	pointer-events: none;
 	opacity: 0;
 }
 
-.overlay.closable {
-	cursor: pointer;
-}
 
-
-.popup {
-	z-index: 999;
-	position: absolute;
-	top: 0;
-	left: 0;
-	background: white;
-	box-shadow: 0 1px 6px rgba(40,50,55, .5);
-	min-height: 20px;
-	padding: 1rem 1rem 1rem 1rem;
-}
-
-.popup-hidden {
-	visibility: hidden;
-	opacity: 0;
-}
-
-.popup-animating {
-	animation-duration: .25s;
-	animation-fill-mode: both;
-}
-
-
-@keyframes fade-in {
-	0% {
-		opacity: 0;
-	}
-
-	100% {
-		opacity: 1;
-	}
-}
-@keyframes fade-out {
-	0% {
-		opacity: 1;
-	}
-
-	100% {
-		opacity: 0;
-	}
-}
-.popup-fade-in {
-	animation-name: fade-in;
-}
-.popup-fade-out {
-	animation-name: fade-out;
-}
 
 
 /* Tip */
-.popup-tip{
+.tip{
 	width: 1rem;
 	height: 1rem;
 	position: absolute;
@@ -77,35 +51,30 @@
 	overflow: hidden;
 	/*outline: 1px dotted gray;*/
 }
-.popup-tip:after{
+.tip:after{
 	content: '';
 	border-top-left-radius: 1px;
 	position: absolute;
 	background: white;
 	box-shadow: 0px 0px 2px rgba(40,50,55, .3);
-	-webkit-transform: rotate(45deg);
-	-khtml-transform: rotate(45deg);
-	-moz-transform: rotate(45deg);
-	-ms-transform: rotate(45deg);
-	-o-transform: rotate(45deg);
 	transform: rotate(45deg);
 	/* Change these values to alter tip size */
 	width: 1rem;
 	height: 1rem;
 }
-.popup-tip[data-side=top]:after{
+.tip[data-side=top]:after{
 	top: auto;
 	bottom: .5rem;
 }
-.popup-tip[data-side=left]:after{
+.tip[data-side=left]:after{
 	left: auto;
 	right: .5rem;
 }
-.popup-tip[data-side=bottom]:after{
+.tip[data-side=bottom]:after{
 	top: .5rem;
 	bottom: auto;
 }
-.popup-tip[data-side=right]:after{
+.tip[data-side=right]:after{
 	left: .5rem;
 	right: auto;
 }
@@ -113,7 +82,7 @@
 
 
 /* Close button */
-.popup-close{
+.close {
 	position: absolute;
 	right: 0;
 	top: 0;
@@ -123,11 +92,11 @@
 	line-height: 3rem;
 	text-align: center;
 	opacity: .3;
-	font-size: 2rem;
+	font-size: 1.5rem;
 }
-.popup-close:after{
-	content: '×';
+.close:after {
+	content: '✕';
 }
-.popup-close:hover{
+.close:hover{
 	opacity: 1;
 }

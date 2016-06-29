@@ -26,6 +26,7 @@ function Overlay(options) {
 	if (!(this instanceof Overlay)) return new Overlay(options);
 
 	Emitter.call(this);
+
 	extend(this, options);
 
 	if (!this.container) {
@@ -48,6 +49,7 @@ function Overlay(options) {
 
 inherits(Overlay, Emitter);
 
+
 //close overlay by click
 Overlay.prototype.closable = true;
 
@@ -62,14 +64,14 @@ Overlay.prototype.closable = true;
  */
 
 Overlay.prototype.show = function () {
-	var self = this;
-
 	this.emit('show');
+
 	this.container.appendChild(this.element);
 
 	//class removed in a timeout to save animation
-	setTimeout( function () {
-		self.element.classList.remove('hidden');
+	setTimeout( () => {
+		this.element.classList.remove('hidden');
+		this.emit('afterShow');
 	});
 
 	return this;
@@ -90,23 +92,24 @@ Overlay.prototype.hide = function () {
 
 	this.element.classList.add('hidden');
 
-	this.container.addEventListener('transitionend', end);
-	this.container.addEventListener('webkitTransitionEnd', end);
-	this.container.addEventListener('otransitionend', end);
-	this.container.addEventListener('oTransitionEnd', end);
-	this.container.addEventListener('msTransitionEnd', end);
+	this.element.addEventListener('transitionend', end);
+	this.element.addEventListener('webkitTransitionEnd', end);
+	this.element.addEventListener('otransitionend', end);
+	this.element.addEventListener('oTransitionEnd', end);
+	this.element.addEventListener('msTransitionEnd', end);
 	var to = setTimeout(end, 1000);
 
 	var that = this;
 	function end () {
-		that.container.removeEventListener('transitionend', end);
-		that.container.removeEventListener('webkitTransitionEnd', end);
-		that.container.removeEventListener('otransitionend', end);
-		that.container.removeEventListener('oTransitionEnd', end);
-		that.container.removeEventListener('msTransitionEnd', end);
+		that.element.removeEventListener('transitionend', end);
+		that.element.removeEventListener('webkitTransitionEnd', end);
+		that.element.removeEventListener('otransitionend', end);
+		that.element.removeEventListener('oTransitionEnd', end);
+		that.element.removeEventListener('msTransitionEnd', end);
 		clearInterval(to);
 
 		that.container.removeChild(that.element);
+		that.emit('afterHide');
 	}
 
 	return this;
