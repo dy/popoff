@@ -1,6 +1,10 @@
-# popoff
+# popoff [![unstable](http://badges.github.io/stability-badges/dist/unstable.svg)](http://github.com/badges/stability-badges)
 
 Popoff runs modals, tooltips, popups, dropdowns, confirms, notifiers, popovers, lightboxes, balloons, dialogs, alerts, overlays, sidebars etc. But some of it may not work yet.
+
+[![Popov](https://raw.githubusercontent.com/dfcreative/popoff/master/popoff.png "Popov")](http://dfcreative.github.io/popoff/)
+
+## Usage
 
 
 [![npm install popoff](https://nodei.co/npm/popoff.png?mini=true)](https://npmjs.org/package/popoff/)
