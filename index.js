@@ -2,11 +2,6 @@
  * @module  popup
  */
 
-//FIXME: sidebar
-//FIXME: tall modals
-//FIXME: demo
-//FIXME: draggable & resizable
-
 const Emitter = require('events');
 const place = require('placer');
 const extend = require('xtend/mutable');
@@ -18,8 +13,14 @@ const fs = require('fs');
 
 insertCss(fs.readFileSync('./index.css', 'utf-8'));
 
-
 module.exports = Popup;
+
+//FIXME: sidebar
+//FIXME: effects
+//FIXME: demo
+//FIXME: draggable & resizable
+
+//FIXME: move tall to modal-only mode
 
 /**
  * @class  Popup
@@ -34,8 +35,22 @@ module.exports = Popup;
 function Popup (opts) {
 	if (!(this instanceof Popup)) return new Popup(opts);
 
-	//take over type’s options first
-	extend(this, this.types[opts.type || this.type], opts);
+	var typeOpts = this.types[opts.type || this.type] || {};
+
+	//hook up type events and options events
+	if (typeOpts.onInit) this.on('init', typeOpts.onInit);
+	if (typeOpts.onShow) this.on('show', typeOpts.onShow);
+	if (typeOpts.onHide) this.on('hide', typeOpts.onHide);
+	if (typeOpts.onAfterShow) this.on('afterShow', typeOpts.onAfterShow);
+	if (typeOpts.onAfterHide) this.on('afterHide', typeOpts.onAfterHide);
+	if (opts.onInit) this.on('init', opts.onInit);
+	if (opts.onShow) this.on('show', opts.onShow);
+	if (opts.onHide) this.on('hide', opts.onHide);
+	if (opts.onAfterShow) this.on('afterShow', opts.onAfterShow);
+	if (opts.onAfterHide) this.on('afterHide', opts.onAfterHide);
+
+	//take over type’s options
+	extend(this, typeOpts, opts);
 
 	//generate unique id
 	this.id = uid();
@@ -47,7 +62,6 @@ function Popup (opts) {
 	if (!this.container) {
 		this.container = document.body || document.documentElement;
 	}
-	this.container.classList.add('popoff-container');
 
 	//ensure element
 	if (!this.element) this.element = document.createElement('div');
@@ -81,6 +95,10 @@ function Popup (opts) {
 		this.element.classList.add('popoff-popup-tip');
 	}
 
+	//create overflow for tall content
+	this.overflowElement = document.createElement('div');
+	this.overflowElement.classList.add('popoff-overflow');
+
 	this.container.appendChild(this.element);
 
 	if (this.escapable) {
@@ -108,13 +126,6 @@ function Popup (opts) {
 		this.tipElement.classList.add(`popoff-${ effect }-out`);
 	});
 
-	//take over options events as well
-	if (this.onInit) this.on('init', this.onInit);
-	if (this.onShow) this.on('show', this.onShow);
-	if (this.onHide) this.on('hide', this.onHide);
-	if (this.onAfterShow) this.on('afterShow', this.onAfterShow);
-	if (this.onAfterHide) this.on('afterHide', this.onAfterHide);
-
 	this.emit('init');
 }
 
@@ -134,7 +145,7 @@ extend(Popup.prototype, {
 	tip: false,
 
 	/** Place popup relative to the element, like dropdown */
-	target: null,
+	target: window,
 
 	/** Whether to show only one popup */
 	single: true,
@@ -153,7 +164,10 @@ extend(Popup.prototype, {
 	align: 'center',
 
 	//default anim fallback
-	animTimeout: 1000
+	animTimeout: 1000,
+
+	//detect tall content
+	tall: false
 });
 
 
@@ -184,7 +198,7 @@ Popup.prototype.types = {
 		},
 		onShow: function () {
 			//FIXME: maybe not really good pattern, but the modal is always placed relative to window viewport. Easies than managing alignTo property.
-			this._target = window;
+			this.currentTarget = window;
 		}
 	},
 
@@ -223,7 +237,6 @@ Popup.prototype.types = {
 		}
 	},
 
-	//tooltip
 	tooltip: {
 		overlay: false,
 		closable: false,
@@ -263,6 +276,32 @@ Popup.prototype.types = {
 				}, this.timeout);
 			});
 		}
+	},
+
+	sidebar: {
+		overlay: false,
+		closable: true,
+		escapable: true,
+		tip: false,
+		single: true,
+		side: 'right',
+		align: .5,
+		target: null,
+		effect: ['fade', 'zoom', 'slide'],
+		update: () => {},
+		onInit: function () {
+			if (this.target) {
+				this.target.addEventListener('click', (e) => {
+					if (this.isVisible) return;
+
+					return this.show();
+				});
+			}
+			else {
+				this.target = window;
+			}
+			this.element.setAttribute('data-side', this.side);
+		}
 	}
 };
 
@@ -271,13 +310,24 @@ Popup.prototype.types = {
  * Show popup near to the target
  */
 Popup.prototype.show = function (target) {
-	this._target = target || this.target;
-	this._target.classList.add('popoff-active');
+	this.currentTarget = target || this.target;
+	this.currentTarget.classList.add('popoff-active');
 	this.element.classList.remove('popoff-hidden');
 	this.tipElement.classList.remove('popoff-hidden');
 
-	this.emit('show', this._target);
+	var elHeight = this.element.offsetHeight;
 
+	//apply overflow on body for tall content
+	if (elHeight > window.innerHeight) {
+		this.isTall = true;
+		this.element.style.left = null;
+		this.element.style.right = null;
+		this.container.classList.add('popoff-container');
+		this.container.appendChild(this.overflowElement);
+		this.overflowElement.appendChild(this.element);
+	}
+
+	this.emit('show', this.currentTarget);
 
 	//in some way it needs to be called in timeout with some delay, otherwise animation fails
 	setTimeout(() => {
@@ -293,7 +343,10 @@ Popup.prototype.show = function (target) {
 	}, 10);
 
 	if (this.overlay) {
-		this._overlay = createOverlay({closable: this.closable})
+		this._overlay = createOverlay({
+			closable: true,
+			container: this.isTall ? this.overflowElement : this.container
+		})
 		.on('hide', e => {
 			this._overlay = null;
 			this.hide();
@@ -320,7 +373,7 @@ Popup.prototype.hide = function () {
 	//overlay recurrently calls this.hide, so just drop it here
 	if (this._overlay) return this._overlay.hide();
 
-	this._target && this._target.classList && this._target.classList.remove('popoff-active');
+	this.currentTarget && this.currentTarget.classList && this.currentTarget.classList.remove('popoff-active');
 
 	this.emit('hide');
 
@@ -340,6 +393,14 @@ Popup.prototype.hide = function () {
 		this._overlay = null;
 		this.element.classList.add('popoff-hidden');
 		this.tipElement.classList.add('popoff-hidden');
+
+		if (this.isTall) {
+			this.isTall = false;
+			this.container.classList.remove('popoff-container');
+			this.container.removeChild(this.overflowElement);
+			this.container.appendChild(this.element);
+		}
+
 		this.emit('afterHide');
 	});
 
@@ -349,14 +410,19 @@ Popup.prototype.hide = function () {
 
 /** Place popup next to the target */
 Popup.prototype.update = function (how) {
-	if (!this.isVisible) return;
+	if (!this.isVisible) return this;
+
+	//tall modals are placed via css
+	if (this.isTall) return this;
 
 	how = extend({
-		target: this._target || this.target,
+		target: this.currentTarget || this.target,
 		side: this.side,
 		align: this.align,
 		within: window
 	}, how);
+
+	this.emit('update', how);
 
 	place(this.element, how);
 
