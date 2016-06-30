@@ -279,7 +279,7 @@ Popup.prototype.show = function (target) {
 	this.emit('show', this._target);
 
 
-	//in some way it needs to be called in timeout, otherwise animation fails
+	//in some way it needs to be called in timeout with some delay, otherwise animation fails
 	setTimeout(() => {
 		var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
 		effects.forEach((effect) => {
@@ -290,7 +290,7 @@ Popup.prototype.show = function (target) {
 		});
 		this.isVisible = true;
 		this.update();
-	});
+	}, 10);
 
 	if (this.overlay) {
 		this._overlay = createOverlay({closable: this.closable})
