@@ -2,7 +2,6 @@
  * @module  popup
  */
 
-//FIXME: effects
 //FIXME: tip
 //FIXME: tall modals
 
@@ -71,6 +70,15 @@ function Popup (opts) {
 		this.element.appendChild(this.closeElement);
 	}
 
+	//create tip
+	this.tipElement = document.createElement('div');
+	this.tipElement.classList.add('popoff-tip');
+	this.tipElement.classList.add('popoff-hidden');
+	if (this.tip) {
+		this.container.appendChild(this.tipElement);
+		this.element.classList.add('popoff-popup-tip');
+	}
+
 	this.container.appendChild(this.element);
 
 	if (this.escapable) {
@@ -95,6 +103,7 @@ function Popup (opts) {
 	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
 	effects.forEach((effect) => {
 		this.element.classList.add(`popoff-${ effect }-out`);
+		this.tipElement.classList.add(`popoff-${ effect }-out`);
 	});
 
 	//take over options events as well
@@ -263,10 +272,13 @@ Popup.prototype.show = function (target) {
 	//in some way it needs to be called in timeout, otherwise animation fails
 	setTimeout(() => {
 		this.element.classList.remove('popoff-hidden');
+		this.tipElement.classList.remove('popoff-hidden');
 		var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
 		effects.forEach((effect) => {
 			this.element.classList.remove(`popoff-${ effect }-out`);
 			this.element.classList.add(`popoff-${ effect }-in`);
+			this.tipElement.classList.remove(`popoff-${ effect }-out`);
+			this.tipElement.classList.add(`popoff-${ effect }-in`);
 		});
 		this.isVisible = true;
 		this.update();
@@ -305,11 +317,14 @@ Popup.prototype.hide = function () {
 	this.emit('hide');
 
 	this.element.classList.add('popoff-hidden');
+	this.tipElement.classList.add('popoff-hidden');
 
 	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
 	effects.forEach((effect) => {
 		this.element.classList.remove(`popoff-${ effect }-in`);
 		this.element.classList.add(`popoff-${ effect }-out`);
+		this.tipElement.classList.remove(`popoff-${ effect }-in`);
+		this.tipElement.classList.add(`popoff-${ effect }-out`);
 	});
 
 	this.isAnimating = true;
@@ -328,12 +343,42 @@ Popup.prototype.hide = function () {
 Popup.prototype.update = function (how) {
 	if (!this.isVisible) return;
 
-	place(this.element, extend({
+	how = extend({
 		target: this._target || this.target,
 		side: this.side,
 		align: this.align,
 		within: window
-	}, how));
+	}, how);
+
+	place(this.element, how);
+
+	if (this.tip) {
+		var side = 'top';
+		switch (how.side) {
+			case 'top':
+				side = 'bottom';
+				break;
+			case 'bottom':
+				side = 'top';
+				break;
+			case 'left':
+				side = 'right';
+				break;
+			case 'right':
+				side = 'left';
+				break;
+			default:
+				side = 'center';
+		}
+
+		this.tipElement.setAttribute('data-side', side);
+		place(this.tipElement, {
+			target: this.target,
+			side: how.side,
+			align: 'center',
+			within: null
+		});
+	}
 
 	return this;
 }

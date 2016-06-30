@@ -40,7 +40,7 @@ test('modal', function () {
 	var p = Popup({
 		overlay: true,
 		content: `
-			<h2>Settings</h2>
+			<h2>Modal</h2>
 			<br/>
 			${ipsum({count: 3, units: 'paragraph', format: 'html'})}
 		`

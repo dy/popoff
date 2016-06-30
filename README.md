@@ -1,6 +1,6 @@
 # popoff
 
-Popoff runs modals, tooltips, popups, dropdowns, confirms, notifiers, popovers, lightboxes, balloons, dialogs, alerts, overlays, sidebars etc.
+Popoff runs modals, tooltips, popups, dropdowns, confirms, notifiers, popovers, lightboxes, balloons, dialogs, alerts, overlays, sidebars etc. But some of it may not work yet.
 
 
 [![npm install popoff](https://nodei.co/npm/popoff.png?mini=true)](https://npmjs.org/package/popoff/)
@@ -9,6 +9,7 @@ Popoff runs modals, tooltips, popups, dropdowns, confirms, notifiers, popovers, 
 ```js
 var createPopup = require('popoff');
 
+//create and show modal
 var modal = createPopup({
 	type: 'modal',
 	content: `
@@ -16,56 +17,54 @@ var modal = createPopup({
 		<p>blah</p>
 	`
 });
-
 modal.show();
-modal.hide();
-modal.update();
 
-
+//create and show dropdown
 var dropdown = createPopup({
 	target: '#menu',
 	type: 'dopdown',
 	content: document.querySelector('#content')
 });
+document.querySelector('#menu').click();
 ```
 
 ## API
 
 ```js
 var popup = new Popup({
-	/** Show overlay, will be detected based off type */
-	overlay: true,
-
-	/** Show close button */
-	closable: true,
-
-	/** Close by escape */
-	escapable: true,
-
-	/** Show tip */
-	tip: false,
-
-	/** Place popup relative to the element, like dropdown */
-	target: null,
-
-	/** Whether to show only one popup */
-	single: true,
-
-	/** A target to bind default placing */
-	container: document.body || document.documentElement,
-
-	/** Animation effect, can be a list */
-	effect: 'fade',
-
-	/** Default module type to take over the options */
+	// popup type, defines options preset to use. Other options redefine defaults.
 	type: 'modal',
 
-	/** Placing settings */
+	// target element that enables the popup, e.g. button.
+	target: null,
+
+	// an element to place popup into
+	container: document.body || document.documentElement,
+
+	// show overlay, will be detected based off type
+	overlay: true,
+
+	// show close button
+	closable: true,
+
+	// close by escape
+	escapable: true,
+
+	// show tip
+	tip: false,
+
+	// exclusive mode
+	single: true,
+
+	// animation effect, can be a list or a single
+	effect: ['fade', 'zoom', 'slide'],
+
+	// placing settings relative to the target
 	side: 'center',
 	align: 'center',
-
-	//default anim fallback
-	animTimeout: 1000
-}
 });
 ```
+
+## Credits
+
+Popoff reimplements practices of old [overlay-component](https://github.com/component/ovelay) and [dialog-component](https://github.com/component/dialog), refined and mixed with modern ES6 and browserify component approaches.
