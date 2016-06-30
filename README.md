@@ -1,8 +1,8 @@
-[![Popov](https://raw.githubusercontent.com/dfcreative/popoff/master/popoff.png "Popov")](http://dfcreative.github.io/popoff/)
+[![Popov](https://raw.githubusercontent.com/dfcreative/popoff/master/popoff.png "Popov")](https://en.wikipedia.org/wiki/Alexander_Stepanovich_Popov)
 
 # Popoff [![stable](http://badges.github.io/stability-badges/dist/stable.svg)](http://github.com/badges/stability-badges)
 
-Popoff runs modals, tooltips, popups, dropdowns, confirms, notifiers, popovers, lightboxes, balloons, dialogs, alerts, overlays, sidebars etc. [Demo](http://dfcreative.github.io/popoff/).
+Popoff runs modals, tooltips, popups, dropdowns, confirms, notifiers, popovers, lightboxes, balloons, dialogs, alerts, overlays, sidebars etc. **[Demo](http://dfcreative.github.io/popoff/)**.
 
 ## Usage
 
@@ -62,7 +62,7 @@ var popup = new Popup({
 	// animation effect, can be a list or a single
 	effect: ['fade', 'zoom', 'slide'],
 
-	// placing settings relative to the target
+	// placing settings relative to the target, see placer module
 	side: 'center',
 	align: 'center',
 });
@@ -74,9 +74,19 @@ popup.show(target?);
 popup.hide();
 
 //update popup position, in case of resize etc.
-popup.update();
+popup.update({
+	target: this._target || this.target,
+	side: this.side,
+	align: this.align,
+	within: window
+});
 ```
 
 ## Credits
 
 Popoff reimplements practices of old [overlay-component](https://github.com/component/ovelay) and [dialog-component](https://github.com/component/dialog), refined and mixed with modern ES6 and browserify component approaches.
+
+## Related
+
+* [placer](https://github.com/dfcreative/placer)
+* [aligner](https://github.com/dfcreative/aligner)
