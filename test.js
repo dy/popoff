@@ -10,7 +10,6 @@ var body = document.body,
 	root = doc.documentElement;
 
 body.style.position = 'relative';
-body.style.margin = 0;
 body.style.minHeight = '100vh';
 body.style.fontFamily = 'sans-serif';
 body.innerHTML = `${ipsum({count: 15, units: 'paragraph', format: 'html'})}`;

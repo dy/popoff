@@ -7,7 +7,7 @@
 	opacity: 1;
 	background-color: rgba(85,85,85,.85);
 	background: linear-gradient(160deg, rgba(103, 98, 105, 0.85), rgba(73, 70, 82, 0.85));
-	transition: opacity 350ms;
+	transition: opacity .25s;
 	z-index: 500;
 }
 
@@ -19,7 +19,8 @@
 	min-height: 1rem;
 	background: white;
 	opacity: 1;
-	transition: opacity .35s;
+	transition: opacity .333s, transform .25s ease-out;
+	transform-origin: center center;
 }
 
 .popoff-closable {
@@ -61,8 +62,29 @@
 
 
 /* Effects */
-.popoff-fade {
+.popoff-fade-in {
 	opacity: 1;
+}
+.popoff-fade-out {
+	opacity: 0;
+}
+.popoff-zoom-in {
+	transform: scale(1, 1);
+}
+.popoff-zoom-out {
+	transform: scale(.95, .95);
+}
+.popoff-slide-in {
+	transform: translateY(0px);
+}
+.popoff-slide-out {
+	transform: translateY(8px);
+}
+.popoff-slide-in.popoff-zoom-in {
+	transform: scale(1, 1) translateY(0px);
+}
+.popoff-slide-out.popoff-zoom-out {
+	transform: scale(.95, .95) translateY(8px);
 }
 
 

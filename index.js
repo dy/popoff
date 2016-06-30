@@ -2,6 +2,9 @@
  * @module  popup
  */
 
+//FIXME: effects
+//FIXME: tip
+//FIXME: tall modals
 
 const Emitter = require('events');
 const place = require('placer');
@@ -58,8 +61,6 @@ function Popup (opts) {
 		this.element.innerHTML = this.content;
 	}
 
-	this.container.appendChild(this.element);
-
 	//create close element
 	this.closeElement = document.createElement('div');
 	this.closeElement.classList.add('popoff-close');
@@ -70,6 +71,7 @@ function Popup (opts) {
 		this.element.appendChild(this.closeElement);
 	}
 
+	this.container.appendChild(this.element);
 
 	if (this.escapable) {
 		document.addEventListener('keyup', e => {
@@ -79,8 +81,20 @@ function Popup (opts) {
 		});
 	}
 
+	//init proper target
+	if (typeof this.target === 'string') {
+		this.target = document.querySelector(this.target);
+	}
+
+	//update on resize
 	window.addEventListener('resize', () => {
 		this.update();
+	});
+
+	//preset effects
+	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
+	effects.forEach((effect) => {
+		this.element.classList.add(`popoff-${ effect }-out`);
 	});
 
 	//take over options events as well
@@ -144,6 +158,7 @@ Popup.prototype.types = {
 		side: 'center',
 		align: 'center',
 		target: null,
+		effect: ['fade', 'zoom', 'slide'],
 		onInit: function () {
 			if (this.target) {
 				this.target.addEventListener('click', (e) => {
@@ -171,27 +186,14 @@ Popup.prototype.types = {
 		single: true,
 		side: 'bottom',
 		align: 'center',
+		effect: ['slide'],
 		onInit: function () {
 			if (this.target) {
 				this.target.addEventListener('click', (e) => {
 					if (this.isVisible) return this.hide();
-
 					else return this.show();
 				});
 			}
-		},
-		onShow: function () {
-			var that = this;
-
-			//show on click
-			this.target.addEventListener('click', e => {
-				//ignore instant bubbling
-				if (!this.isVisible) {
-					return;
-				}
-
-				this.show();
-			});
 
 			//hide on unfocus
 			document.addEventListener('click', e => {
@@ -206,8 +208,7 @@ Popup.prototype.types = {
 
 				//ignore self clicks
 				this.hide();
-			})
-
+			});
 		}
 	},
 
@@ -255,7 +256,6 @@ Popup.prototype.types = {
  */
 Popup.prototype.show = function (target) {
 	this._target = target || this.target;
-
 	this._target.classList.add('popoff-active');
 
 	this.emit('show', this._target);
@@ -265,8 +265,10 @@ Popup.prototype.show = function (target) {
 		this.element.classList.remove('popoff-hidden');
 		var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
 		effects.forEach((effect) => {
-			this.element.classList.add(`popoff-${ effect }`);
+			this.element.classList.remove(`popoff-${ effect }-out`);
+			this.element.classList.add(`popoff-${ effect }-in`);
 		});
+		this.isVisible = true;
 		this.update();
 	});
 
@@ -284,7 +286,6 @@ Popup.prototype.show = function (target) {
 		//in case if something happened with content during the animation
 		// this.update();
 		this.isAnimating = false;
-		this.isVisible = true;
 		this.emit('afterShow');
 	});
 
@@ -302,17 +303,18 @@ Popup.prototype.hide = function () {
 	this._target && this._target.classList && this._target.classList.remove('popoff-active');
 
 	this.emit('hide');
-	this.isVisible = false;
 
 	this.element.classList.add('popoff-hidden');
 
 	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
 	effects.forEach((effect) => {
-		this.element.classList.remove(`popoff-${ effect }`);
+		this.element.classList.remove(`popoff-${ effect }-in`);
+		this.element.classList.add(`popoff-${ effect }-out`);
 	});
 
 	this.isAnimating = true;
 	this.animend(() => {
+		this.isVisible = false;
 		this.isAnimating = false;
 		this._overlay = null;
 		this.emit('afterHide');
@@ -324,6 +326,8 @@ Popup.prototype.hide = function () {
 
 /** Place popup next to the target */
 Popup.prototype.update = function (how) {
+	if (!this.isVisible) return;
+
 	place(this.element, extend({
 		target: this._target || this.target,
 		side: this.side,
