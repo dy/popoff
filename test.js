@@ -27,6 +27,10 @@ insertCSS(`
 		font-family: sans-serif;
 	}
 
+	h1,h2,h3,h4,h5,h6 {
+		margin: .83rem 0rem 1rem 0;
+	}
+
 	.popoff-overlay {
 		background-color: rgba(85,85,85,.15);
 		background: linear-gradient(160deg, rgba(103, 98, 105, .55), rgba(73, 70, 82, .55));
@@ -66,16 +70,22 @@ ${ipsum({count: 15, units: 'paragraph', format: 'html'})}
 `;
 
 
-test.skip('overlay', function (done) {
-	this.timeout(Infinity);
+test('overlay', function () {
+	var target = document.createElement('a');
+	target.href = '#overlay';
+	target.innerHTML = 'Overlay';
+	target.className = 'target';
+	target.style.textDecoration = 'none';
+	target.style.background = 'black';
+	target.style.color = 'white';
+	target.style.padding = '10px';
+	document.querySelectorAll('p')[0].appendChild(target);
 
 	var o = Overlay();
 
-	o.show();
-
-	// setTimeout(() => {
-		o.on('hide', done);
-	// }, 1000);
+	target.addEventListener('click', () => {
+		o.show();
+	});
 });
 
 
@@ -94,7 +104,6 @@ test('modal', function () {
 		overlay: true,
 		content: `
 			<h2>Modal</h2>
-			<br/>
 			${ipsum({count: 3, units: 'paragraph', format: 'html'})}
 		`
 	});
