@@ -36,7 +36,7 @@ document.querySelector('#menu').click();
 
 ```js
 var popup = new Popup({
-	// popup type, defines options preset to use. Other options redefine defaults.
+	// modal, dropdown, tooltip, sidebar work out of the box. Otherwise define custom options below.
 	type: 'modal',
 
 	// target element that enables the popup, e.g. button.
@@ -67,6 +67,15 @@ var popup = new Popup({
 	side: 'center',
 	align: 'center',
 });
+
+//show popup relative to the target
+popup.show(target?);
+
+//hide popup
+popup.hide();
+
+//update popup position, in case of resize etc.
+popup.update();
 ```
 
 ## Credits
