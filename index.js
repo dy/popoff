@@ -2,9 +2,9 @@
  * @module  popup
  */
 
+//FIXME: sidebar
 //FIXME: tall modals
 //FIXME: demo
-//FIXME: sidebar
 //FIXME: draggable & resizable
 
 const Emitter = require('events');
@@ -273,13 +273,14 @@ Popup.prototype.types = {
 Popup.prototype.show = function (target) {
 	this._target = target || this.target;
 	this._target.classList.add('popoff-active');
+	this.element.classList.remove('popoff-hidden');
+	this.tipElement.classList.remove('popoff-hidden');
 
 	this.emit('show', this._target);
 
+
 	//in some way it needs to be called in timeout, otherwise animation fails
 	setTimeout(() => {
-		this.element.classList.remove('popoff-hidden');
-		this.tipElement.classList.remove('popoff-hidden');
 		var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
 		effects.forEach((effect) => {
 			this.element.classList.remove(`popoff-${ effect }-out`);
@@ -323,8 +324,6 @@ Popup.prototype.hide = function () {
 
 	this.emit('hide');
 
-	this.element.classList.add('popoff-hidden');
-	this.tipElement.classList.add('popoff-hidden');
 
 	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
 	effects.forEach((effect) => {
@@ -339,6 +338,8 @@ Popup.prototype.hide = function () {
 		this.isVisible = false;
 		this.isAnimating = false;
 		this._overlay = null;
+		this.element.classList.add('popoff-hidden');
+		this.tipElement.classList.add('popoff-hidden');
 		this.emit('afterHide');
 	});
 
