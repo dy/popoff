@@ -2,8 +2,10 @@
  * @module  popup
  */
 
-//FIXME: tip
 //FIXME: tall modals
+//FIXME: demo
+//FIXME: sidebar
+//FIXME: draggable & resizable
 
 const Emitter = require('events');
 const place = require('placer');
@@ -195,7 +197,7 @@ Popup.prototype.types = {
 		single: true,
 		side: 'bottom',
 		align: 'center',
-		effect: ['slide'],
+		effect: ['fade', 'slide'],
 		onInit: function () {
 			if (this.target) {
 				this.target.addEventListener('click', (e) => {
@@ -223,38 +225,43 @@ Popup.prototype.types = {
 
 	//tooltip
 	tooltip: {
-		before: function () {
+		overlay: false,
+		closable: false,
+		escapable: true,
+		target: null,
+		tip: true,
+		single: true,
+		side: 'right',
+		align: 'center',
+		effect: ['fade', 'slide'],
+		timeout: 500,
+		onInit: function () {
 			var that = this;
 
-			on(this.target, `mouseenter.${ this.id }`, function () {
-				if (this.state !== 'hidden') {
-					return;
-				}
+			if (this.target) {
+				this.target.addEventListener('mouseenter', (e) => {
+					this._leave && clearTimeout(this._leave);
+					if (this.isVisible) return;
+					this.show();
+				});
+				this.target.addEventListener('mouseleave', (e) => {
+					if (!this.isVisible) return;
+					this._leave = setTimeout(() => {
+						this.hide();
+					}, this.timeout);
+				});
+			}
 
-				this.show();
+			this.element.addEventListener('mouseenter', (e) => {
+				if (!this.isVisible) return;
+				this._leave && clearTimeout(this._leave);
 			});
-
-			on(this.target, `mouseleave.${ this.id }`, function () {
-				if (this.state !== 'visible') {
-					return;
-				}
-
-				this.hide();
+			this.element.addEventListener('mouseleave', (e) => {
+				if (!this.isVisible) return;
+				this._leave = setTimeout(() => {
+					this.hide();
+				}, this.timeout);
 			});
-
-			on(this.element, `mouseleave.${ this.id }`, function () {
-				if (this.state !== 'visible') {
-					return;
-				}
-
-				this.hide();
-			});
-		},
-		after: function () {
-			var that = this;
-
-			off(this.target, `.${ this.id }`);
-			off(document, `.${ this.id }`);
 		}
 	}
 };

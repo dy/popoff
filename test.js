@@ -98,13 +98,20 @@ test('dropdown', () => {
 	// dropdown.show();
 });
 
-test.skip('tooltip', () => {
-	var target = document.createElement('div');
-	target.innerHTML = this.test.title;
+test('tooltip', () => {
+	var target = document.createElement('span');
+	target.innerHTML = 'Tooltip';
 	target.className = 'target';
-	p.appendChild(target);
+	target.style.background = 'black';
+	target.style.color = 'white';
+	target.style.padding = '10px';
+	document.querySelectorAll('p')[4].appendChild(target);
 
-	var popoff = new Popup(ipsum({count: 3, units: 'paragraph', format: 'html'}), {
+	var content = document.createElement('div');
+	content.innerHTML = ipsum({count: 1, units: 'paragraph', format: 'html'});
+
+	var tooltip = new Popup({
+		content: content,
 		target: target,
 		type: 'tooltip'
 	});
