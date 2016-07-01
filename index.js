@@ -57,6 +57,7 @@ function Popup (opts) {
 	if (!this.container) {
 		this.container = document.body || document.documentElement;
 	}
+	this.container.classList.add('popoff-container');
 
 	//ensure element
 	if (!this.element) this.element = document.createElement('div');
@@ -252,9 +253,22 @@ Popup.prototype.types = {
 
 			if (this.target) {
 				this.target.addEventListener('mouseenter', (e) => {
-					this._leave && clearTimeout(this._leave);
+					if (this._leave) {
+						clearTimeout(this._leave);
+						this._leave = null;
+					}
 					if (this.isVisible) return;
-					this.show();
+					this.show(undefined, () => {
+						this._leave = setTimeout(() => {
+							this.hide();
+						}, this.timeout);
+					});
+				});
+				this.target.addEventListener('mousemove', (e) => {
+					if (this._leave) {
+						clearTimeout(this._leave);
+						this._leave = null;
+					}
 				});
 				this.target.addEventListener('mouseleave', (e) => {
 					if (!this.isVisible) return;
@@ -311,8 +325,20 @@ Popup.prototype.types = {
 /**
  * Show popup near to the target
  */
-Popup.prototype.show = function (target) {
+Popup.prototype.show = function (target, cb) {
 	if (this.isVisible) return this;
+
+	if (target instanceof Function) {
+		this.currentTarget = this.target;
+		cb = target;
+	}
+	else {
+		this.currentTarget = target || this.target;
+	}
+
+	this.currentTarget && this.currentTarget.classList && this.currentTarget.classList.add('popoff-active');
+	this.element.classList.remove('popoff-hidden');
+	this.tipElement.classList.remove('popoff-hidden');
 
 	//ensure effects classes
 	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
@@ -321,11 +347,6 @@ Popup.prototype.show = function (target) {
 		this.tipElement.classList.add(`popoff-effect-${ effect }`);
 	});
 
-	this.currentTarget = target || this.target;
-	this.currentTarget && this.currentTarget.classList && this.currentTarget.classList.add('popoff-active');
-	this.element.classList.remove('popoff-hidden');
-	this.tipElement.classList.remove('popoff-hidden');
-
 	var elHeight = this.element.offsetHeight;
 
 	//apply overflow on body for tall content
@@ -333,7 +354,7 @@ Popup.prototype.show = function (target) {
 		this.isTall = true;
 		this.element.style.left = null;
 		this.element.style.right = null;
-		this.container.classList.add('popoff-container');
+		this.container.classList.add('popoff-container-overflow');
 		this.container.appendChild(this.overflowElement);
 		this.overflowElement.appendChild(this.element);
 	}
@@ -371,10 +392,11 @@ Popup.prototype.show = function (target) {
 		//in case if something happened with content during the animation
 		// this.update();
 		this.isAnimating = false;
-		this.emit('afterShow');
-
 		this.tipElement.classList.remove('popoff-animate');
 		this.element.classList.remove('popoff-animate');
+
+		this.emit('afterShow');
+		cb && cb.call(this);
 	});
 
 	return this;
@@ -384,7 +406,7 @@ Popup.prototype.show = function (target) {
 /**
  * Hide popup
  */
-Popup.prototype.hide = function () {
+Popup.prototype.hide = function (cb) {
 	//overlay recurrently calls this.hide, so just drop it here
 	if (this._overlay) return this._overlay.hide();
 
@@ -420,12 +442,13 @@ Popup.prototype.hide = function () {
 
 		if (this.isTall) {
 			this.isTall = false;
-			this.container.classList.remove('popoff-container');
+			this.container.classList.remove('popoff-container-overflow');
 			this.container.removeChild(this.overflowElement);
 			this.container.appendChild(this.element);
 		}
 
 		this.emit('afterHide');
+		cb && cb.call(this);
 	});
 
 	return this;

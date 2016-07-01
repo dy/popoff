@@ -73,11 +73,11 @@ var popup = new Popup({
 	tall: false
 });
 
-//show popup relative to the target
-popup.show(target?);
+//show popup relative to the target, invoke callback after animation end
+popup.show(target?, callback?);
 
-//hide popup
-popup.hide();
+//hide popup, invoke callback after animation end
+popup.hide(callback?);
 
 //update popup position, in case of resize etc.
 popup.update({

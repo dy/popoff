@@ -56,8 +56,13 @@
 }
 
 .popoff-container {
+
+}
+
+.popoff-container-overflow {
 	overflow: hidden;
 	height: 100%;
+	pointer-events: none;
 }
 
 .popoff-overflow {
