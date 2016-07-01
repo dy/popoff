@@ -158,7 +158,7 @@ test('modal', function () {
 		overlay: true,
 		content: `
 			<h2>Modal</h2>
-			${ipsum({count: 3, units: 'paragraph', format: 'html'})}
+			${ipsum({count: 1, units: 'paragraph', format: 'html'})}
 		`
 	});
 
