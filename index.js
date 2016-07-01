@@ -107,6 +107,7 @@ function Popup (opts) {
 
 	if (this.escapable) {
 		document.addEventListener('keyup', e => {
+			if (!this.isVisible) return;
 			if (e.which === 27) {
 				this.hide();
 			}
