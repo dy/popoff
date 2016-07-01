@@ -1,4 +1,4 @@
-[![Popov](https://raw.githubusercontent.com/dfcreative/popoff/master/popoff.png "Popov")](https://en.wikipedia.org/wiki/Alexander_Stepanovich_Popov)
+[![Popov](https://raw.githubusercontent.com/dfcreative/popoff/gh-pages/popoff.png "Popov")](https://en.wikipedia.org/wiki/Alexander_Stepanovich_Popov)
 
 # Popoff [![stable](http://badges.github.io/stability-badges/dist/stable.svg)](http://github.com/badges/stability-badges)
 

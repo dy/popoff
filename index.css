@@ -7,6 +7,8 @@
 	opacity: 0;
 	background-color: rgba(85,85,85,.85);
 	background: linear-gradient(160deg, rgba(103, 98, 105, 0.85), rgba(73, 70, 82, 0.85));
+	-webkit-transition: opacity .25s;
+	-moz-transition: opacity .25s;
 	transition: opacity .25s;
 	z-index: 5;
 }
@@ -23,7 +25,11 @@
 	visibility: visible;
 	backface-visibility: hidden;
 	box-sizing: border-box;
+	-webkit-transition: opacity .333s, transform .25s ease-out;
+	-moz-transition: opacity .333s, transform .25s ease-out;
 	transition: opacity .333s, transform .25s ease-out;
+	-webkit-transform-origin: center center;
+	-moz-transform-origin: center center;
 	transform-origin: center center;
 }
 
@@ -136,6 +142,8 @@
 	position: absolute;
 	z-index: 10;
 	overflow: hidden;
+	-webkit-transition: opacity .333s, transform .25s ease-out;
+	-moz-transition: opacity .333s, transform .25s ease-out;
 	transition: opacity .333s, transform .25s ease-out;
 }
 .popoff-tip:after{
@@ -144,7 +152,11 @@
 	position: absolute;
 	background: white;
 	box-shadow: 0 0px 3px rgba(19, 16, 27, 0.25);
+	-webkit-transform-origin: center;
+	-moz-transform-origin: center;
 	transform-origin: center;
+	-webkit-transform: rotate(45deg);
+	-moz-transform: rotate(45deg);
 	transform: rotate(45deg);
 	width: 1.5rem;
 	height: 1.5rem;
@@ -207,27 +219,39 @@
 	opacity: 0;
 }
 .popoff-effect-scale-in {
+	-webkit-transform: scale(1, 1);
+	transform: scale(1, 1);
 	transform: scale(1, 1);
 	opacity: 1;
 }
 .popoff-effect-scale-out {
+	-webkit-transform: scale(.99, .99);
+	-moz-transform: scale(.99, .99);
 	transform: scale(.99, .99);
 	opacity: 0;
 }
 .popoff-effect-slide-in {
+	-webkit-transform: translateY(0px);
+	-moz-transform: translateY(0px);
 	transform: translateY(0px);
 	opacity: 1;
 }
 .popoff-effect-slide-out {
+	-webkit-transform: translateY(6px);
+	-moz-transform: translateY(6px);
 	transform: translateY(6px);
 	opacity: 0;
 }
 .popoff-effect-slide-in.popoff-scale-in {
 	opacity: 1;
+	-webkit-transform: scale(1, 1) translateY(0px);
+	-moz-transform: scale(1, 1) translateY(0px);
 	transform: scale(1, 1) translateY(0px);
 }
 .popoff-effect-slide-out.popoff-scale-out {
 	opacity: 0;
+	-webkit-transform: scale(.99, .99) translateY(6px);
+	-moz-transform: scale(.99, .99) translateY(6px);
 	transform: scale(.99, .99) translateY(6px);
 }
 
