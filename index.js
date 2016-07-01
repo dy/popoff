@@ -15,14 +15,12 @@ insertCss(fs.readFileSync('./index.css', 'utf-8'));
 
 module.exports = Popup;
 
-//FIXME: demo
 
 /**
  * @class  Popup
  *
  * @constructor
  *
- * @param {Element} el An element to take as a content
  * @param {Object} options Showing options
  *
  * @return {Popup} A popup controller

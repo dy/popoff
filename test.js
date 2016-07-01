@@ -1,10 +1,11 @@
 var ipsum = require('lorem-ipsum');
-var Draggable = require('draggy');
-var Resizable = require('resizable');
-var test = require('tst');
+// var Draggable = require('draggy');
+// var Resizable = require('resizable');
 var Overlay = require('./overlay');
 var Popup = require('./');
 var insertCSS = require('insert-css');
+// var test = require('tst');
+var test = (a,b) => {b();};
 
 var body = document.body,
 	doc = document,
@@ -130,23 +131,21 @@ var p = Popup({
 });
 
 
-test.skip('overlay', function () {
-	var target = document.createElement('a');
-	target.href = '#overlay';
-	target.innerHTML = 'Overlay';
-	target.className = 'target';
-	target.style.textDecoration = 'none';
-	target.style.background = 'black';
-	target.style.color = 'white';
-	target.style.padding = '10px';
-	document.querySelector('#types p:last-of-type').appendChild(target);
+// var target = document.createElement('a');
+// target.href = '#overlay';
+// target.innerHTML = 'Overlay';
+// target.className = 'target';
+// target.style.textDecoration = 'none';
+// target.style.background = 'black';
+// target.style.color = 'white';
+// target.style.padding = '10px';
+// document.querySelector('#types p:last-of-type').appendChild(target);
 
-	var o = Overlay();
+// var o = Overlay();
 
-	target.addEventListener('click', () => {
-		o.show();
-	});
-});
+// target.addEventListener('click', () => {
+// 	o.show();
+// });
 
 
 test('modal', function () {
@@ -248,6 +247,7 @@ test('tooltip', () => {
 
 
 test('dialog draggable & resizable', () => {
+	return;
 	var target = document.createElement('a');
 	target.href = '#drag-resize';
 	target.innerHTML = 'Drag & resize';
