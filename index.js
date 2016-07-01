@@ -183,7 +183,7 @@ Popup.prototype.types = {
 		align: 'center',
 		target: null,
 		tall: true,
-		effect: ['fade', 'zoom', 'slide'],
+		effect: ['fade'],
 		onInit: function () {
 			if (this.target) {
 				this.target.addEventListener('click', (e) => {
@@ -300,7 +300,7 @@ Popup.prototype.types = {
 		side: 'bottom',
 		align: .5,
 		target: null,
-		effect: ['fade', 'zoom', 'slide'],
+		effect: 'slide',
 		update: () => {},
 		onInit: function () {
 			if (this.target) {
@@ -317,6 +317,7 @@ Popup.prototype.types = {
 		onShow: function () {
 			if (!/top|left|bottom|right/.test(this.side)) this.side = this.types.sidebar.side;
 			this.element.setAttribute('data-side', this.side);
+			this.effect = 'slide-' + this.side;
 		}
 	}
 };
@@ -340,6 +341,8 @@ Popup.prototype.show = function (target, cb) {
 	this.element.classList.remove('popoff-hidden');
 	this.tipElement.classList.remove('popoff-hidden');
 
+	this.emit('show', this.currentTarget);
+
 	//ensure effects classes
 	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
 	effects.forEach((effect) => {
@@ -361,8 +364,6 @@ Popup.prototype.show = function (target, cb) {
 
 	this.tipElement.classList.add('popoff-animate');
 	this.element.classList.add('popoff-animate');
-
-	this.emit('show', this.currentTarget);
 
 	//in some way it needs to be called in timeout with some delay, otherwise animation fails
 	setTimeout(() => {

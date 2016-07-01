@@ -51,8 +51,14 @@ insertCSS(`
 		margin-bottom: .5rem;
 	}
 
-	.popoff-dropdown p, .popoff-tooltip p {
+	.popoff-dropdown p,
+	.popoff-sidebar p,
+	.popoff-tooltip p {
 		margin: 0;
+	}
+
+	.popoff-sidebar h2 {
+		margin: 0 0 .5rem;
 	}
 
 	.popoff-overlay {
@@ -184,7 +190,7 @@ test('sidebar', function () {
 		type: 'sidebar',
 		content: `
 			<h2>Sidebar</h2>
-			${ipsum({count: 1, units: 'paragraph', format: 'html'})}
+			${ipsum({count: 2, units: 'sentences', format: 'html'})}
 		`
 	});
 
