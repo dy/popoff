@@ -66,7 +66,7 @@ Overlay.prototype.show = function () {
 
 	//class removed in a timeout to save animation
 	setTimeout( () => {
-		this.element.classList.add('popoff-fade-in');
+		this.element.classList.add('popoff-effect-fade-in');
 		this.emit('afterShow');
 	});
 
@@ -86,7 +86,7 @@ Overlay.prototype.show = function () {
 Overlay.prototype.hide = function () {
 	this.emit('hide');
 
-	this.element.classList.remove('popoff-fade-in');
+	this.element.classList.remove('popoff-effect-fade-in');
 
 	this.element.addEventListener('transitionend', end);
 	this.element.addEventListener('webkitTransitionEnd', end);

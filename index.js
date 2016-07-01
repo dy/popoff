@@ -15,8 +15,6 @@ insertCss(fs.readFileSync('./index.css', 'utf-8'));
 
 module.exports = Popup;
 
-//FIXME: sidebar
-//FIXME: effects
 //FIXME: demo
 //FIXME: draggable & resizable
 
@@ -95,6 +93,15 @@ function Popup (opts) {
 		this.element.classList.add('popoff-popup-tip');
 	}
 
+	//apply custom style
+	if (this.style) {
+		for (var name in this.style) {
+			let value = this.style[name];
+			if (typeof value === 'number' && !/z/.test(name)) value += 'px';
+			this.element.style[name] = value;
+		}
+	}
+
 	//create overflow for tall content
 	this.overflowElement = document.createElement('div');
 	this.overflowElement.classList.add('popoff-overflow');
@@ -117,13 +124,6 @@ function Popup (opts) {
 	//update on resize
 	window.addEventListener('resize', () => {
 		this.update();
-	});
-
-	//preset effects
-	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
-	effects.forEach((effect) => {
-		this.element.classList.add(`popoff-${ effect }-out`);
-		this.tipElement.classList.add(`popoff-${ effect }-out`);
 	});
 
 	this.emit('init');
@@ -175,7 +175,7 @@ extend(Popup.prototype, {
 /** Type of default interactions */
 Popup.prototype.types = {
 	modal: {
-		overlay: false,
+		overlay: true,
 		closable: true,
 		escapable: true,
 		tip: false,
@@ -183,6 +183,7 @@ Popup.prototype.types = {
 		side: 'center',
 		align: 'center',
 		target: null,
+		tall: true,
 		effect: ['fade', 'zoom', 'slide'],
 		onInit: function () {
 			if (this.target) {
@@ -211,7 +212,7 @@ Popup.prototype.types = {
 		single: true,
 		side: 'bottom',
 		align: 'center',
-		effect: ['fade', 'slide'],
+		effect: ['fade'],
 		onInit: function () {
 			if (this.target) {
 				this.target.addEventListener('click', (e) => {
@@ -246,7 +247,7 @@ Popup.prototype.types = {
 		single: true,
 		side: 'right',
 		align: 'center',
-		effect: ['fade', 'slide'],
+		effect: ['fade'],
 		timeout: 500,
 		onInit: function () {
 			var that = this;
@@ -284,7 +285,7 @@ Popup.prototype.types = {
 		escapable: true,
 		tip: false,
 		single: true,
-		side: 'right',
+		side: 'bottom',
 		align: .5,
 		target: null,
 		effect: ['fade', 'zoom', 'slide'],
@@ -300,6 +301,9 @@ Popup.prototype.types = {
 			else {
 				this.target = window;
 			}
+		},
+		onShow: function () {
+			if (!/top|left|bottom|right/.test(this.side)) this.side = this.types.sidebar.side;
 			this.element.setAttribute('data-side', this.side);
 		}
 	}
@@ -310,15 +314,27 @@ Popup.prototype.types = {
  * Show popup near to the target
  */
 Popup.prototype.show = function (target) {
+	if (this.isVisible) return this;
+
+	//ensure effects classes
+	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
+	effects.forEach((effect) => {
+		this.element.classList.add(`popoff-effect-${ effect }-out`);
+		this.element.classList.remove(`popoff-effect-${ effect }-in`);
+		this.tipElement.classList.add(`popoff-effect-${ effect }-out`);
+		this.tipElement.classList.remove(`popoff-effect-${ effect }-in`);
+	});
+
 	this.currentTarget = target || this.target;
-	this.currentTarget.classList.add('popoff-active');
+	this.currentTarget && this.currentTarget.classList && this.currentTarget.classList.add('popoff-active');
 	this.element.classList.remove('popoff-hidden');
 	this.tipElement.classList.remove('popoff-hidden');
+
 
 	var elHeight = this.element.offsetHeight;
 
 	//apply overflow on body for tall content
-	if (elHeight > window.innerHeight) {
+	if (this.tall && elHeight > window.innerHeight) {
 		this.isTall = true;
 		this.element.style.left = null;
 		this.element.style.right = null;
@@ -333,10 +349,10 @@ Popup.prototype.show = function (target) {
 	setTimeout(() => {
 		var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
 		effects.forEach((effect) => {
-			this.element.classList.remove(`popoff-${ effect }-out`);
-			this.element.classList.add(`popoff-${ effect }-in`);
-			this.tipElement.classList.remove(`popoff-${ effect }-out`);
-			this.tipElement.classList.add(`popoff-${ effect }-in`);
+			this.element.classList.remove(`popoff-effect-${ effect }-out`);
+			this.element.classList.add(`popoff-effect-${ effect }-in`);
+			this.tipElement.classList.remove(`popoff-effect-${ effect }-out`);
+			this.tipElement.classList.add(`popoff-effect-${ effect }-in`);
 		});
 		this.isVisible = true;
 		this.update();
@@ -380,10 +396,10 @@ Popup.prototype.hide = function () {
 
 	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
 	effects.forEach((effect) => {
-		this.element.classList.remove(`popoff-${ effect }-in`);
-		this.element.classList.add(`popoff-${ effect }-out`);
-		this.tipElement.classList.remove(`popoff-${ effect }-in`);
-		this.tipElement.classList.add(`popoff-${ effect }-out`);
+		this.element.classList.remove(`popoff-effect-${ effect }-in`);
+		this.element.classList.add(`popoff-effect-${ effect }-out`);
+		this.tipElement.classList.remove(`popoff-effect-${ effect }-in`);
+		this.tipElement.classList.add(`popoff-effect-${ effect }-out`);
 	});
 
 	this.isAnimating = true;
@@ -447,8 +463,8 @@ Popup.prototype.update = function (how) {
 
 		this.tipElement.setAttribute('data-side', side);
 		place(this.tipElement, {
-			target: this.target,
-			side: how.side,
+			target: this.element,
+			side: side,
 			align: 'center',
 			within: null
 		});

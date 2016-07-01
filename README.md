@@ -60,13 +60,16 @@ var popup = new Popup({
 	single: true,
 
 	// animation effect, can be a list or a single
-	effect: ['fade', 'zoom', 'slide'],
+	effect: ['fade', 'scale', 'slide'],
+
+	// additional style rules for popup
+	style: {},
 
 	// placing settings relative to the target, see placer module
 	side: 'center',
 	align: 'center',
 
-	// detect tall content to apply overflow, useful for modals with much of content
+	// apply overflow to tall content, useful for modals with much of content
 	tall: false
 });
 
@@ -83,13 +86,21 @@ popup.update({
 	align: this.align,
 	within: window
 });
+
+//events
+popup.on('show', () => {});
+popup.on('afterShow', () => {});
+popup.on('hide', () => {});
+popup.on('afterHide', () => {});
+popup.on('update', () => {});
 ```
 
 ## Credits
 
-Popoff reimplements practices of old [overlay-component](https://github.com/component/ovelay) and [dialog-component](https://github.com/component/dialog), refined and mixed with modern ES6 and browserify component approaches.
+Popoff engages practices of old [overlay-component](https://github.com/component/ovelay) and [dialog-component](https://github.com/component/dialog), refined and mixed with modern ES6 and browserify component approaches.
+List of effects is taken from [modal window effects](https://github.com/codrops/ModalWindowEffects) article from codrops, so big thanks to them for awesome lib.
 
 ## Related
 
-* [placer](https://github.com/dfcreative/placer)
-* [aligner](https://github.com/dfcreative/aligner)
+* [placer](https://github.com/dfcreative/placer) - place any element relative to any other element in any way.
+* [aligner](https://github.com/dfcreative/aligner) - align elements set by one or other side.
