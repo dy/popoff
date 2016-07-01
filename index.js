@@ -733,9 +733,11 @@ Popup.prototype.types = {
 					}
 					if (_this4.isVisible) return;
 					_this4.show();
-					_this4._leave = setTimeout(function () {
-						_this4.hide();
-					}, _this4.timeout + 1000);
+					setTimeout(function () {
+						_this4._leave = setTimeout(function () {
+							_this4.hide();
+						}, _this4.timeout + 1000);
+					});
 				});
 				this.target.addEventListener('mousemove', function (e) {
 					if (_this4._leave) {
