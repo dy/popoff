@@ -579,6 +579,7 @@ function Popup(opts) {
 
 	if (this.escapable) {
 		document.addEventListener('keyup', function (e) {
+			if (!_this.isVisible) return;
 			if (e.which === 27) {
 				_this.hide();
 			}
@@ -1028,6 +1029,11 @@ function align(els, alignment, relativeTo){
 
 	//apply alignment
 	var targetRect = offsets(relativeTo);
+	if (relativeTo === window) {
+		targetRect.top = 0;
+		targetRect.left = 0;
+	}
+
 	for (var i = els.length, el, s; i--;){
 		el = els[i];
 
@@ -1046,24 +1052,24 @@ function align(els, alignment, relativeTo){
 		var placeeMargins = margins(el);
 
 		//get relativeTo & parent rectangles
-		var parent = el.offsetParent || win;
+		if (isFixed(el)) {
+			var parent = win;
+		}
+		else {
+			var parent = el.offsetParent || win;
+		}
 		var parentRect = offsets(parent);
 		var parentPaddings = paddings(parent);
 		var parentBorders = borders(parent);
 
 		//correct parentRect
-		if (parent === window || (parent === doc.body && getComputedStyle(parent).position === 'static') || parent === root ) {
+		if (parent === window || (parent === doc.body && getComputedStyle(parent).position === 'static') || parent === root) {
 			parentRect.left = 0;
 			parentRect.top = 0;
 		}
-
 		parentRect = m.sub(parentRect, parentBorders);
 		parentRect = m.add(parentRect, placeeMargins);
 
-		if (isFixed(el)) {
-			targetRect.top = 0;
-			targetRect.left = 0;
-		}
 		// parentRect = m.add(parentRect, parentPaddings);
 
 		alignX(els[i], targetRect, parentRect, xAlign);
