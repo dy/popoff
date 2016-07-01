@@ -732,11 +732,10 @@ Popup.prototype.types = {
 						_this4._leave = null;
 					}
 					if (_this4.isVisible) return;
-					_this4.show(undefined, function () {
-						_this4._leave = setTimeout(function () {
-							_this4.hide();
-						}, _this4.timeout);
-					});
+					_this4.show();
+					_this4._leave = setTimeout(function () {
+						_this4.hide();
+					}, _this4.timeout + 1000);
 				});
 				this.target.addEventListener('mousemove', function (e) {
 					if (_this4._leave) {
