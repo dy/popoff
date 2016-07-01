@@ -314,6 +314,18 @@ Popup.prototype.types = {
 Popup.prototype.show = function (target) {
 	if (this.isVisible) return this;
 
+	var elHeight = this.element.offsetHeight;
+
+	//apply overflow on body for tall content
+	if (this.tall && elHeight > window.innerHeight) {
+		this.isTall = true;
+		this.element.style.left = null;
+		this.element.style.right = null;
+		this.container.classList.add('popoff-container');
+		this.container.appendChild(this.overflowElement);
+		this.overflowElement.appendChild(this.element);
+	}
+
 	//ensure effects classes
 	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
 	effects.forEach((effect) => {
@@ -328,18 +340,8 @@ Popup.prototype.show = function (target) {
 	this.element.classList.remove('popoff-hidden');
 	this.tipElement.classList.remove('popoff-hidden');
 
-
-	var elHeight = this.element.offsetHeight;
-
-	//apply overflow on body for tall content
-	if (this.tall && elHeight > window.innerHeight) {
-		this.isTall = true;
-		this.element.style.left = null;
-		this.element.style.right = null;
-		this.container.classList.add('popoff-container');
-		this.container.appendChild(this.overflowElement);
-		this.overflowElement.appendChild(this.element);
-	}
+	this.tipElement.classList.add('popoff-animate');
+	this.element.classList.add('popoff-animate');
 
 	this.emit('show', this.currentTarget);
 
@@ -374,6 +376,9 @@ Popup.prototype.show = function (target) {
 		// this.update();
 		this.isAnimating = false;
 		this.emit('afterShow');
+
+		this.tipElement.classList.remove('popoff-animate');
+		this.element.classList.remove('popoff-animate');
 	});
 
 	return this;
@@ -401,10 +406,16 @@ Popup.prototype.hide = function () {
 	});
 
 	this.isAnimating = true;
+
+	this.tipElement.classList.add('popoff-animate');
+	this.element.classList.add('popoff-animate');
+
 	this.animend(() => {
 		this.isVisible = false;
 		this.isAnimating = false;
 		this._overlay = null;
+		this.tipElement.classList.remove('popoff-animate');
+		this.element.classList.remove('popoff-animate');
 		this.element.classList.add('popoff-hidden');
 		this.tipElement.classList.add('popoff-hidden');
 

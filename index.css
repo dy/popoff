@@ -25,12 +25,15 @@
 	visibility: visible;
 	backface-visibility: hidden;
 	box-sizing: border-box;
-	-webkit-transition: opacity .333s, transform .25s ease-out;
-	-moz-transition: opacity .333s, transform .25s ease-out;
-	transition: opacity .333s, transform .25s ease-out;
 	-webkit-transform-origin: center center;
 	-moz-transform-origin: center center;
 	transform-origin: center center;
+}
+
+.popoff-animate {
+	-webkit-transition: opacity .333s, transform .25s ease-out;
+	-moz-transition: opacity .333s, transform .25s ease-out;
+	transition: opacity .333s, transform .25s ease-out;
 }
 
 .popoff-popup-tip {
@@ -142,9 +145,6 @@
 	position: absolute;
 	z-index: 10;
 	overflow: hidden;
-	-webkit-transition: opacity .333s, transform .25s ease-out;
-	-moz-transition: opacity .333s, transform .25s ease-out;
-	transition: opacity .333s, transform .25s ease-out;
 }
 .popoff-tip:after{
 	content: '';
@@ -361,7 +361,8 @@
 	top: 0!important;
 	left: 0!important;
 	width: 100%!important;
-	height: 100%!important;
+	min-height: 100%!important;
+	overflow: auto;
 	max-width: none;
 	-webkit-transform: scale(0.8);
 	-moz-transform: scale(0.8);
