@@ -482,7 +482,7 @@ var createOverlay = require('./overlay');
 var insertCss = require('insert-css');
 
 
-insertCss(".popoff-overlay {\r\n\tposition: fixed;\r\n\ttop: 0;\r\n\tleft: 0;\r\n\tbottom: 0;\r\n\tright: 0;\r\n\topacity: 0;\r\n\tbackground-color: rgba(85,85,85,.85);\r\n\tbackground: linear-gradient(160deg, rgba(103, 98, 105, 0.85), rgba(73, 70, 82, 0.85));\r\n\t-webkit-transition: opacity .25s;\r\n\t-moz-transition: opacity .25s;\r\n\ttransition: opacity .25s;\r\n\tz-index: 5;\r\n}\r\n\r\n.popoff-popup {\r\n\tz-index: 9;\r\n\tposition: absolute;\r\n\toverflow: hidden;\r\n\tmargin: auto;\r\n\tmin-width: 4rem;\r\n\tmin-height: 1rem;\r\n\tbackground: white;\r\n\topacity: 1;\r\n\tvisibility: visible;\r\n\tbackface-visibility: hidden;\r\n\tbox-sizing: border-box;\r\n\t-webkit-transition: opacity .333s, transform .25s ease-out;\r\n\t-moz-transition: opacity .333s, transform .25s ease-out;\r\n\ttransition: opacity .333s, transform .25s ease-out;\r\n\t-webkit-transform-origin: center center;\r\n\t-moz-transform-origin: center center;\r\n\ttransform-origin: center center;\r\n}\r\n\r\n.popoff-popup-tip {\r\n\tmargin: 1rem;\r\n}\r\n\r\n.popoff-closable {\r\n\tcursor: pointer;\r\n}\r\n\r\n.popoff-hidden {\r\n\topacity: 0;\r\n\tdisplay: none;\r\n\tpointer-events: none;\r\n\tvisibility: hidden;\r\n}\r\n\r\n.popoff-container {\r\n\toverflow: hidden;\r\n\theight: 100%;\r\n}\r\n\r\n.popoff-overflow {\r\n\tposition: fixed;\r\n\toverflow: auto;\r\n\ttop: 0;\r\n\tleft: 0;\r\n\tright: 0;\r\n\tbottom: 0;\r\n\tz-index: 10;\r\n}\r\n\r\n.popoff-overflow .popoff-popup {\r\n\tposition: absolute;\r\n\tmargin: 4rem auto;\r\n\tleft: 0;\r\n\tright: 0;\r\n}\r\n\r\n\r\n/* Types */\r\n.popoff-modal,\r\n.popoff-dialog,\r\n.popoff-confirm,\r\n.popoff-alert,\r\n.popoff-sidebar {\r\n\tposition: fixed;\r\n\tmax-width: 660px;\r\n\tmin-width: 320px;\r\n\tpadding: 1.6rem 2rem;\r\n\tbox-shadow: 0 .666vh 3.333vw -.333vh rgba(19, 16, 27, 0.45);\r\n}\r\n@media (max-width: 640px) {\r\n\t.popoff-modal,\r\n\t.popoff-dialog,\r\n\t.popoff-confirm,\r\n\t.popoff-alert {\r\n\t\tmax-width: 80%;\r\n\t}\r\n}\r\n.popoff-dropdown,\r\n.popoff-tooltip {\r\n\tmax-width: 320px;\r\n\tpadding: 1rem 1.2rem;\r\n\tbox-shadow: 0 1px 4px rgba(19, 16, 27, 0.25);\r\n}\r\n\r\n.popoff-sidebar {\r\n\tmargin: 0;\r\n\tmax-width: none;\r\n\tmin-width: 0;\r\n\tmax-height: none;\r\n\toverflow: auto;\r\n}\r\n.popoff-sidebar[data-side=\"top\"] {\r\n\ttop: 0;\r\n\tleft: 0;\r\n\tright: 0;\r\n\tbottom: auto;\r\n\tmax-height: 20%;\r\n}\r\n.popoff-sidebar[data-side=\"bottom\"] {\r\n\tbottom: 0;\r\n\tleft: 0;\r\n\tright: 0;\r\n\ttop: auto;\r\n\tmax-height: 20%;\r\n}\r\n.popoff-sidebar[data-side=\"right\"] {\r\n\tbottom: 0;\r\n\ttop: 0;\r\n\tright: 0;\r\n\tleft: auto;\r\n\tmax-width: 20%;\r\n}\r\n.popoff-sidebar[data-side=\"left\"] {\r\n\tbottom: 0;\r\n\ttop: 0;\r\n\tleft: 0;\r\n\tright: auto;\r\n\tmax-width: 20%;\r\n}\r\n\r\n\r\n/* Tip */\r\n.popoff-tip{\r\n\twidth: 1.5rem;\r\n\theight: 1.5rem;\r\n\tposition: absolute;\r\n\tz-index: 10;\r\n\toverflow: hidden;\r\n\t-webkit-transition: opacity .333s, transform .25s ease-out;\r\n\t-moz-transition: opacity .333s, transform .25s ease-out;\r\n\ttransition: opacity .333s, transform .25s ease-out;\r\n}\r\n.popoff-tip:after{\r\n\tcontent: '';\r\n\tborder-top-left-radius: 1px;\r\n\tposition: absolute;\r\n\tbackground: white;\r\n\tbox-shadow: 0 0px 3px rgba(19, 16, 27, 0.25);\r\n\t-webkit-transform-origin: center;\r\n\t-moz-transform-origin: center;\r\n\ttransform-origin: center;\r\n\t-webkit-transform: rotate(45deg);\r\n\t-moz-transform: rotate(45deg);\r\n\ttransform: rotate(45deg);\r\n\twidth: 1.5rem;\r\n\theight: 1.5rem;\r\n}\r\n.popoff-tip[data-side=\"top\"],\r\n.popoff-tip[data-side=\"bottom\"] {\r\n\theight: 1rem;\r\n}\r\n.popoff-tip[data-side=\"top\"]:after{\r\n\tbottom: auto;\r\n\ttop: .65rem;\r\n}\r\n.popoff-tip[data-side=\"bottom\"]:after{\r\n\tbottom: .65rem;\r\n\ttop: auto;\r\n}\r\n.popoff-tip[data-side=\"left\"],\r\n.popoff-tip[data-side=\"right\"] {\r\n\twidth: 1rem;\r\n}\r\n.popoff-tip[data-side=\"left\"]:after{\r\n\tleft: .65rem;\r\n\tright: auto;\r\n}\r\n.popoff-tip[data-side=\"right\"]:after{\r\n\tleft: auto;\r\n\tright: .65rem;\r\n}\r\n\r\n\r\n/* Close button */\r\n.popoff-close {\r\n\tposition: absolute;\r\n\tright: 0;\r\n\ttop: 0;\r\n\twidth: 3.333rem;\r\n\theight: 3.333rem;\r\n\tcursor: pointer;\r\n\tline-height: 3.333rem;\r\n\ttext-align: center;\r\n\tfont-size: 1.333rem;\r\n\tcolor: rgb(40,40,40);\r\n\tbackground: transparent;\r\n}\r\n.popoff-close:after {\r\n\tcontent: '✕';\r\n}\r\n.popoff-close:hover{\r\n\tbackground: black;\r\n\tcolor: white;\r\n}\r\n\r\n\r\n/* Effects */\r\n/* Basic effects */\r\n.popoff-effect-fade-in {\r\n\topacity: 1;\r\n}\r\n.popoff-effect-fade-out {\r\n\topacity: 0;\r\n}\r\n.popoff-effect-scale-in {\r\n\t-webkit-transform: scale(1, 1);\r\n\ttransform: scale(1, 1);\r\n\ttransform: scale(1, 1);\r\n\topacity: 1;\r\n}\r\n.popoff-effect-scale-out {\r\n\t-webkit-transform: scale(.99, .99);\r\n\t-moz-transform: scale(.99, .99);\r\n\ttransform: scale(.99, .99);\r\n\topacity: 0;\r\n}\r\n.popoff-effect-slide-in {\r\n\t-webkit-transform: translateY(0px);\r\n\t-moz-transform: translateY(0px);\r\n\ttransform: translateY(0px);\r\n\topacity: 1;\r\n}\r\n.popoff-effect-slide-out {\r\n\t-webkit-transform: translateY(6px);\r\n\t-moz-transform: translateY(6px);\r\n\ttransform: translateY(6px);\r\n\topacity: 0;\r\n}\r\n.popoff-effect-slide-in.popoff-scale-in {\r\n\topacity: 1;\r\n\t-webkit-transform: scale(1, 1) translateY(0px);\r\n\t-moz-transform: scale(1, 1) translateY(0px);\r\n\ttransform: scale(1, 1) translateY(0px);\r\n}\r\n.popoff-effect-slide-out.popoff-scale-out {\r\n\topacity: 0;\r\n\t-webkit-transform: scale(.99, .99) translateY(6px);\r\n\t-moz-transform: scale(.99, .99) translateY(6px);\r\n\ttransform: scale(.99, .99) translateY(6px);\r\n}\r\n\r\n\r\n\r\n/* Effect 1: Fade in and scale up */\r\n.popoff-effect-fade-scale-out {\r\n\t-webkit-transform: scale(0.7);\r\n\t-moz-transform: scale(0.7);\r\n\t-ms-transform: scale(0.7);\r\n\ttransform: scale(0.7);\r\n\topacity: 0;\r\n\t-webkit-transition: all 0.3s;\r\n\t-moz-transition: all 0.3s;\r\n\ttransition: all 0.3s;\r\n}\r\n\r\n.popoff-effect-fade-scale-in {\r\n\t-webkit-transform: scale(1);\r\n\t-moz-transform: scale(1);\r\n\t-ms-transform: scale(1);\r\n\ttransform: scale(1);\r\n\topacity: 1;\r\n}\r\n\r\n/* Effect 2: Slide from the right */\r\n.popoff-effect-slide-right-out {\r\n\t-webkit-transform: translateX(20%);\r\n\t-moz-transform: translateX(20%);\r\n\t-ms-transform: translateX(20%);\r\n\ttransform: translateX(20%);\r\n\topacity: 0;\r\n\t-webkit-transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);\r\n\t-moz-transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);\r\n\ttransition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);\r\n}\r\n\r\n.popoff-effect-slide-right-in {\r\n\t-webkit-transform: translateX(0%);\r\n\t-moz-transform: translateX(0%);\r\n\t-ms-transform: translateX(0%);\r\n\ttransform: translateX(0%);\r\n\topacity: 1;\r\n}\r\n\r\n/* Effect 3: Slide from the bottom */\r\n.popoff-effect-slide-bottom-out {\r\n\t-webkit-transform: translateY(20%);\r\n\t-moz-transform: translateY(20%);\r\n\t-ms-transform: translateY(20%);\r\n\ttransform: translateY(20%);\r\n\topacity: 0;\r\n\t-webkit-transition: all 0.3s;\r\n\t-moz-transition: all 0.3s;\r\n\ttransition: all 0.3s;\r\n}\r\n\r\n.popoff-effect-slide-bottom-in {\r\n\t-webkit-transform: translateY(0);\r\n\t-moz-transform: translateY(0);\r\n\t-ms-transform: translateY(0);\r\n\ttransform: translateY(0);\r\n\topacity: 1;\r\n}\r\n\r\n/* Effect 4: Newspaper */\r\n.popoff-effect-newspaper-out {\r\n\t-webkit-transform: scale(0) rotate(720deg);\r\n\t-moz-transform: scale(0) rotate(720deg);\r\n\t-ms-transform: scale(0) rotate(720deg);\r\n\ttransform: scale(0) rotate(720deg);\r\n\t-webkit-transition: all 0.5s;\r\n\t-moz-transition: all 0.5s;\r\n\ttransition: all 0.5s;\r\n\topacity: 0;\r\n}\r\n\r\n.popoff-effect-newspaper-in {\r\n\t-webkit-transform: scale(1) rotate(0deg);\r\n\t-moz-transform: scale(1) rotate(0deg);\r\n\t-ms-transform: scale(1) rotate(0deg);\r\n\ttransform: scale(1) rotate(0deg);\r\n\topacity: 1;\r\n}\r\n\r\n/* Effect 11: Super scaled */\r\n.popoff-effect-super-scaled-out {\r\n\t-webkit-transform: scale(2);\r\n\t-moz-transform: scale(2);\r\n\t-ms-transform: scale(2);\r\n\ttransform: scale(2);\r\n\topacity: 0;\r\n\t-webkit-transition: all 0.3s;\r\n\t-moz-transition: all 0.3s;\r\n\ttransition: all 0.3s;\r\n}\r\n.popoff-effect-super-scaled-in {\r\n\t-webkit-transform: scale(1);\r\n\t-moz-transform: scale(1);\r\n\t-ms-transform: scale(1);\r\n\ttransform: scale(1);\r\n\topacity: 1;\r\n}\r\n\r\n/* Effect 12:  Just me */\r\n.popoff-effect-just-me-out {\r\n\ttop: 0!important;\r\n\tleft: 0!important;\r\n\twidth: 100%!important;\r\n\theight: 100%!important;\r\n\tmax-width: none;\r\n\t-webkit-transform: scale(0.8);\r\n\t-moz-transform: scale(0.8);\r\n\t-ms-transform: scale(0.8);\r\n\ttransform: scale(0.8);\r\n\topacity: 0;\r\n\t-webkit-transition: all 0.3s;\r\n\t-moz-transition: all 0.3s;\r\n\ttransition: all 0.3s;\r\n}\r\n\r\n.popoff-effect-just-me-in {\r\n\ttop: 0!important;\r\n\tleft: 0!important;\r\n\twidth: 100%!important;\r\n\theight: 100%!important;\r\n\tmax-width: none;\r\n\t-webkit-transform: scale(1);\r\n\t-moz-transform: scale(1);\r\n\t-ms-transform: scale(1);\r\n\ttransform: scale(1);\r\n\topacity: 1;\r\n}");
+insertCss(".popoff-overlay {\r\n\tposition: fixed;\r\n\ttop: 0;\r\n\tleft: 0;\r\n\tbottom: 0;\r\n\tright: 0;\r\n\topacity: 1;\r\n\tbackground-color: rgba(85,85,85,.85);\r\n\tbackground: linear-gradient(160deg, rgba(103, 98, 105, 0.85), rgba(73, 70, 82, 0.85));\r\n\t-webkit-transition: opacity .25s;\r\n\t-moz-transition: opacity .25s;\r\n\ttransition: opacity .25s;\r\n\tz-index: 5;\r\n}\r\n\r\n.popoff-popup {\r\n\tz-index: 9;\r\n\tposition: absolute;\r\n\toverflow: hidden;\r\n\tmargin: auto;\r\n\tmin-width: 4rem;\r\n\tmin-height: 1rem;\r\n\tbackground: white;\r\n\topacity: 1;\r\n\tvisibility: visible;\r\n\tbackface-visibility: hidden;\r\n\tbox-sizing: border-box;\r\n\t-webkit-transform-origin: center center;\r\n\t-moz-transform-origin: center center;\r\n\ttransform-origin: center center;\r\n\t-webkit-transform: scale(1) rotate(0deg);\r\n\t-moz-transform: scale(1) rotate(0deg);\r\n\t-ms-transform: scale(1) rotate(0deg);\r\n\ttransform: scale(1) rotate(0deg);\r\n}\r\n\r\n.popoff-animate {\r\n\t-webkit-transition: opacity .333s, transform .25s ease-out;\r\n\t-moz-transition: opacity .333s, transform .25s ease-out;\r\n\ttransition: opacity .333s, transform .25s ease-out;\r\n}\r\n\r\n.popoff-popup-tip {\r\n\tmargin: 1rem;\r\n}\r\n\r\n.popoff-closable {\r\n\tcursor: pointer;\r\n}\r\n\r\n.popoff-hidden {\r\n\topacity: 0;\r\n\tdisplay: none;\r\n\tpointer-events: none;\r\n\tvisibility: hidden;\r\n}\r\n\r\n.popoff-container {\r\n\toverflow: hidden;\r\n\theight: 100%;\r\n}\r\n\r\n.popoff-overflow {\r\n\tposition: fixed;\r\n\toverflow: auto;\r\n\ttop: 0;\r\n\tleft: 0;\r\n\tright: 0;\r\n\tbottom: 0;\r\n\tz-index: 10;\r\n}\r\n\r\n.popoff-overflow .popoff-popup {\r\n\tposition: absolute;\r\n\tmargin: 4rem auto;\r\n\tleft: 0;\r\n\tright: 0;\r\n}\r\n\r\n\r\n/* Types */\r\n.popoff-modal,\r\n.popoff-dialog,\r\n.popoff-confirm,\r\n.popoff-alert,\r\n.popoff-sidebar {\r\n\tposition: fixed;\r\n\tmax-width: 660px;\r\n\tmin-width: 320px;\r\n\tpadding: 1.6rem 2rem;\r\n\tbox-shadow: 0 .666vh 3.333vw -.333vh rgba(19, 16, 27, 0.45);\r\n}\r\n@media (max-width: 640px) {\r\n\t.popoff-modal,\r\n\t.popoff-dialog,\r\n\t.popoff-confirm,\r\n\t.popoff-alert {\r\n\t\tmax-width: 80%;\r\n\t}\r\n}\r\n.popoff-dropdown,\r\n.popoff-tooltip {\r\n\tmax-width: 320px;\r\n\tpadding: 1rem 1.2rem;\r\n\tbox-shadow: 0 1px 4px rgba(19, 16, 27, 0.25);\r\n}\r\n\r\n.popoff-sidebar {\r\n\tmargin: 0;\r\n\tmax-width: none;\r\n\tmin-width: 0;\r\n\tmax-height: none;\r\n\toverflow: auto;\r\n}\r\n.popoff-sidebar[data-side=\"top\"] {\r\n\ttop: 0;\r\n\tleft: 0;\r\n\tright: 0;\r\n\tbottom: auto;\r\n\tmax-height: 20%;\r\n}\r\n.popoff-sidebar[data-side=\"bottom\"] {\r\n\tbottom: 0;\r\n\tleft: 0;\r\n\tright: 0;\r\n\ttop: auto;\r\n\tmax-height: 20%;\r\n}\r\n.popoff-sidebar[data-side=\"right\"] {\r\n\tbottom: 0;\r\n\ttop: 0;\r\n\tright: 0;\r\n\tleft: auto;\r\n\tmax-width: 20%;\r\n}\r\n.popoff-sidebar[data-side=\"left\"] {\r\n\tbottom: 0;\r\n\ttop: 0;\r\n\tleft: 0;\r\n\tright: auto;\r\n\tmax-width: 20%;\r\n}\r\n\r\n\r\n/* Tip */\r\n.popoff-tip{\r\n\twidth: 1.5rem;\r\n\theight: 1.5rem;\r\n\tposition: absolute;\r\n\tz-index: 10;\r\n\toverflow: hidden;\r\n}\r\n.popoff-tip:after{\r\n\tcontent: '';\r\n\tborder-top-left-radius: 1px;\r\n\tposition: absolute;\r\n\tbackground: white;\r\n\tbox-shadow: 0 0px 3px rgba(19, 16, 27, 0.25);\r\n\t-webkit-transform-origin: center;\r\n\t-moz-transform-origin: center;\r\n\ttransform-origin: center;\r\n\t-webkit-transform: rotate(45deg);\r\n\t-moz-transform: rotate(45deg);\r\n\ttransform: rotate(45deg);\r\n\twidth: 1.5rem;\r\n\theight: 1.5rem;\r\n}\r\n.popoff-tip[data-side=\"top\"],\r\n.popoff-tip[data-side=\"bottom\"] {\r\n\theight: 1rem;\r\n}\r\n.popoff-tip[data-side=\"top\"]:after{\r\n\tbottom: auto;\r\n\ttop: .65rem;\r\n}\r\n.popoff-tip[data-side=\"bottom\"]:after{\r\n\tbottom: .65rem;\r\n\ttop: auto;\r\n}\r\n.popoff-tip[data-side=\"left\"],\r\n.popoff-tip[data-side=\"right\"] {\r\n\twidth: 1rem;\r\n}\r\n.popoff-tip[data-side=\"left\"]:after{\r\n\tleft: .65rem;\r\n\tright: auto;\r\n}\r\n.popoff-tip[data-side=\"right\"]:after{\r\n\tleft: auto;\r\n\tright: .65rem;\r\n}\r\n\r\n\r\n/* Close button */\r\n.popoff-close {\r\n\tposition: absolute;\r\n\tright: 0;\r\n\ttop: 0;\r\n\twidth: 3.333rem;\r\n\theight: 3.333rem;\r\n\tcursor: pointer;\r\n\tline-height: 3.333rem;\r\n\ttext-align: center;\r\n\tfont-size: 1.333rem;\r\n\tcolor: rgb(40,40,40);\r\n\tbackground: transparent;\r\n}\r\n.popoff-close:after {\r\n\tcontent: '✕';\r\n}\r\n.popoff-close:hover{\r\n\tbackground: black;\r\n\tcolor: white;\r\n}\r\n\r\n\r\n/* Effects */\r\n/* Basic effects */\r\n.popoff-effect-fade {\r\n\topacity: 0;\r\n\t-webkit-transition: all 0.3s;\r\n\t-moz-transition: all 0.3s;\r\n\ttransition: all 0.3s;\r\n}\r\n\r\n/* Effect 1: Fade in and scale up */\r\n.popoff-effect-scale {\r\n\t-webkit-transform: scale(0.7);\r\n\t-moz-transform: scale(0.7);\r\n\t-ms-transform: scale(0.7);\r\n\ttransform: scale(0.7);\r\n\topacity: 0;\r\n\t-webkit-transition: all 0.3s;\r\n\t-moz-transition: all 0.3s;\r\n\ttransition: all 0.3s;\r\n}\r\n\r\n/* Effect 2: Slide from the right */\r\n.popoff-effect-slide-right {\r\n\t-webkit-transform: translateX(20%);\r\n\t-moz-transform: translateX(20%);\r\n\t-ms-transform: translateX(20%);\r\n\ttransform: translateX(20%);\r\n\topacity: 0;\r\n\t-webkit-transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);\r\n\t-moz-transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);\r\n\ttransition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);\r\n}\r\n.popoff-effect-slide-bottom {\r\n\t-webkit-transform: translateY(20%);\r\n\t-moz-transform: translateY(20%);\r\n\t-ms-transform: translateY(20%);\r\n\ttransform: translateY(20%);\r\n\topacity: 0;\r\n\t-webkit-transition: all 0.3s;\r\n\t-moz-transition: all 0.3s;\r\n\ttransition: all 0.3s;\r\n}\r\n.popoff-effect-slide-left {\r\n\t-webkit-transform: translateX(-20%);\r\n\t-moz-transform: translateX(-20%);\r\n\t-ms-transform: translateX(-20%);\r\n\ttransform: translateX(-20%);\r\n\topacity: 0;\r\n\t-webkit-transition: all 0.3s;\r\n\t-moz-transition: all 0.3s;\r\n\ttransition: all 0.3s;\r\n}\r\n.popoff-effect-slide-top {\r\n\t-webkit-transform: translateY(-20%);\r\n\t-moz-transform: translateY(-20%);\r\n\t-ms-transform: translateY(-20%);\r\n\ttransform: translateY(-20%);\r\n\topacity: 0;\r\n\t-webkit-transition: all 0.3s;\r\n\t-moz-transition: all 0.3s;\r\n\ttransition: all 0.3s;\r\n}\r\n\r\n\r\n/* Effect 4: Newspaper */\r\n.popoff-effect-newspaper {\r\n\t-webkit-transform: scale(0) rotate(720deg);\r\n\t-moz-transform: scale(0) rotate(720deg);\r\n\t-ms-transform: scale(0) rotate(720deg);\r\n\ttransform: scale(0) rotate(720deg);\r\n\t-webkit-transition: all 0.5s;\r\n\t-moz-transition: all 0.5s;\r\n\ttransition: all 0.5s;\r\n\topacity: 0;\r\n}\r\n\r\n\r\n/* Effect 11: Super scaled */\r\n.popoff-effect-super-scaled {\r\n\t-webkit-transform: scale(2);\r\n\t-moz-transform: scale(2);\r\n\t-ms-transform: scale(2);\r\n\ttransform: scale(2);\r\n\topacity: 0;\r\n\t-webkit-transition: all 0.3s;\r\n\t-moz-transition: all 0.3s;\r\n\ttransition: all 0.3s;\r\n}\r\n");
 
 module.exports = Popup;
 
@@ -793,10 +793,8 @@ Popup.prototype.show = function (target) {
 	//ensure effects classes
 	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
 	effects.forEach(function (effect) {
-		_this6.element.classList.add('popoff-effect-' + effect + '-out');
-		_this6.element.classList.remove('popoff-effect-' + effect + '-in');
-		_this6.tipElement.classList.add('popoff-effect-' + effect + '-out');
-		_this6.tipElement.classList.remove('popoff-effect-' + effect + '-in');
+		_this6.element.classList.add('popoff-effect-' + effect);
+		_this6.tipElement.classList.add('popoff-effect-' + effect);
 	});
 
 	this.currentTarget = target || this.target;
@@ -816,16 +814,17 @@ Popup.prototype.show = function (target) {
 		this.overflowElement.appendChild(this.element);
 	}
 
+	this.tipElement.classList.add('popoff-animate');
+	this.element.classList.add('popoff-animate');
+
 	this.emit('show', this.currentTarget);
 
 	//in some way it needs to be called in timeout with some delay, otherwise animation fails
 	setTimeout(function () {
 		var effects = Array.isArray(_this6.effect) ? _this6.effect : [_this6.effect];
 		effects.forEach(function (effect) {
-			_this6.element.classList.remove('popoff-effect-' + effect + '-out');
-			_this6.element.classList.add('popoff-effect-' + effect + '-in');
-			_this6.tipElement.classList.remove('popoff-effect-' + effect + '-out');
-			_this6.tipElement.classList.add('popoff-effect-' + effect + '-in');
+			_this6.element.classList.remove('popoff-effect-' + effect);
+			_this6.tipElement.classList.remove('popoff-effect-' + effect);
 		});
 		_this6.isVisible = true;
 		_this6.update();
@@ -847,6 +846,9 @@ Popup.prototype.show = function (target) {
 		// this.update();
 		_this6.isAnimating = false;
 		_this6.emit('afterShow');
+
+		_this6.tipElement.classList.remove('popoff-animate');
+		_this6.element.classList.remove('popoff-animate');
 	});
 
 	return this;
@@ -867,19 +869,28 @@ Popup.prototype.hide = function () {
 
 	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
 	effects.forEach(function (effect) {
-		_this7.element.classList.remove('popoff-effect-' + effect + '-in');
-		_this7.element.classList.add('popoff-effect-' + effect + '-out');
-		_this7.tipElement.classList.remove('popoff-effect-' + effect + '-in');
-		_this7.tipElement.classList.add('popoff-effect-' + effect + '-out');
+		_this7.element.classList.add('popoff-effect-' + effect);
+		_this7.tipElement.classList.add('popoff-effect-' + effect);
 	});
 
 	this.isAnimating = true;
+
+	this.tipElement.classList.add('popoff-animate');
+	this.element.classList.add('popoff-animate');
+
 	this.animend(function () {
 		_this7.isVisible = false;
 		_this7.isAnimating = false;
 		_this7._overlay = null;
+		_this7.tipElement.classList.remove('popoff-animate');
+		_this7.element.classList.remove('popoff-animate');
 		_this7.element.classList.add('popoff-hidden');
 		_this7.tipElement.classList.add('popoff-hidden');
+
+		effects.forEach(function (effect) {
+			_this7.element.classList.remove('popoff-effect-' + effect);
+			_this7.tipElement.classList.remove('popoff-effect-' + effect);
+		});
 
 		if (_this7.isTall) {
 			_this7.isTall = false;
@@ -7236,12 +7247,15 @@ Overlay.prototype.show = function () {
 	this.emit('show');
 
 	this.container.appendChild(this.element);
+	this.element.classList.add('popoff-animate');
+	this.element.classList.add('popoff-effect-fade');
 
 	//class removed in a timeout to save animation
 	setTimeout(function () {
-		_this2.element.classList.add('popoff-effect-fade-in');
+		_this2.element.classList.remove('popoff-animate');
+		_this2.element.classList.remove('popoff-effect-fade');
 		_this2.emit('afterShow');
-	});
+	}, 10);
 
 	return this;
 };
@@ -7258,7 +7272,8 @@ Overlay.prototype.show = function () {
 Overlay.prototype.hide = function () {
 	this.emit('hide');
 
-	this.element.classList.remove('popoff-effect-fade-in');
+	this.element.classList.add('popoff-animate');
+	this.element.classList.add('popoff-effect-fade');
 
 	this.element.addEventListener('transitionend', end);
 	this.element.addEventListener('webkitTransitionEnd', end);
@@ -7275,6 +7290,9 @@ Overlay.prototype.hide = function () {
 		that.element.removeEventListener('oTransitionEnd', end);
 		that.element.removeEventListener('msTransitionEnd', end);
 		clearInterval(to);
+
+		that.element.classList.remove('popoff-animate');
+		that.element.classList.remove('popoff-effect-fade');
 
 		that.container.removeChild(that.element);
 		that.emit('afterHide');
@@ -7477,8 +7495,9 @@ test('tall modal', function () {
 });
 
 test('Effects', function () {
-	var effects = ['fade', 'scale', 'slide', 'fade-scale', 'slide-right', 'slide-bottom', 'newspaper', 'super-scaled', 'just-me'];
+	var effects = ['fade', 'scale', 'slide-right', 'slide-bottom', 'slide-left', 'slide-top', 'newspaper', 'super-scaled'];
 
+	// 'just-me'
 	effects.forEach(function (effect) {
 		var target = document.createElement('a');
 		target.href = '#' + effect;
