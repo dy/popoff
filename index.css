@@ -11,6 +11,7 @@
 	-moz-transition: opacity .25s;
 	transition: opacity .25s;
 	z-index: 5;
+	pointer-events: all;
 }
 
 .popoff-popup {
@@ -32,6 +33,7 @@
 	-moz-transform: scale(1) rotate(0deg);
 	-ms-transform: scale(1) rotate(0deg);
 	transform: scale(1) rotate(0deg);
+	pointer-events: all;
 }
 
 .popoff-animate {
