@@ -316,9 +316,10 @@ test('tall modal', function () {
 
 test('Effects', function () {
 	var effects = [
-		'fade', 'scale', 'slide',
-		'fade-scale', 'slide-right', 'slide-bottom', 'newspaper',
-		'super-scaled', 'just-me'
+		'fade', 'scale',
+		'slide-right', 'slide-bottom', 'slide-left', 'slide-top',
+		'newspaper','super-scaled',
+		// 'just-me'
 	];
 
 	effects.forEach((effect) => {

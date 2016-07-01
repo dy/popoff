@@ -35,7 +35,7 @@ document.querySelector('#menu').click();
 
 ```js
 var popup = new Popup({
-	// modal, dropdown, tooltip, sidebar work out of the box. Otherwise define custom options below.
+	// modal, dropdown, tooltip, sidebar work out of the box. Otherwise define custom options below. See demo for examples.
 	type: 'modal',
 
 	// target element that enables the popup, e.g. button.
@@ -59,8 +59,8 @@ var popup = new Popup({
 	// exclusive mode
 	single: true,
 
-	// animation effect, can be a list or a single
-	effect: ['fade', 'scale', 'slide'],
+	// animation effect, see effects on the demo page
+	effect: 'fade',
 
 	// additional style rules for popup
 	style: {},

@@ -63,12 +63,15 @@ Overlay.prototype.show = function () {
 	this.emit('show');
 
 	this.container.appendChild(this.element);
+	this.element.classList.add('popoff-animate');
+	this.element.classList.add('popoff-effect-fade');
 
 	//class removed in a timeout to save animation
 	setTimeout( () => {
-		this.element.classList.add('popoff-effect-fade-in');
+		this.element.classList.remove('popoff-animate');
+		this.element.classList.remove('popoff-effect-fade');
 		this.emit('afterShow');
-	});
+	}, 10);
 
 	return this;
 };
@@ -86,7 +89,8 @@ Overlay.prototype.show = function () {
 Overlay.prototype.hide = function () {
 	this.emit('hide');
 
-	this.element.classList.remove('popoff-effect-fade-in');
+	this.element.classList.add('popoff-animate');
+	this.element.classList.add('popoff-effect-fade');
 
 	this.element.addEventListener('transitionend', end);
 	this.element.addEventListener('webkitTransitionEnd', end);
@@ -103,6 +107,9 @@ Overlay.prototype.hide = function () {
 		that.element.removeEventListener('oTransitionEnd', end);
 		that.element.removeEventListener('msTransitionEnd', end);
 		clearInterval(to);
+
+		that.element.classList.remove('popoff-animate');
+		that.element.classList.remove('popoff-effect-fade');
 
 		that.container.removeChild(that.element);
 		that.emit('afterHide');

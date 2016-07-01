@@ -314,6 +314,18 @@ Popup.prototype.types = {
 Popup.prototype.show = function (target) {
 	if (this.isVisible) return this;
 
+	//ensure effects classes
+	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
+	effects.forEach((effect) => {
+		this.element.classList.add(`popoff-effect-${ effect }`);
+		this.tipElement.classList.add(`popoff-effect-${ effect }`);
+	});
+
+	this.currentTarget = target || this.target;
+	this.currentTarget && this.currentTarget.classList && this.currentTarget.classList.add('popoff-active');
+	this.element.classList.remove('popoff-hidden');
+	this.tipElement.classList.remove('popoff-hidden');
+
 	var elHeight = this.element.offsetHeight;
 
 	//apply overflow on body for tall content
@@ -326,20 +338,6 @@ Popup.prototype.show = function (target) {
 		this.overflowElement.appendChild(this.element);
 	}
 
-	//ensure effects classes
-	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
-	effects.forEach((effect) => {
-		this.element.classList.add(`popoff-effect-${ effect }-out`);
-		this.element.classList.remove(`popoff-effect-${ effect }-in`);
-		this.tipElement.classList.add(`popoff-effect-${ effect }-out`);
-		this.tipElement.classList.remove(`popoff-effect-${ effect }-in`);
-	});
-
-	this.currentTarget = target || this.target;
-	this.currentTarget && this.currentTarget.classList && this.currentTarget.classList.add('popoff-active');
-	this.element.classList.remove('popoff-hidden');
-	this.tipElement.classList.remove('popoff-hidden');
-
 	this.tipElement.classList.add('popoff-animate');
 	this.element.classList.add('popoff-animate');
 
@@ -349,10 +347,8 @@ Popup.prototype.show = function (target) {
 	setTimeout(() => {
 		var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
 		effects.forEach((effect) => {
-			this.element.classList.remove(`popoff-effect-${ effect }-out`);
-			this.element.classList.add(`popoff-effect-${ effect }-in`);
-			this.tipElement.classList.remove(`popoff-effect-${ effect }-out`);
-			this.tipElement.classList.add(`popoff-effect-${ effect }-in`);
+			this.element.classList.remove(`popoff-effect-${ effect }`);
+			this.tipElement.classList.remove(`popoff-effect-${ effect }`);
 		});
 		this.isVisible = true;
 		this.update();
@@ -399,10 +395,8 @@ Popup.prototype.hide = function () {
 
 	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
 	effects.forEach((effect) => {
-		this.element.classList.remove(`popoff-effect-${ effect }-in`);
-		this.element.classList.add(`popoff-effect-${ effect }-out`);
-		this.tipElement.classList.remove(`popoff-effect-${ effect }-in`);
-		this.tipElement.classList.add(`popoff-effect-${ effect }-out`);
+		this.element.classList.add(`popoff-effect-${ effect }`);
+		this.tipElement.classList.add(`popoff-effect-${ effect }`);
 	});
 
 	this.isAnimating = true;
@@ -418,6 +412,11 @@ Popup.prototype.hide = function () {
 		this.element.classList.remove('popoff-animate');
 		this.element.classList.add('popoff-hidden');
 		this.tipElement.classList.add('popoff-hidden');
+
+		effects.forEach((effect) => {
+			this.element.classList.remove(`popoff-effect-${ effect }`);
+			this.tipElement.classList.remove(`popoff-effect-${ effect }`);
+		});
 
 		if (this.isTall) {
 			this.isTall = false;
