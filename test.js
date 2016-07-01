@@ -58,7 +58,7 @@ insertCSS(`
 	}
 
 	.popoff-sidebar h2 {
-		margin: 0 0 .5rem;
+		margin: 0 0 .66rem;
 	}
 
 	.popoff-overlay {

@@ -120,20 +120,21 @@
 	max-width: none;
 	min-width: 0;
 	max-height: none;
+	overflow: auto;
 }
 .popoff-sidebar[data-side="top"] {
 	top: 0;
 	left: 0;
 	right: 0;
 	bottom: auto;
-	max-height: 20%;
+	max-height: 50%;
 }
 .popoff-sidebar[data-side="bottom"] {
 	bottom: 0;
 	left: 0;
 	right: 0;
 	top: auto;
-	max-height: 20%;
+	max-height: 50%;
 }
 .popoff-sidebar[data-side="right"] {
 	bottom: 0;
