@@ -16,9 +16,6 @@ insertCss(fs.readFileSync('./index.css', 'utf-8'));
 module.exports = Popup;
 
 //FIXME: demo
-//FIXME: draggable & resizable
-
-//FIXME: move tall to modal-only mode
 
 /**
  * @class  Popup

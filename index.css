@@ -11,10 +11,10 @@
 	z-index: 5;
 }
 
-
 .popoff-popup {
 	z-index: 9;
 	position: absolute;
+	overflow: hidden;
 	margin: auto;
 	min-width: 4rem;
 	min-height: 1rem;
@@ -74,7 +74,6 @@
 	position: fixed;
 	max-width: 660px;
 	min-width: 320px;
-	width: 90%;
 	padding: 1.6rem 2rem;
 	box-shadow: 0 .666vh 3.333vw -.333vh rgba(19, 16, 27, 0.45);
 }
@@ -96,7 +95,7 @@
 .popoff-sidebar {
 	margin: 0;
 	max-width: none;
-	min-width: none;
+	min-width: 0;
 	max-height: none;
 	overflow: auto;
 }
