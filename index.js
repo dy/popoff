@@ -258,11 +258,10 @@ Popup.prototype.types = {
 						this._leave = null;
 					}
 					if (this.isVisible) return;
-					this.show(undefined, () => {
-						this._leave = setTimeout(() => {
-							this.hide();
-						}, this.timeout);
-					});
+					this.show();
+					this._leave = setTimeout(() => {
+						this.hide();
+					}, this.timeout + 1000);
 				});
 				this.target.addEventListener('mousemove', (e) => {
 					if (this._leave) {
