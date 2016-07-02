@@ -8,6 +8,7 @@
   },
   "files": [
     "index.js",
+    "overlay.js",
     "index.css"
   ],
   "dependencies": {
