@@ -9,6 +9,7 @@ const uid = require('get-uid');
 const inherits = require('inherits');
 const createOverlay = require('./overlay');
 const insertCss = require('insert-css');
+const isMobile = require('is-mobile')();
 const fs = require('fs');
 
 insertCss(fs.readFileSync('./index.css', 'utf-8'));
@@ -42,8 +43,6 @@ function Popup (opts) {
 	if (opts.onAfterShow) this.on('afterShow', opts.onAfterShow);
 	if (opts.onAfterHide) this.on('afterHide', opts.onAfterHide);
 
-	//take over type’s options
-	extend(this, typeOpts, opts);
 
 	//generate unique id
 	this.id = uid();
@@ -51,24 +50,26 @@ function Popup (opts) {
 	//FIXME: :'(
 	this.update = this.update.bind(this);
 
+	//ensure element
+	if (!this.element) this.element = document.createElement('div');
+	this.element.classList.add('popoff-popup');
+	this.element.classList.add('popoff-hidden');
+
+	this.contentElement = document.createElement('div');
+	this.contentElement.classList.add('popoff-content');
+	this.element.appendChild(this.contentElement);
+
+	//take over type’s options.
+	//should be after contentElement creation to init `content` property
+	extend(this, typeOpts, opts);
+
+	this.element.classList.add(`popoff-${this.type}`);
+
 	//take over a target first
 	if (!this.container) {
 		this.container = document.body || document.documentElement;
 	}
 	this.container.classList.add('popoff-container');
-
-	//ensure element
-	if (!this.element) this.element = document.createElement('div');
-	this.element.classList.add('popoff-popup');
-	this.element.classList.add('popoff-hidden');
-	this.element.classList.add(`popoff-${this.type}`);
-
-	if (this.content instanceof HTMLElement) {
-		this.element.appendChild(this.content);
-	}
-	else if (typeof this.content === 'string') {
-		this.element.innerHTML = this.content;
-	}
 
 	//create close element
 	this.closeElement = document.createElement('div');
@@ -77,7 +78,7 @@ function Popup (opts) {
 		this.closeElement.addEventListener('click', e => {
 			this.hide();
 		});
-		this.element.appendChild(this.closeElement);
+		this.element.insertBefore(this.closeElement, this.contentElement);
 	}
 
 	//create tip
@@ -167,6 +168,25 @@ extend(Popup.prototype, {
 	tall: false
 });
 
+//FIXME: hope it will not crash safari
+Object.defineProperties(Popup.prototype, {
+	content: {
+		get: function () {
+			return this.contentElement;
+		},
+		set: function (content) {
+			if (!this.contentElement) throw Error('Content element is undefined');
+
+			if (content instanceof HTMLElement) {
+				this.contentElement.innerHTML = '';
+				this.contentElement.appendChild(content);
+			}
+			else if (typeof content === 'string') {
+				this.contentElement.innerHTML = content;
+			}
+		}
+	}
+});
 
 
 /** Type of default interactions */
@@ -359,6 +379,7 @@ Popup.prototype.show = function (target, cb) {
 		this.container.classList.add('popoff-container-overflow');
 		this.container.appendChild(this.overflowElement);
 		this.overflowElement.appendChild(this.element);
+		isMobile && this.overflowElement.appendChild(this.closeElement);
 	}
 
 	this.tipElement.classList.add('popoff-animate');
@@ -394,6 +415,8 @@ Popup.prototype.show = function (target, cb) {
 		this.isAnimating = false;
 		this.tipElement.classList.remove('popoff-animate');
 		this.element.classList.remove('popoff-animate');
+		this.element.classList.add('popoff-visible');
+		this.tipElement.classList.add('popoff-visible');
 
 		this.emit('afterShow');
 		cb && cb.call(this);
@@ -425,6 +448,10 @@ Popup.prototype.hide = function (cb) {
 
 	this.tipElement.classList.add('popoff-animate');
 	this.element.classList.add('popoff-animate');
+	this.element.classList.remove('popoff-visible');
+	this.tipElement.classList.remove('popoff-visible');
+
+	if (this.isTall && isMobile) this.element.appendChild(this.closeElement);
 
 	this.animend(() => {
 		this.isVisible = false;

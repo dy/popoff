@@ -4,8 +4,8 @@ var ipsum = require('lorem-ipsum');
 var Overlay = require('./overlay');
 var Popup = require('./');
 var insertCSS = require('insert-css');
-// var test = require('tst');
-var test = (a,b) => {b();};
+var test = require('tst');
+// var test = (a,b) => {b();};
 
 var body = document.body,
 	doc = document,
@@ -27,6 +27,10 @@ insertCSS(`
 		margin: auto;
 		line-height: 1.5;
 		font-family: sans-serif;
+	}
+
+	img {
+		max-width: 100%;
 	}
 
 	h1,h2,h3,h4,h5,h6 {
@@ -93,6 +97,10 @@ insertCSS(`
 `);
 
 
+var meta = document.createElement('meta');
+meta.setAttribute('name', 'viewport');
+meta.setAttribute('content', 'width=device-width, initial-scale=1, shrink-to-fit=no');
+document.head.appendChild(meta);
 body.innerHTML = `
 <a href="https://en.wikipedia.org/wiki/Alexander_Stepanovich_Popov" style="text-decoration: none"><img id="popoff" src='./popoff.png' alt="Señor Popov. Попов Александр Степанович, портрет гравюра." style="display: block; margin: auto;"/></a>
 <h1 style="text-align:center;">Señor Popoff</h1>
