@@ -30,7 +30,7 @@ insertCSS(`
 	}
 
 	img {
-		max-width: 100%;
+		max-width: 60%;
 	}
 
 	h1,h2,h3,h4,h5,h6 {

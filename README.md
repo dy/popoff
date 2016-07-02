@@ -67,10 +67,7 @@ var popup = new Popup({
 
 	// placing settings relative to the target, see placer module
 	side: 'center',
-	align: 'center',
-
-	// apply overflow to tall content, useful for modals with much of content
-	tall: false
+	align: 'center'
 });
 
 //show popup relative to the target, invoke callback after animation end

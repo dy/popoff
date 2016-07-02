@@ -9,8 +9,8 @@ const uid = require('get-uid');
 const inherits = require('inherits');
 const createOverlay = require('./overlay');
 const insertCss = require('insert-css');
-const isMobile = require('is-mobile')();
 const fs = require('fs');
+const sb = require('mucss/scrollbar')
 
 insertCss(fs.readFileSync('./index.css', 'utf-8'));
 
@@ -55,12 +55,8 @@ function Popup (opts) {
 	this.element.classList.add('popoff-popup');
 	this.element.classList.add('popoff-hidden');
 
-	this.contentElement = document.createElement('div');
-	this.contentElement.classList.add('popoff-content');
-	this.element.appendChild(this.contentElement);
-
 	//take over type’s options.
-	//should be after contentElement creation to init `content` property
+	//should be after element creation to init `content` property
 	extend(this, typeOpts, opts);
 
 	this.element.classList.add(`popoff-${this.type}`);
@@ -78,7 +74,7 @@ function Popup (opts) {
 		this.closeElement.addEventListener('click', e => {
 			this.hide();
 		});
-		this.element.insertBefore(this.closeElement, this.contentElement);
+		this.element.appendChild(this.closeElement);
 	}
 
 	//create tip
@@ -165,25 +161,29 @@ extend(Popup.prototype, {
 	animTimeout: 1000,
 
 	//detect tall content
-	tall: false
+	wrap: false
 });
 
 //FIXME: hope it will not crash safari
 Object.defineProperties(Popup.prototype, {
 	content: {
 		get: function () {
-			return this.contentElement;
+			return this.element;
 		},
 		set: function (content) {
-			if (!this.contentElement) throw Error('Content element is undefined');
+			if (!this.element) throw Error('Content element is undefined');
+
+			if (this.closeElement) this.element.removeChild(this.closeElement);
 
 			if (content instanceof HTMLElement) {
-				this.contentElement.innerHTML = '';
-				this.contentElement.appendChild(content);
+				this.element.innerHTML = '';
+				this.element.appendChild(content);
 			}
 			else if (typeof content === 'string') {
-				this.contentElement.innerHTML = content;
+				this.element.innerHTML = content;
 			}
+
+			if (this.closeElement) this.element.appendChild(this.closeElement);
 		}
 	}
 });
@@ -200,8 +200,9 @@ Popup.prototype.types = {
 		side: 'center',
 		align: 'center',
 		target: null,
-		tall: true,
-		effect: ['fade'],
+		wrap: true,
+		effect: 'fade',
+		update: () => {},
 		onInit: function () {
 			if (this.target) {
 				this.target.addEventListener('click', (e) => {
@@ -213,10 +214,6 @@ Popup.prototype.types = {
 			else {
 				this.target = window;
 			}
-		},
-		onShow: function () {
-			//FIXME: maybe not really good pattern, but the modal is always placed relative to window viewport. Easies than managing alignTo property.
-			this.currentTarget = window;
 		}
 	},
 
@@ -229,7 +226,7 @@ Popup.prototype.types = {
 		single: true,
 		side: 'bottom',
 		align: 'center',
-		effect: ['fade'],
+		effect: 'fade',
 		onInit: function () {
 			if (this.target) {
 				this.target.addEventListener('click', (e) => {
@@ -264,7 +261,7 @@ Popup.prototype.types = {
 		single: true,
 		side: 'right',
 		align: 'center',
-		effect: ['fade'],
+		effect: 'fade',
 		timeout: 500,
 		onInit: function () {
 			var that = this;
@@ -363,23 +360,22 @@ Popup.prototype.show = function (target, cb) {
 	this.emit('show', this.currentTarget);
 
 	//ensure effects classes
-	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
-	effects.forEach((effect) => {
-		this.element.classList.add(`popoff-effect-${ effect }`);
-		this.tipElement.classList.add(`popoff-effect-${ effect }`);
-	});
+	this.element.classList.add(`popoff-effect-${ this.effect }`);
+	this.tipElement.classList.add(`popoff-effect-${ this.effect }`);
 
 	var elHeight = this.element.offsetHeight;
 
 	//apply overflow on body for tall content
-	if (this.tall && elHeight > window.innerHeight) {
-		this.isTall = true;
-		this.element.style.left = null;
-		this.element.style.right = null;
+	if (this.wrap) {
+		if (elHeight > window.innerHeight) {
+			this.isTall = true;
+			this.overflowElement.classList.add('popoff-overflow-tall');
+		}
 		this.container.classList.add('popoff-container-overflow');
+		this._border = this.container.style.borderRight;
+		this.container.style.borderRight = sb + 'px solid transparent';
 		this.container.appendChild(this.overflowElement);
 		this.overflowElement.appendChild(this.element);
-		isMobile && this.overflowElement.appendChild(this.closeElement);
 	}
 
 	this.tipElement.classList.add('popoff-animate');
@@ -387,11 +383,8 @@ Popup.prototype.show = function (target, cb) {
 
 	//in some way it needs to be called in timeout with some delay, otherwise animation fails
 	setTimeout(() => {
-		var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
-		effects.forEach((effect) => {
-			this.element.classList.remove(`popoff-effect-${ effect }`);
-			this.tipElement.classList.remove(`popoff-effect-${ effect }`);
-		});
+		this.element.classList.remove(`popoff-effect-${ this.effect }`);
+		this.tipElement.classList.remove(`popoff-effect-${ this.effect }`);
 		this.isVisible = true;
 		this.update();
 	}, 10);
@@ -399,7 +392,7 @@ Popup.prototype.show = function (target, cb) {
 	if (this.overlay) {
 		this._overlay = createOverlay({
 			closable: true,
-			container: this.isTall ? this.overflowElement : this.container
+			container: this.wrap ? this.overflowElement : this.container
 		})
 		.on('hide', e => {
 			this._overlay = null;
@@ -438,11 +431,8 @@ Popup.prototype.hide = function (cb) {
 	this.emit('hide');
 
 
-	var effects = Array.isArray(this.effect) ? this.effect : [this.effect];
-	effects.forEach((effect) => {
-		this.element.classList.add(`popoff-effect-${ effect }`);
-		this.tipElement.classList.add(`popoff-effect-${ effect }`);
-	});
+	this.element.classList.add(`popoff-effect-${ this.effect }`);
+	this.tipElement.classList.add(`popoff-effect-${ this.effect }`);
 
 	this.isAnimating = true;
 
@@ -451,7 +441,6 @@ Popup.prototype.hide = function (cb) {
 	this.element.classList.remove('popoff-visible');
 	this.tipElement.classList.remove('popoff-visible');
 
-	if (this.isTall && isMobile) this.element.appendChild(this.closeElement);
 
 	this.animend(() => {
 		this.isVisible = false;
@@ -462,14 +451,15 @@ Popup.prototype.hide = function (cb) {
 		this.element.classList.add('popoff-hidden');
 		this.tipElement.classList.add('popoff-hidden');
 
-		effects.forEach((effect) => {
-			this.element.classList.remove(`popoff-effect-${ effect }`);
-			this.tipElement.classList.remove(`popoff-effect-${ effect }`);
-		});
+		this.element.classList.remove(`popoff-effect-${ this.effect }`);
+		this.tipElement.classList.remove(`popoff-effect-${ this.effect }`);
 
-		if (this.isTall) {
+		if (this.wrap) {
 			this.isTall = false;
+			this.overflowElement.classList.remove('popoff-overflow-tall');
 			this.container.classList.remove('popoff-container-overflow');
+			this.container.style.borderRight = this._border || null;
+			this._border = null;
 			this.container.removeChild(this.overflowElement);
 			this.container.appendChild(this.element);
 		}
@@ -486,8 +476,8 @@ Popup.prototype.hide = function (cb) {
 Popup.prototype.update = function (how) {
 	if (!this.isVisible) return this;
 
-	//tall modals are placed via css
-	if (this.isTall) return this;
+	//wrapped modals are placed via css
+	if (this.wrap) return this;
 
 	how = extend({
 		target: this.currentTarget || this.target,
