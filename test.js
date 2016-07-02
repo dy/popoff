@@ -4,8 +4,8 @@ var ipsum = require('lorem-ipsum');
 var Overlay = require('./overlay');
 var Popup = require('./');
 var insertCSS = require('insert-css');
-var test = require('tst');
-// var test = (a,b) => {b();};
+// var test = require('tst');
+var test = (a,b) => {b();};
 
 var body = document.body,
 	doc = document,
@@ -195,6 +195,7 @@ test('sidebar', function () {
 
 	var p = Popup({
 		type: 'sidebar',
+		shift: 40,
 		content: `
 			<h2>Sidebar</h2>
 			${ipsum({count: 2, units: 'sentences', format: 'html'})}
@@ -293,7 +294,7 @@ Resizable(popup.element, {
 	// });
 	Resizable(p.element, {
 		draggable: true,
-		css3: false,
+		// css3: false,
 		within: window
 	});
 });

@@ -161,7 +161,10 @@ extend(Popup.prototype, {
 	animTimeout: 1000,
 
 	//detect tall content
-	wrap: false
+	wrap: false,
+
+	//shift content
+	shift: true
 });
 
 //FIXME: hope it will not crash safari
@@ -317,6 +320,7 @@ Popup.prototype.types = {
 		align: .5,
 		target: null,
 		effect: 'slide',
+		shift: true,
 		update: () => {},
 		onInit: function () {
 			if (this.target) {
@@ -335,16 +339,23 @@ Popup.prototype.types = {
 			if (!/top|left|bottom|right/.test(this.side)) this.side = this.types.sidebar.side;
 			this.element.setAttribute('data-side', this.side);
 			this.effect = 'slide-' + this.side;
-			// this.container.parentNode.classList.add('popoff-container-sidebar-container')
-			this.container.classList.add('popoff-container-sidebar')
-			this.container.classList.add('popoff-container-slide-' + this.side);
+
+			if (this.shift) {
+				this.container.classList.add('popoff-animate');
+				var value = typeof this.shift === 'number' ? (this.shift + 'px') : this.shift;
+				if (/top|bottom/.test(this.side)) {
+					this.container.style.transform = `translateY(${ (this.side === 'top' ? '' : '-') + value })`;
+				}
+				else {
+					this.container.style.transform = `translateX(${ (this.side === 'left' ? '' : '-') + value })`;
+				}
+			}
 		},
 		onHide: function () {
-			this.container.classList.remove('popoff-container-slide-' + this.side);
+			if (this.shift) this.container.style.transform = null;
 		},
 		onAfterHide: function () {
-			this.container.classList.remove('popoff-container-sidebar');
-			// this.container.parentNode.classList.remove('popoff-container-sidebar-container');
+			this.shift && this.container.classList.remove('popoff-animate');
 		}
 	}
 };

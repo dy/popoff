@@ -56,18 +56,14 @@ var popup = new Popup({
 	// show tip
 	tip: false,
 
-	// exclusive mode
-	single: true,
-
-	// animation effect, see effects on the demo page
+	// animation effect, see effects in the demo page
 	effect: 'fade',
 
 	// additional style rules for popup
 	style: {},
 
-	// placing settings relative to the target, see placer module
-	side: 'center',
-	align: 'center'
+	// shift main content on defined amount. Useful in case of sidebars
+	shift: 120
 });
 
 //show popup relative to the target, invoke callback after animation end

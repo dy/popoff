@@ -150,7 +150,8 @@
 	max-width: none;
 	min-width: 0;
 	max-height: none;
-	overflow: hidden;
+	overflow-y: auto;
+	opacity: 1;
 }
 .popoff-sidebar[data-side="top"] {
 	top: 0;
@@ -179,37 +180,6 @@
 	left: 0;
 	right: auto;
 	width: 240px;
-}
-.popoff-container-sidebar {
-	-webkit-transition: all 0.25s;
-	-moz-transition: all 0.25s;
-	transition: all 0.25s;
-}
-.popoff-container-slide-top {
-	-webkit-transform: translateY(160px);
-	-moz-transform: translateY(160px);
-	-ms-transform: translateY(160px);
-	transform: translateY(160px);
-}
-.popoff-container-slide-bottom {
-	-webkit-transform: translateY(-160px);
-	-moz-transform: translateY(-160px);
-	-ms-transform: translateY(-160px);
-	transform: translateY(-160px);
-}
-/* left sidebar does not work on mobile properly */
-/*.popoff-container-slide-left {
-	-webkit-transform: translateX(240px);
-	-moz-transform: translateX(240px);
-	-ms-transform: translateX(240px);
-	transform: translateX(240px);
-}
-*/
-.popoff-container-slide-right {
-	-webkit-transform: translateX(-240px);
-	-moz-transform: translateX(-240px);
-	-ms-transform: translateX(-240px);
-	transform: translateX(-240px);
 }
 
 
