@@ -29,11 +29,10 @@
   },
   "scripts": {
     "test:browser": "budo test.js",
-    "build": "browserify test.js -o demo/index.js"
+    "build": "browserify test.js -t brfs -t bubleify -o demo/index.js"
   },
   "browserify": {
     "transform": [
-      "babelify",
       "brfs"
     ]
   },
