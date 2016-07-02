@@ -4,12 +4,12 @@
 	left: 0;
 	bottom: 0;
 	right: 0;
-	opacity: 1;
+	opacity: 0;
 	background-color: rgba(85,85,85,.85);
 	background: linear-gradient(160deg, rgba(103, 98, 105, 0.85), rgba(73, 70, 82, 0.85));
-	-webkit-transition: opacity .25s;
-	-moz-transition: opacity .25s;
-	transition: opacity .25s;
+	-webkit-transition: opacity .33s;
+	-moz-transition: opacity .33s;
+	transition: opacity .33s;
 	z-index: 5;
 }
 .popoff-closable {
@@ -52,7 +52,7 @@
 	visibility: hidden;
 }
 .popoff-visible {
-
+	opacity: 1;
 }
 
 
@@ -178,14 +178,17 @@
 
 
 /* Tip */
-.popoff-tip{
+.popoff-tip {
 	width: 1.5rem;
 	height: 1.5rem;
 	position: absolute;
 	z-index: 10;
 	overflow: hidden;
+	-webkit-transition: opacity 0.3s;
+	-moz-transition: opacity 0.3s;
+	transition: opacity 0.3s;
 }
-.popoff-tip:after{
+.popoff-tip:after {
 	content: '';
 	border-top-left-radius: 1px;
 	position: absolute;
@@ -204,11 +207,11 @@
 .popoff-tip[data-side="bottom"] {
 	height: 1rem;
 }
-.popoff-tip[data-side="top"]:after{
+.popoff-tip[data-side="top"]:after {
 	bottom: auto;
 	top: .65rem;
 }
-.popoff-tip[data-side="bottom"]:after{
+.popoff-tip[data-side="bottom"]:after {
 	bottom: .65rem;
 	top: auto;
 }
@@ -216,20 +219,22 @@
 .popoff-tip[data-side="right"] {
 	width: 1rem;
 }
-.popoff-tip[data-side="left"]:after{
+.popoff-tip[data-side="left"]:after {
 	left: .65rem;
 	right: auto;
 }
-.popoff-tip[data-side="right"]:after{
+.popoff-tip[data-side="right"]:after {
 	left: auto;
 	right: .65rem;
 }
 
 
 
-/* Effects */
-/* Basic effects */
-.popoff-effect-fade {
+/* Basic fade */
+.popoff-effect-fade .popoff-tip {
+	opacity: 0;
+}
+.popoff-effect-fade .popoff-popup {
 	opacity: 0;
 	-webkit-transition: all 0.3s;
 	-moz-transition: all 0.3s;
@@ -237,7 +242,7 @@
 }
 
 /* Effect 1: Fade in and scale up */
-.popoff-effect-scale {
+.popoff-effect-scale .popoff-popup {
 	-webkit-transform: scale(0.7);
 	-moz-transform: scale(0.7);
 	-ms-transform: scale(0.7);
@@ -251,18 +256,7 @@
 
 
 /* Effect 2: Slide from the right */
-.popoff-effect-slide-right {
-	-webkit-transform: translateX(20%);
-	-moz-transform: translateX(20%);
-	-ms-transform: translateX(20%);
-	transform: translateX(20%);
-	opacity: 0;
-	-webkit-transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-	-moz-transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-	transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-}
-.popoff-effect-slide-bottom,
-.popoff-effect-slide {
+.popoff-effect-slide .popoff-popup {
 	-webkit-transform: translateY(20%);
 	-moz-transform: translateY(20%);
 	-ms-transform: translateY(20%);
@@ -272,7 +266,27 @@
 	-moz-transition: all 0.3s;
 	transition: all 0.3s;
 }
-.popoff-effect-slide-left {
+.popoff-effect-slide-right .popoff-popup {
+	-webkit-transform: translateX(20%);
+	-moz-transform: translateX(20%);
+	-ms-transform: translateX(20%);
+	transform: translateX(20%);
+	opacity: 0;
+	-webkit-transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
+	-moz-transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
+	transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
+}
+.popoff-effect-slide-bottom .popoff-popup {
+	-webkit-transform: translateY(20%);
+	-moz-transform: translateY(20%);
+	-ms-transform: translateY(20%);
+	transform: translateY(20%);
+	opacity: 0;
+	-webkit-transition: all 0.3s;
+	-moz-transition: all 0.3s;
+	transition: all 0.3s;
+}
+.popoff-effect-slide-left .popoff-popup {
 	-webkit-transform: translateX(-20%);
 	-moz-transform: translateX(-20%);
 	-ms-transform: translateX(-20%);
@@ -282,7 +296,7 @@
 	-moz-transition: all 0.3s;
 	transition: all 0.3s;
 }
-.popoff-effect-slide-top {
+.popoff-effect-slide-top .popoff-popup {
 	-webkit-transform: translateY(-20%);
 	-moz-transform: translateY(-20%);
 	-ms-transform: translateY(-20%);
@@ -295,7 +309,7 @@
 
 
 /* Effect 4: Newspaper */
-.popoff-effect-newspaper {
+.popoff-effect-newspaper .popoff-popup {
 	-webkit-transform: scale(0) rotate(720deg);
 	-moz-transform: scale(0) rotate(720deg);
 	-ms-transform: scale(0) rotate(720deg);
@@ -308,7 +322,7 @@
 
 
 /* Effect 11: Super scaled */
-.popoff-effect-super-scaled {
+.popoff-effect-super-scaled .popoff-popup {
 	-webkit-transform: scale(2);
 	-moz-transform: scale(2);
 	-ms-transform: scale(2);

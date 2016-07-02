@@ -360,8 +360,7 @@ Popup.prototype.show = function (target, cb) {
 	this.emit('show', this.currentTarget);
 
 	//ensure effects classes
-	this.element.classList.add(`popoff-effect-${ this.effect }`);
-	this.tipElement.classList.add(`popoff-effect-${ this.effect }`);
+	this.container.classList.add(`popoff-effect-${ this.effect }`);
 
 	var elHeight = this.element.offsetHeight;
 
@@ -383,8 +382,7 @@ Popup.prototype.show = function (target, cb) {
 
 	//in some way it needs to be called in timeout with some delay, otherwise animation fails
 	setTimeout(() => {
-		this.element.classList.remove(`popoff-effect-${ this.effect }`);
-		this.tipElement.classList.remove(`popoff-effect-${ this.effect }`);
+		this.container.classList.remove(`popoff-effect-${ this.effect }`);
 		this.isVisible = true;
 		this.update();
 	}, 10);
@@ -431,8 +429,7 @@ Popup.prototype.hide = function (cb) {
 	this.emit('hide');
 
 
-	this.element.classList.add(`popoff-effect-${ this.effect }`);
-	this.tipElement.classList.add(`popoff-effect-${ this.effect }`);
+	this.container.classList.add(`popoff-effect-${ this.effect }`);
 
 	this.isAnimating = true;
 
@@ -451,8 +448,7 @@ Popup.prototype.hide = function (cb) {
 		this.element.classList.add('popoff-hidden');
 		this.tipElement.classList.add('popoff-hidden');
 
-		this.element.classList.remove(`popoff-effect-${ this.effect }`);
-		this.tipElement.classList.remove(`popoff-effect-${ this.effect }`);
+		this.container.classList.remove(`popoff-effect-${ this.effect }`);
 
 		if (this.wrap) {
 			this.isTall = false;
