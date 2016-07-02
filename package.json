@@ -1,6 +1,6 @@
 {
   "name": "popoff",
-  "version": "2.0.10",
+  "version": "2.0.11",
   "description": "Popups, tooltips and overlays",
   "main": "index.js",
   "directories": {
