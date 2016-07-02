@@ -16,7 +16,9 @@ insertCSS(`
 	html {
 		background-color: rgb(255,254,252);
 		background: url(http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/lightpaperfibers.png), rgb(255,254,252);
+		font-family: sans-serif;
 		/* box-shadow: inset 8vw -8vw 50vw rgba(153, 158, 167, 0.35); */
+		line-height: 1.5;
 	}
 
 	body {
@@ -25,8 +27,6 @@ insertCSS(`
 		padding: 6rem 2rem 6rem;
 		max-width: 660px;
 		margin: auto;
-		line-height: 1.5;
-		font-family: sans-serif;
 	}
 
 	img {
