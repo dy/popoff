@@ -93,7 +93,8 @@ popup.on('update', () => {});
 Popoff engages practices of old [overlay-component](https://github.com/component/ovelay) and [dialog-component](https://github.com/component/dialog), refined and mixed with modern ES6 and browserify component approaches.
 List of effects is taken from [modal window effects](https://github.com/codrops/ModalWindowEffects) article from codrops, so big thanks to them for awesome lib.
 
-## Related
+## See also
 
-* [placer](https://github.com/dfcreative/placer) - place any element relative to any other element in any way.
-* [aligner](https://github.com/dfcreative/aligner) - align elements set by one or other side.
+* [prama](https://github.com/dfcreative/prama) — settings page constructor.
+* [placer](https://github.com/dfcreative/placer) — place any element relative to any other element in any way.
+* [aligner](https://github.com/dfcreative/aligner) — align elements set by one or other side.

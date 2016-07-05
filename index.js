@@ -12,7 +12,7 @@ const insertCss = require('insert-css');
 const fs = require('fs');
 const sb = require('mucss/scrollbar')
 
-insertCss(fs.readFileSync('./index.css', 'utf-8'));
+insertCss(fs.readFileSync(__dirname + '/index.css', 'utf-8'));
 
 module.exports = Popup;
 

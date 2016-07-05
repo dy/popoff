@@ -5,8 +5,8 @@
 	bottom: 0;
 	right: 0;
 	opacity: 0;
-	background-color: rgba(85,85,85,.85);
-	background: linear-gradient(160deg, rgba(103, 98, 105, 0.85), rgba(73, 70, 82, 0.85));
+	background-color: rgba(65,65,65,.85);
+	background: linear-gradient(160deg, rgba(93, 88, 95, 0.85), rgba(63, 60, 72, 0.85));
 	-webkit-transition: opacity .33s;
 	-moz-transition: opacity .33s;
 	transition: opacity .33s;
