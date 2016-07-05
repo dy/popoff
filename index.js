@@ -9,8 +9,9 @@ const uid = require('get-uid');
 const inherits = require('inherits');
 const createOverlay = require('./overlay');
 const insertCss = require('insert-css');
+const sb = require('mucss/scrollbar');
+const hasScroll = require('mucss/has-scroll');
 const fs = require('fs');
-const sb = require('mucss/scrollbar')
 
 insertCss(fs.readFileSync(__dirname + '/index.css', 'utf-8'));
 
@@ -393,9 +394,11 @@ Popup.prototype.show = function (target, cb) {
 			this.isTall = true;
 			this.overflowElement.classList.add('popoff-overflow-tall');
 		}
+		if (hasScroll.y()) {
+			this._border = this.container.style.borderRight;
+			this.container.style.borderRight = sb + 'px solid transparent';
+		}
 		this.container.classList.add('popoff-container-overflow');
-		this._border = this.container.style.borderRight;
-		this.container.style.borderRight = sb + 'px solid transparent';
 		this.container.appendChild(this.overflowElement);
 		this.overflowElement.appendChild(this.element);
 	}
