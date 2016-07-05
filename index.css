@@ -103,15 +103,14 @@
 	line-height: 3.333rem;
 	text-align: center;
 	font-size: 1.333rem;
-	color: rgb(40,40,40);
+	color: rgb(120,120,120);
 	background: transparent;
 }
 .popoff-close:after {
 	content: '✕';
 }
 .popoff-close:hover{
-	background: black;
-	color: white;
+	color: rgb(0,0,0);
 }
 
 
