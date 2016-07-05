@@ -324,6 +324,11 @@ Popup.prototype.types = {
 		shift: true,
 		update: () => {},
 		onInit: function () {
+			//define shift
+			if (this.shift === true) {
+				this.shift = 100;
+			}
+
 			if (this.target) {
 				this.target.addEventListener('click', (e) => {
 					if (this.isVisible) return;

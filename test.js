@@ -101,8 +101,7 @@ var meta = document.createElement('meta');
 meta.setAttribute('name', 'viewport');
 meta.setAttribute('content', 'width=device-width, initial-scale=1, shrink-to-fit=no');
 document.head.appendChild(meta);
-body.innerHTML = `
-<a href="https://en.wikipedia.org/wiki/Alexander_Stepanovich_Popov" style="text-decoration: none"><img id="popoff" src='./popoff.png' alt="Señor Popov. Попов Александр Степанович, портрет гравюра." style="display: block; margin: auto;"/></a>
+body.innerHTML = `<a href="https://en.wikipedia.org/wiki/Alexander_Stepanovich_Popov" style="text-decoration: none"><img id="popoff" src='./popoff.png' alt="Señor Popov. Попов Александр Степанович, портрет гравюра." style="display: block; margin: auto;"/></a>
 <h1 style="text-align:center;">Señor Popoff</h1>
 <p style="text-align: center">Popoff provides every and each sort of popup: dialog, modal, tooltip, dropdown, confirm, notifier, popover, lightbox, balloon, dialog, alert, overlay, sidebar etc.</p>
 <section id="types">
@@ -195,7 +194,7 @@ test('sidebar', function () {
 
 	var p = Popup({
 		type: 'sidebar',
-		shift: 40,
+		shift: true,
 		content: `
 			<h2>Sidebar</h2>
 			${ipsum({count: 2, units: 'sentences', format: 'html'})}

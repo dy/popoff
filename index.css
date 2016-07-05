@@ -152,34 +152,35 @@
 	max-height: none;
 	overflow-y: auto;
 	opacity: 1;
+	padding: 1.2rem;
 }
 .popoff-sidebar[data-side="top"] {
 	top: 0;
 	left: 0;
 	right: 0;
 	bottom: auto;
-	height: 160px;
+	max-height: 160px;
 }
 .popoff-sidebar[data-side="bottom"] {
 	bottom: 0;
 	left: 0;
 	right: 0;
 	top: auto;
-	height: 160px;
+	max-height: 160px;
 }
 .popoff-sidebar[data-side="right"] {
 	bottom: 0;
 	top: 0;
 	right: 0;
 	left: auto;
-	width: 240px;
+	max-width: 240px;
 }
 .popoff-sidebar[data-side="left"] {
 	bottom: 0;
 	top: 0;
 	left: 0;
 	right: auto;
-	width: 240px;
+	max-width: 240px;
 }
 
 
