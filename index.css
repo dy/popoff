@@ -124,7 +124,7 @@
 	max-width: 660px;
 	min-width: 320px;
 	padding: 1.6rem 2rem;
-	box-shadow: 0 .666vh 3.333vw -.333vh rgba(19, 16, 27, 0.45);
+	box-shadow: 0 4px 16px -2px rgba(19, 16, 27, 0.35);
 }
 @media (max-width: 42rem) {
 	.popoff-modal,

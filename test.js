@@ -1,6 +1,6 @@
 var ipsum = require('lorem-ipsum');
-// var Draggable = require('draggy');
-// var Resizable = require('resizable');
+var Draggable = require('draggy');
+var Resizable = require('resizable');
 var Overlay = require('./overlay');
 var Popup = require('./');
 var insertCSS = require('insert-css');
@@ -254,11 +254,10 @@ test('tooltip', () => {
 });
 
 
-test('dialog draggable & resizable', () => {
-	return;
+test('dialog draggable', () => {
 	var target = document.createElement('a');
 	target.href = '#drag-resize';
-	target.innerHTML = 'Drag & resize';
+	target.innerHTML = 'Draggable';
 	target.className = 'target';
 	target.style.textDecoration = 'none';
 	target.style.background = 'black';
@@ -271,31 +270,27 @@ test('dialog draggable & resizable', () => {
 		overlay: false,
 		effect: 'fade',
 		content: `
-			<h2>Draggable & resizable</h2>
-			<p>Enable draggable and resizable behavior with <a href="https://npmjs.org/package/resizable">resizable</a> components as so:</p>
+			<h2>Draggable</h2>
+			<p>Enable draggable behavior with <a href="https://npmjs.org/package/draggy">draggy</a> component as so:</p>
 			<code><pre>
 var popup = new Popup({
 	overlay: false,
 	effect: 'fade'
 });
-Resizable(popup.element, {
-	draggable: true,
-	css3: false //important
-});
+Draggable(popup.element);
 			</pre></code>
 			Don’t forget to remove <code>max-width</code>.
 		`
 	});
 
-	// Draggable(p.element, {
-	// 	css3: false,
-	// 	within: window
-	// });
-	Resizable(p.element, {
-		draggable: true,
-		// css3: false,
+	Draggable(p.element, {
 		within: window
 	});
+	// Resizable(p.element, {
+	// 	draggable: true,
+	// 	// css3: false,
+	// 	within: window
+	// });
 });
 
 
