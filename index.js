@@ -206,11 +206,10 @@ Popup.prototype.types = {
 		target: null,
 		wrap: true,
 		effect: 'fade',
-		update: () => {},
 		onInit: function () {
 			if (this.target) {
 				this.target.addEventListener('click', (e) => {
-					if (this.isVisible) return;
+					if (this.isVisible) return this.hide();
 
 					return this.show();
 				});

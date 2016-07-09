@@ -6,7 +6,6 @@ var Popup = require('./');
 var insertCSS = require('insert-css');
 // var test = require('tst');
 var test = (a,b) => {b();};
-
 var body = document.body,
 	doc = document,
 	root = doc.documentElement;
@@ -17,7 +16,6 @@ insertCSS(`
 		background-color: rgb(255,254,252);
 		background: url(http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/lightpaperfibers.png), rgb(255,254,252);
 		font-family: sans-serif;
-		/* box-shadow: inset 8vw -8vw 50vw rgba(153, 158, 167, 0.35); */
 		line-height: 1.5;
 	}
 
@@ -269,6 +267,8 @@ test('dialog draggable', () => {
 		target: target,
 		overlay: false,
 		effect: 'fade',
+		side: 'bottom',
+		wrap: false,
 		content: `
 			<h2>Draggable</h2>
 			<p>Enable draggable behavior with <a href="https://npmjs.org/package/draggy">draggy</a> component as so:</p>
