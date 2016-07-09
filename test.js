@@ -215,6 +215,9 @@ test('dropdown', () => {
 	target.style.textDecoration = 'none';
 	target.style.color = 'white';
 	target.style.padding = '10px';
+	// target.style.position = 'absolute';
+	// target.style.right = '10px';
+	// target.style.bottom = '40px';
 	document.querySelector('#types p:last-of-type').appendChild(target);
 
 	var content = document.createElement('div');

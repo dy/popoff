@@ -540,8 +540,8 @@ Popup.prototype.update = function (how) {
 
 		this.tipElement.setAttribute('data-side', side);
 		place(this.tipElement, {
-			target: this.element,
-			side: side,
+			target: this.target,
+			side: how.side,
 			align: 'center',
 			within: null
 		});
