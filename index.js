@@ -46,6 +46,8 @@ EventEmitter.prototype.setMaxListeners = function(n) {
 };
 
 EventEmitter.prototype.emit = function(type) {
+  var this$1 = this;
+
   var er, handler, len, args, i, listeners;
 
   if (!this._events)
@@ -90,7 +92,7 @@ EventEmitter.prototype.emit = function(type) {
     listeners = handler.slice();
     len = listeners.length;
     for (i = 0; i < len; i++)
-      listeners[i].apply(this, args);
+      listeners[i].apply(this$1, args);
   }
 
   return true;
@@ -216,6 +218,8 @@ EventEmitter.prototype.removeListener = function(type, listener) {
 };
 
 EventEmitter.prototype.removeAllListeners = function(type) {
+  var this$1 = this;
+
   var key, listeners;
 
   if (!this._events)
@@ -234,7 +238,7 @@ EventEmitter.prototype.removeAllListeners = function(type) {
   if (arguments.length === 0) {
     for (key in this._events) {
       if (key === 'removeListener') continue;
-      this.removeAllListeners(key);
+      this$1.removeAllListeners(key);
     }
     this.removeAllListeners('removeListener');
     this._events = {};
@@ -248,7 +252,7 @@ EventEmitter.prototype.removeAllListeners = function(type) {
   } else if (listeners) {
     // LIFO order
     while (listeners.length)
-      this.removeListener(type, listeners[listeners.length - 1]);
+      this$1.removeListener(type, listeners[listeners.length - 1]);
   }
   delete this._events[type];
 
@@ -556,13 +560,12 @@ Popup.prototype.types = {
 		target: null,
 		wrap: true,
 		effect: 'fade',
-		update: function () {},
 		onInit: function () {
 			var this$1 = this;
 
 			if (this.target) {
 				this.target.addEventListener('click', function (e) {
-					if (this$1.isVisible) return;
+					if (this$1.isVisible) return this$1.hide();
 
 					return this$1.show();
 				});
@@ -1044,7 +1047,7 @@ function align(els, alignment, relativeTo){
 		}
 
 		//correct parentRect
-		if (parent === window || (parent === doc.body && getComputedStyle(parent).position === 'static') || parent === root) {
+		if ((parent === window && isFixed(relativeTo)) || (parent === doc.body && getComputedStyle(parent).position === 'static') || parent === root) {
 			parentRect.left = 0;
 			parentRect.top = 0;
 		}
@@ -1347,37 +1350,37 @@ module.exports = State;
 
 
 //work with css
-const css = require('mucss/css');
-const parseCSSValue = require('mucss/parse-value');
-const selection = require('mucss/selection');
-const offsets = require('mucss/offset');
-const getTranslate = require('mucss/translate');
-const intersect = require('intersects');
-const isFixed = require('mucss/is-fixed');
+var css = require('mucss/css');
+var parseCSSValue = require('mucss/parse-value');
+var selection = require('mucss/selection');
+var offsets = require('mucss/offset');
+var getTranslate = require('mucss/translate');
+var intersect = require('intersects');
+var isFixed = require('mucss/is-fixed');
 
 //events
-const on = require('emmy/on');
-const off = require('emmy/off');
-const emit = require('emmy/emit');
-const Emitter = require('events');
-const getClientX = require('get-client-xy').x;
-const getClientY = require('get-client-xy').y;
+var on = require('emmy/on');
+var off = require('emmy/off');
+var emit = require('emmy/emit');
+var Emitter = require('events');
+var getClientX = require('get-client-xy').x;
+var getClientY = require('get-client-xy').y;
 
 //utils
-const isArray = require('mutype/is-array');
-const isNumber = require('mutype/is-number');
-const isString = require('mutype/is-string');
-const isFn = require('mutype/is-fn');
-const defineState = require('define-state');
-const extend = require('xtend/mutable');
-const round = require('mumath/round');
-const between = require('mumath/clamp');
-const loop = require('mumath/mod');
-const getUid = require('get-uid');
-const inherits =  require('inherits');
+var isArray = require('mutype/is-array');
+var isNumber = require('mutype/is-number');
+var isString = require('mutype/is-string');
+var isFn = require('mutype/is-fn');
+var defineState = require('define-state');
+var extend = require('xtend/mutable');
+var round = require('mumath/round');
+var between = require('mumath/clamp');
+var loop = require('mumath/mod');
+var getUid = require('get-uid');
+var inherits =  require('inherits');
 
 
-const win = window, doc = document, root = doc.documentElement;
+var win = window, doc = document, root = doc.documentElement;
 
 
 /**
@@ -1391,7 +1394,7 @@ const win = window, doc = document, root = doc.documentElement;
  *
  * That is why weakmap.
  */
-const draggableCache = Draggable.cache = new WeakMap;
+var draggableCache = Draggable.cache = new WeakMap;
 
 
 
@@ -2301,7 +2304,7 @@ Draggable.prototype.destroy = function () {
 
 function q (str) {
 	if (Array.isArray(str)) {
-		return str.map(q).reduce( (prev, curr) => prev.concat(curr), [] );
+		return str.map(q).reduce( function (prev, curr) { return prev.concat(curr); }, [] );
 	}
 	else if (str instanceof HTMLElement) {
 		return [str];
@@ -2654,8 +2657,10 @@ function isLocked(target, name){
 	return (locks && locks[name]);
 }
 },{}],15:[function(require,module,exports){
-arguments[4][8][0].apply(exports,arguments)
-},{"dup":8}],16:[function(require,module,exports){
+module.exports = function(a){
+	return a instanceof Array;
+}
+},{}],16:[function(require,module,exports){
 module.exports = function(target){
 	return typeof Event !== 'undefined' && target instanceof Event;
 };
@@ -2675,10 +2680,11 @@ module.exports = function(o){
 	// return obj === Object(obj);
 	return !!o && typeof o === 'object' && o.constructor === Object;
 };
-
 },{}],19:[function(require,module,exports){
-arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],20:[function(require,module,exports){
+module.exports = function(a){
+	return typeof a === 'string' || a instanceof String;
+}
+},{}],20:[function(require,module,exports){
 
 /**
  * An Array.prototype.slice.call(arguments) alternative
@@ -2711,7 +2717,6 @@ module.exports = function (args, slice, sliceEnd) {
 
   return ret;
 }
-
 
 },{}],21:[function(require,module,exports){
 /**
@@ -3420,7 +3425,6 @@ function prefixize(name){
 	if (fakeStyle[prefix + uName] !== undefined) return prefix + uName;
 	return '';
 }
-
 },{"./fake-element":34,"./prefix":41}],34:[function(require,module,exports){
 /** Just a fake element to test styles
  * @module mucss/fake-element
@@ -3495,7 +3499,6 @@ module.exports = function(el){
 		parse(style.marginBottom)
 	);
 };
-
 },{"./parse-value":40,"./rect":42}],38:[function(require,module,exports){
 /**
  * Calculate absolute offsets of an element, relative to the document.
@@ -3652,7 +3655,6 @@ else {
 		js: pre[0].toUpperCase() + pre.substr(1)
 	};
 }
-
 },{}],42:[function(require,module,exports){
 /**
  * Simple rect constructor.
@@ -3863,6 +3865,8 @@ module.exports = require('./wrap')(function(value, step) {
  */
 module.exports = function(fn){
 	return function (a) {
+		var this$1 = this;
+
 		var args = arguments;
 		if (a instanceof Array) {
 			var result = new Array(a.length), slice;
@@ -3873,7 +3877,7 @@ module.exports = function(fn){
 					val = val;
 					slice.push(val);
 				}
-				result[i] = fn.apply(this, slice);
+				result[i] = fn.apply(this$1, slice);
 			}
 			return result;
 		}
@@ -3886,7 +3890,7 @@ module.exports = function(fn){
 					val = val;
 					slice.push(val);
 				}
-				result[i] = fn.apply(this, slice);
+				result[i] = fn.apply(this$1, slice);
 			}
 			return result;
 		}
@@ -4124,7 +4128,7 @@ function place (element, options) {
 var placeBySide = {
 	center: function(placee, opts){
 		//get to & within rectangles
-		var placerRect = offsets(opts.target);
+		var targetRect = offsets(opts.target);
 		var parentRect = getParentRect(placee.offsetParent);
 
 		//align centered
@@ -4155,7 +4159,7 @@ var placeBySide = {
 	left: function(placee, opts){
 		var parent = placee.offsetParent || document.body || root;
 
-		var placerRect = offsets(opts.target);
+		var targetRect = offsets(opts.target);
 		var parentRect = getParentRect(parent);
 
 		//correct borders
@@ -4164,7 +4168,7 @@ var placeBySide = {
 
 		//place left (set css right because placee width may change)
 		css(placee, {
-			right: parentRect.right - placerRect.left,
+			right: parentRect.right - targetRect.left,
 			left: 'auto'
 		});
 
@@ -4181,17 +4185,19 @@ var placeBySide = {
 	},
 
 	right: function (placee, opts) {
+		var parent = placee.offsetParent || document.body || root;
+
 		//get to & within rectangles
-		var placerRect = offsets(opts.target);
-		var parentRect = getParentRect(placee.offsetParent);
+		var targetRect = offsets(opts.target);
+		var parentRect = getParentRect(parent);
 
 		//correct borders
-		contractRect(parentRect, borders(placee.offsetParent));
+		contractRect(parentRect, borders(parent));
 
 
 		//place right
 		css(placee, {
-			left: placerRect.right - parentRect.left,
+			left: targetRect.right - parentRect.left,
 			right: 'auto',
 		});
 
@@ -4210,16 +4216,23 @@ var placeBySide = {
 
 	top: function(placee, opts){
 		var parent = placee.offsetParent || document.body || root;
-		var placerRect = offsets(opts.target);
-		var parentRect = getParentRect(placee.offsetParent);
+
+		var targetRect = offsets(opts.target);
+		var parentRect = getParentRect(parent);
 
 		//correct borders
 		contractRect(parentRect, borders(parent));
 
+		if (isFixed(placee)) {
+			parentRect.top = 0;
+			parentRect.bottom = window.innerHeight;
+			targetRect.top -= window.pageYOffset;
+			targetRect.bottom -= window.pageYOffset;
+		}
 
 		//place vertically top-side
 		css(placee, {
-			bottom: parentRect.bottom - placerRect.top,
+			bottom: parentRect.bottom - targetRect.top,
 			top: 'auto'
 		});
 
@@ -4237,18 +4250,26 @@ var placeBySide = {
 	},
 
 	bottom: function(placee, opts){
+		var parent = placee.offsetParent || document.body || root;
+
 		//get to & within rectangles
-		var placerRect = offsets(opts.target);
-		var parentRect = getParentRect(placee.offsetParent);
+		var targetRect = offsets(opts.target);
+		var parentRect = getParentRect(parent);
 
 
 		//correct borders
-		contractRect(parentRect, borders(placee.offsetParent));
+		contractRect(parentRect, borders(parent));
 
+		if (isFixed(placee)) {
+			parentRect.top = 0;
+			parentRect.bottom = window.innerHeight;
+			targetRect.top -= window.pageYOffset;
+			targetRect.bottom -= window.pageYOffset;
+		}
 
 		//place bottom
 		css(placee, {
-			top: placerRect.bottom - parentRect.top,
+			top: targetRect.bottom - parentRect.top,
 			bottom: 'auto',
 		});
 
@@ -4275,7 +4296,7 @@ function getBestSide (placee, opts) {
 
 	var withinRect = offsets(opts.within),
 		placeeRect = offsets(placee),
-		placerRect = offsets(opts.target);
+		targetRect = offsets(opts.target);
 
 	contractRect(withinRect, borders(opts.within));
 
@@ -4283,10 +4304,10 @@ function getBestSide (placee, opts) {
 
 	//rect of "hot" area (available spaces from placer to container)
 	var hotRect = {
-		top: placerRect.top - withinRect.top,
-		bottom: withinRect.bottom - placerRect.bottom,
-		left: placerRect.left - withinRect.left,
-		right: withinRect.right - placerRect.right
+		top: targetRect.top - withinRect.top,
+		bottom: withinRect.bottom - targetRect.bottom,
+		left: targetRect.left - withinRect.left,
+		right: withinRect.right - targetRect.right
 	};
 
 	//rect of available spaces
@@ -4407,7 +4428,7 @@ function getParentRect (target) {
 	var rect;
 
 	//handle special static body case
-	if (target == null || target === window || (target === doc.body && getComputedStyle(target).position === 'static') || target === root) {
+	if (target == null || (target === window) || (target === doc.body && getComputedStyle(target).position === 'static') || target === root) {
 		rect = {
 			left: 0,
 			right: win.innerWidth - (hasScroll.y() ? scrollbarWidth : 0),
@@ -4859,10 +4880,12 @@ proto.createHandle = function(handle, direction){
 
 /** deconstructor - removes any memory bindings */
 proto.destroy = function () {
+	var this$1 = this;
+
 	//remove all handles
 	for (var hName in this.handles){
-		this.element.removeChild(this.handles[hName]);
-		Draggable.cache.get(this.handles[hName]).destroy();
+		this$1.element.removeChild(this$1.handles[hName]);
+		Draggable.cache.get(this$1.handles[hName]).destroy();
 	}
 
 
@@ -4935,12 +4958,26 @@ var handleStyles = splitKeys({
  */
 module.exports = Resizable;
 },{"draggy":7,"emmy/emit":12,"emmy/on":22,"events":1,"inherits":25,"mucss/border":32,"mucss/css":33,"mucss/margin":37,"mucss/offset":38,"mucss/padding":39,"mumath/clamp":46,"mutype/is-array":54,"mutype/is-object":55,"mutype/is-string":56,"split-keys":58,"xtend/mutable":59}],54:[function(require,module,exports){
-arguments[4][8][0].apply(exports,arguments)
-},{"dup":8}],55:[function(require,module,exports){
-arguments[4][18][0].apply(exports,arguments)
-},{"dup":18}],56:[function(require,module,exports){
-arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],57:[function(require,module,exports){
+module.exports = function(a){
+	return a instanceof Array;
+}
+},{}],55:[function(require,module,exports){
+/**
+ * @module mutype/is-object
+ */
+
+//TODO: add st8 tests
+
+//isPlainObject indeed
+module.exports = function(o){
+	// return obj === Object(obj);
+	return !!o && typeof o === 'object' && o.constructor === Object;
+};
+},{}],56:[function(require,module,exports){
+module.exports = function(a){
+	return typeof a === 'string' || a instanceof String;
+}
+},{}],57:[function(require,module,exports){
 /**
  * Append all not-existing props to the initial object
  *
@@ -5033,8 +5070,10 @@ module.exports = extend
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
 function extend(target) {
+    var arguments$1 = arguments;
+
     for (var i = 1; i < arguments.length; i++) {
-        var source = arguments[i]
+        var source = arguments$1[i]
 
         for (var key in source) {
             if (hasOwnProperty.call(source, key)) {
@@ -5172,13 +5211,12 @@ var Popup = require('./');
 var insertCSS = require('insert-css');
 // var test = require('tst');
 var test = function (a,b) {b();};
-
 var body = document.body,
 	doc = document,
 	root = doc.documentElement;
 
 
-insertCSS("\n\thtml {\n\t\tbackground-color: rgb(255,254,252);\n\t\tbackground: url(http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/lightpaperfibers.png), rgb(255,254,252);\n\t\tfont-family: sans-serif;\n\t\t/* box-shadow: inset 8vw -8vw 50vw rgba(153, 158, 167, 0.35); */\n\t\tline-height: 1.5;\n\t}\n\n\tbody {\n\t\tposition: relative;\n\t\tmin-height: 100vh;\n\t\tpadding: 6rem 2rem 6rem;\n\t\tmax-width: 660px;\n\t\tmargin: auto;\n\t}\n\n\timg {\n\t\tmax-width: 60%;\n\t}\n\n\th1,h2,h3,h4,h5,h6 {\n\t\tmargin: 4rem 0rem 2rem 0;\n\t}\n\n\t.popoff-popup h1,\n\t.popoff-popup h2,\n\t.popoff-popup h3,\n\t.popoff-popup h4,\n\t.popoff-popup h5,\n\t.popoff-popup h6 {\n\t\tmargin-top: 1rem;\n\t}\n\n\t.target {\n\t\twhite-space: nowrap;\n\t\tmargin-right: .5rem;\n\t\ttext-transform: uppercase;\n\t\tletter-spacing: .25ex;\n\t\tfont-size: .75rem;\n\t\tdisplay: inline-block;\n\t\tmargin-bottom: .5rem;\n\t}\n\n\t.popoff-dropdown p,\n\t.popoff-sidebar p,\n\t.popoff-tooltip p {\n\t\tmargin: 0;\n\t}\n\n\t.popoff-sidebar h2 {\n\t\tmargin: 0 0 .66rem;\n\t}\n\n\t.popoff-overlay {\n\t\tbackground-color: rgba(85,85,85,.15);\n\t\tbackground: linear-gradient(160deg, rgba(103, 98, 105, .55), rgba(73, 70, 82, .55));\n\t}\n\n\t.popoff-overlay:before,\n\t.popoff-overlay:after {\n\t\tcontent: '';\n\t\tposition: absolute;\n\t\ttop: -100vw;\n\t\tleft: -100vw;\n\t\tright: -100vw;\n\t\tbottom: -100vw;\n\t\tbackground: url(./lines.png);\n\t\ttransform: rotate(-12.5deg) scale(1.5, 1.51);\n\t\ttransition: transform 50s ease-in;\n\t\topacity: .05;\n\t}\n\t.popoff-overlay:after {\n\t\ttransform: rotate(-12.4deg) scale(1.51, 1.5);\n\t\ttransition: transform 50s ease-out;\n\t}\n\t.popoff-overlay.popoff-fade-in:before {\n\t\ttransform: rotate(12.4deg) scale(1.51, 1.5);\n\t}\n\t.popoff-overlay.popoff-fade-in:after {\n\t\ttransform: rotate(12.5deg) scale(1.5, 1.51);\n\t}\n");
+insertCSS("\n\thtml {\n\t\tbackground-color: rgb(255,254,252);\n\t\tbackground: url(http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/lightpaperfibers.png), rgb(255,254,252);\n\t\tfont-family: sans-serif;\n\t\tline-height: 1.5;\n\t}\n\n\tbody {\n\t\tposition: relative;\n\t\tmin-height: 100vh;\n\t\tpadding: 6rem 2rem 6rem;\n\t\tmax-width: 660px;\n\t\tmargin: auto;\n\t}\n\n\timg {\n\t\tmax-width: 60%;\n\t}\n\n\th1,h2,h3,h4,h5,h6 {\n\t\tmargin: 4rem 0rem 2rem 0;\n\t}\n\n\t.popoff-popup h1,\n\t.popoff-popup h2,\n\t.popoff-popup h3,\n\t.popoff-popup h4,\n\t.popoff-popup h5,\n\t.popoff-popup h6 {\n\t\tmargin-top: 1rem;\n\t}\n\n\t.target {\n\t\twhite-space: nowrap;\n\t\tmargin-right: .5rem;\n\t\ttext-transform: uppercase;\n\t\tletter-spacing: .25ex;\n\t\tfont-size: .75rem;\n\t\tdisplay: inline-block;\n\t\tmargin-bottom: .5rem;\n\t}\n\n\t.popoff-dropdown p,\n\t.popoff-sidebar p,\n\t.popoff-tooltip p {\n\t\tmargin: 0;\n\t}\n\n\t.popoff-sidebar h2 {\n\t\tmargin: 0 0 .66rem;\n\t}\n\n\t.popoff-overlay {\n\t\tbackground-color: rgba(85,85,85,.15);\n\t\tbackground: linear-gradient(160deg, rgba(103, 98, 105, .55), rgba(73, 70, 82, .55));\n\t}\n\n\t.popoff-overlay:before,\n\t.popoff-overlay:after {\n\t\tcontent: '';\n\t\tposition: absolute;\n\t\ttop: -100vw;\n\t\tleft: -100vw;\n\t\tright: -100vw;\n\t\tbottom: -100vw;\n\t\tbackground: url(./lines.png);\n\t\ttransform: rotate(-12.5deg) scale(1.5, 1.51);\n\t\ttransition: transform 50s ease-in;\n\t\topacity: .05;\n\t}\n\t.popoff-overlay:after {\n\t\ttransform: rotate(-12.4deg) scale(1.51, 1.5);\n\t\ttransition: transform 50s ease-out;\n\t}\n\t.popoff-overlay.popoff-fade-in:before {\n\t\ttransform: rotate(12.4deg) scale(1.51, 1.5);\n\t}\n\t.popoff-overlay.popoff-fade-in:after {\n\t\ttransform: rotate(12.5deg) scale(1.5, 1.51);\n\t}\n");
 
 
 var meta = document.createElement('meta');
@@ -5333,6 +5371,8 @@ test('dialog draggable', function () {
 		target: target,
 		overlay: false,
 		effect: 'fade',
+		side: 'bottom',
+		wrap: false,
 		content: "\n\t\t\t<h2>Draggable</h2>\n\t\t\t<p>Enable draggable behavior with <a href=\"https://npmjs.org/package/draggy\">draggy</a> component as so:</p>\n\t\t\t<code><pre>\nvar popup = new Popup({\n\toverlay: false,\n\teffect: 'fade'\n});\nDraggable(popup.element);\n\t\t\t</pre></code>\n\t\t\tDon’t forget to remove <code>max-width</code>.\n\t\t"
 	});
 
