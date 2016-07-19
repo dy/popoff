@@ -214,9 +214,7 @@ Popup.prototype.types = {
 					return this.show();
 				});
 			}
-			else {
-				this.target = window;
-			}
+			this.target = window;
 		}
 	},
 

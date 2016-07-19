@@ -98,3 +98,7 @@ List of effects is taken from [modal window effects](https://github.com/codrops/
 * [prama](https://github.com/dfcreative/prama) — settings page constructor.
 * [placer](https://github.com/dfcreative/placer) — place any element relative to any other element in any way.
 * [aligner](https://github.com/dfcreative/aligner) — align elements set by one or other side.
+
+## Related
+
+* [dialogs](https://github.com/jameskyburz/dialogs) — simple dialogs: alert, confirm etc.
