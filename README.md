@@ -92,11 +92,11 @@ popup.update({
 ```
 </details>
 
-**`popup.on('show', () => {});`**
-**`popup.on('afterShow', () => {});`**
-**`popup.on('hide', () => {});`**
-**`popup.on('afterHide', () => {});`**
-**`popup.on('update', () => {});`**
+<details><summary>**`popup.on('show', () => );`**</summary>
+
+Invoke callback on event, one of the following: `show`, `hide`, `afterShow`, `afterHide`, `update`.
+
+</details>
 
 ## Credits
 
