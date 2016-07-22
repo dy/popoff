@@ -162,10 +162,7 @@ extend(Popup.prototype, {
 	animTimeout: 1000,
 
 	//detect tall content
-	wrap: false,
-
-	//shift content
-	shift: true
+	wrap: false
 });
 
 //FIXME: hope it will not crash safari
@@ -318,14 +315,8 @@ Popup.prototype.types = {
 		align: .5,
 		target: null,
 		effect: 'slide',
-		shift: true,
 		update: () => {},
 		onInit: function () {
-			//define shift
-			if (this.shift === true) {
-				this.shift = 100;
-			}
-
 			if (this.target) {
 				this.target.addEventListener('click', (e) => {
 					if (this.isVisible) return;
@@ -336,29 +327,16 @@ Popup.prototype.types = {
 			else {
 				this.target = window;
 			}
-			this.container.parentNode.appendChild(this.element);
+			this.container.appendChild(this.element);
 		},
 		onShow: function () {
 			if (!/top|left|bottom|right/.test(this.side)) this.side = this.types.sidebar.side;
 			this.element.setAttribute('data-side', this.side);
 			this.effect = 'slide-' + this.side;
-
-			if (this.shift) {
-				this.container.classList.add('popoff-animate');
-				var value = typeof this.shift === 'number' ? (this.shift + 'px') : this.shift;
-				if (/top|bottom/.test(this.side)) {
-					this.container.style.transform = `translateY(${ (this.side === 'top' ? '' : '-') + value })`;
-				}
-				else {
-					this.container.style.transform = `translateX(${ (this.side === 'left' ? '' : '-') + value })`;
-				}
-			}
 		},
 		onHide: function () {
-			if (this.shift) this.container.style.transform = null;
 		},
 		onAfterHide: function () {
-			this.shift && this.container.classList.remove('popoff-animate');
 		}
 	}
 };

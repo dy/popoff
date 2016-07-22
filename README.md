@@ -33,8 +33,10 @@ document.querySelector('#menu').click();
 
 ## API
 
+<details><summary>**`let popup = new Popup({type, effect, container, ...});`**</summary>
+
+Create popup instance based on passed options.
 ```js
-var popup = new Popup({
 	// modal, dropdown, tooltip, sidebar work out of the box. Otherwise define custom options below. See demo for examples.
 	type: 'modal',
 
@@ -60,32 +62,35 @@ var popup = new Popup({
 	effect: 'fade',
 
 	// additional style rules for popup
-	style: {},
+	style: {}
+```
+</details>
 
-	// shift main content on defined amount. Useful in case of sidebars
-	shift: 120
-});
+<details><summary>**`popup.show(target?, callback?);`**</summary>
+Show popup relative to the target, invoke callback after animation end.
+</details>
 
-//show popup relative to the target, invoke callback after animation end
-popup.show(target?, callback?);
+<details><summary>**`popup.hide(callback?);`**</summary>
+Hide popup, invoke callback after animation end.
+</details>
 
-//hide popup, invoke callback after animation end
-popup.hide(callback?);
-
-//update popup position, in case of resize etc.
+<details><summary>**`popup.update(options?);`**</summary>
+Update popup position, in case of resize etc. Options are optional.
+```js
 popup.update({
 	target: this._target || this.target,
 	side: this.side,
 	align: this.align,
 	within: window
 });
+```
+</details>
 
-//events
-popup.on('show', () => {});
-popup.on('afterShow', () => {});
-popup.on('hide', () => {});
-popup.on('afterHide', () => {});
-popup.on('update', () => {});
+**`popup.on('show', () => {});`**
+**`popup.on('afterShow', () => {});`**
+**`popup.on('hide', () => {});`**
+**`popup.on('afterHide', () => {});`**
+**`popup.on('update', () => {});`**
 ```
 
 ## Credits
