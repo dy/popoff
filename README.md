@@ -57,7 +57,7 @@ Close by escape.
 <details><summary>`tip: false`</summary>
 Show tip.
 </details>
-<details><summary>`effect: 'fade'</summary>
+<details><summary>`effect: 'fade'`</summary>
 Animation effect, see effects in the demo page.
 </details>
 <details><summary>`style: {}`</summary>
