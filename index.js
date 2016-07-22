@@ -53,6 +53,7 @@ function Popup (opts) {
 
 	//ensure element
 	if (!this.element) this.element = document.createElement('div');
+	this.element.classList.add('popoff');
 	this.element.classList.add('popoff-popup');
 	this.element.classList.add('popoff-hidden');
 
@@ -211,7 +212,7 @@ Popup.prototype.types = {
 					return this.show();
 				});
 			}
-			this.target = window;
+			this.target = this.container;
 		}
 	},
 
