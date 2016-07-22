@@ -35,33 +35,32 @@ document.querySelector('#menu').click();
 
 <details><summary>**`let popup = new Popup({type, effect, container, ...});`**</summary>
 
-Create popup instance based on passed options:
-
-<details><summary>**`type: 'modal'`**</summary>
+Create popup instance based on passed options.
+<details><summary>type: 'modal'</summary>
 Modal, dropdown, tooltip, sidebar work out of the box. Otherwise define custom options below. See [demo](https://dfcreative.github.io/popoff) for examples.
 </details>
-<details><summary>**`target: null`**</summary>
+<details><summary>`target: null`</summary>
 Target element that enables the popup, e.g. button.
 </details>
-<details><summary>**`container: document.body || document.documentElement`**</summary>
+<details><summary>`container: document.body || document.documentElement`</summary>
 An element to place popup into.
 </details>
-<details><summary>**`overlay: true`**</summary>
+<details><summary>`overlay: true`</summary>
 Show overlay, will be detected based off type.
 </details>
-<details><summary>**`closable: true`**</summary>
+<details><summary>`closable: true`</summary>
 Show close button.
 </details>
-<details><summary>**`escapable: true`**</summary>
+<details><summary>`escapable: true`</summary>
 Close by escape.
 </details>
-<details><summary>**`tip: false`**</summary>
+<details><summary>`tip: false`</summary>
 Show tip.
 </details>
-<details><summary>**`effect: 'fade'`**</summary>
-Animation effect, see effects in the demo page
+<details><summary>`effect: 'fade'</summary>
+Animation effect, see effects in the demo page.
 </details>
-<details><summary>**`style: {}`**</summary>
+<details><summary>`style: {}`</summary>
 Additional style rules for popup.
 </details>
 </details>
@@ -92,7 +91,7 @@ popup.update({
 ```
 </details>
 
-<details><summary>**`popup.on('show', () => );`**</summary>
+<details><summary>**`popup.on('show', () => {});`**</summary>
 
 Invoke callback on event, one of the following: `show`, `hide`, `afterShow`, `afterHide`, `update`.
 
