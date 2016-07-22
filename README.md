@@ -35,47 +35,53 @@ document.querySelector('#menu').click();
 
 <details><summary>**`let popup = new Popup({type, effect, container, ...});`**</summary>
 
-Create popup instance based on passed options.
-```js
-	// modal, dropdown, tooltip, sidebar work out of the box. Otherwise define custom options below. See demo for examples.
-	type: 'modal',
+Create popup instance based on passed options:
 
-	// target element that enables the popup, e.g. button.
-	target: null,
-
-	// an element to place popup into
-	container: document.body || document.documentElement,
-
-	// show overlay, will be detected based off type
-	overlay: true,
-
-	// show close button
-	closable: true,
-
-	// close by escape
-	escapable: true,
-
-	// show tip
-	tip: false,
-
-	// animation effect, see effects in the demo page
-	effect: 'fade',
-
-	// additional style rules for popup
-	style: {}
-```
+<details><summary>**`type: 'modal'`**</summary>
+Modal, dropdown, tooltip, sidebar work out of the box. Otherwise define custom options below. See [demo](https://dfcreative.github.io/popoff) for examples.
+</details>
+<details><summary>**`target: null`**</summary>
+Target element that enables the popup, e.g. button.
+</details>
+<details><summary>**`container: document.body || document.documentElement`**</summary>
+An element to place popup into.
+</details>
+<details><summary>**`overlay: true`**</summary>
+Show overlay, will be detected based off type.
+</details>
+<details><summary>**`closable: true`**</summary>
+Show close button.
+</details>
+<details><summary>**`escapable: true`**</summary>
+Close by escape.
+</details>
+<details><summary>**`tip: false`**</summary>
+Show tip.
+</details>
+<details><summary>**`effect: 'fade'`**</summary>
+Animation effect, see effects in the demo page
+</details>
+<details><summary>**`style: {}`**</summary>
+Additional style rules for popup.
+</details>
 </details>
 
-<details><summary>**`popup.show(target?, callback?);`**</summary>
-Show popup relative to the target, invoke callback after animation end.
+<details><summary>**`popup.show(myButtonEl, () => {});`**</summary>
+
+Show popup relative to the target element, invoke callback after animation end. Target and callback are optional.
+
 </details>
 
-<details><summary>**`popup.hide(callback?);`**</summary>
-Hide popup, invoke callback after animation end.
+<details><summary>**`popup.hide(() => {});`**</summary>
+
+Hide popup, invoke callback after animation end. Callback is optional.
+
 </details>
 
-<details><summary>**`popup.update(options?);`**</summary>
-Update popup position, in case of resize etc. Options are optional.
+<details><summary>**`popup.update();`**</summary>
+
+Update popup position, in case of resize etc. Optionally pass an options to redefine params.
+
 ```js
 popup.update({
 	target: this._target || this.target,
@@ -91,7 +97,6 @@ popup.update({
 **`popup.on('hide', () => {});`**
 **`popup.on('afterHide', () => {});`**
 **`popup.on('update', () => {});`**
-```
 
 ## Credits
 
