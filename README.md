@@ -38,32 +38,32 @@ document.querySelector('#menu').click();
 Create popup instance based on passed options.
 
 ```js
-	// modal, dropdown, tooltip, sidebar work out of the box. Otherwise define custom options below. See demo for examples.
-	type: 'modal',
+// modal, dropdown, tooltip, sidebar work out of the box. Otherwise define custom options below. See demo for examples.
+type: 'modal',
 
-	// target element that enables the popup, e.g. button.
-	target: null,
+// target element that enables the popup, e.g. button.
+target: null,
 
-	// an element to place popup into
-	container: document.body || document.documentElement,
+// an element to place popup into
+container: document.body || document.documentElement,
 
-	// show overlay, will be detected based off type
-	overlay: true,
+// show overlay, will be detected based off type
+overlay: true,
 
-	// show close button
-	closable: true,
+// show close button
+closable: true,
 
-	// close by escape
-	escapable: true,
+// close by escape
+escapable: true,
 
-	// show tip
-	tip: false,
+// show tip
+tip: false,
 
-	// animation effect, see effects in the demo page
-	effect: 'fade',
+// animation effect, see effects in the demo page
+effect: 'fade',
 
-	// additional style rules for popup
-	style: {}
+// additional style rules for popup
+style: {}
 ```
 
 </details>
