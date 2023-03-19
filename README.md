@@ -1,8 +1,8 @@
-[![Popov](https://raw.githubusercontent.com/dfcreative/popoff/gh-pages/popoff.png "Popov")](https://en.wikipedia.org/wiki/Alexander_Stepanovich_Popov)
+[![Popov](https://raw.githubusercontent.com/dy/popoff/gh-pages/popoff.png "Popov")](https://en.wikipedia.org/wiki/Alexander_Stepanovich_Popov)
 
 # Popoff [![unstable](http://badges.github.io/stability-badges/dist/unstable.svg)](http://github.com/badges/stability-badges)
 
-Popoff runs modals, tooltips, popups, dropdowns, confirms, notifiers, popovers, lightboxes, balloons, dialogs, alerts, overlays, sidebars etc. **[Demo](http://dfcreative.github.io/popoff/)**.
+Popoff runs modals, tooltips, popups, dropdowns, confirms, notifiers, popovers, lightboxes, balloons, dialogs, alerts, overlays, sidebars etc. **[Demo](http://dy.github.io/popoff/)**.
 
 ## Usage
 
@@ -10,7 +10,7 @@ Popoff runs modals, tooltips, popups, dropdowns, confirms, notifiers, popovers, 
 
 
 ```js
-var createPopup = require('popoff');
+import createPopup from 'popoff';
 
 //create and show modal
 var modal = createPopup({
@@ -33,7 +33,7 @@ document.querySelector('#menu').click();
 
 ## API
 
-<details><summary>**`let popup = new Popup({type, effect, container, ...});`**</summary>
+### `let popup = new Popup({type, effect, container, ...});`
 
 Create popup instance based on passed options.
 
@@ -66,21 +66,15 @@ effect: 'fade',
 style: {}
 ```
 
-</details>
-
-<details><summary>**`popup.show(myButtonEl, () => {});`**</summary>
+### `popup.show(myButtonEl, () => {});`
 
 Show popup relative to the target element, invoke callback after animation end. Target and callback are optional.
 
-</details>
-
-<details><summary>**`popup.hide(() => {});`**</summary>
+### `popup.hide(() => {});`
 
 Hide popup, invoke callback after animation end. Callback is optional.
 
-</details>
-
-<details><summary>**`popup.update();`**</summary>
+### `popup.update();`
 
 Update popup position, in case of resize etc. Optionally pass an options to redefine params.
 
@@ -92,13 +86,10 @@ popup.update({
 	within: window
 });
 ```
-</details>
-
-<details><summary>**`popup.on('show', () => {});`**</summary>
+### `popup.on('show', () => {});`
 
 Invoke callback on event, one of the following: `show`, `hide`, `afterShow`, `afterHide`, `update`.
 
-</details>
 
 ## Credits
 
