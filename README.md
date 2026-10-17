@@ -137,7 +137,8 @@ The parts: `.popoff-tip` (with `data-side`), `.popoff-tip-head`, `.popoff-tip-na
 ## Before 3
 
 Popoff 2 drew its own modals, overlays and effects (2016, browserify). Browsers now have `popover`, `<dialog>` and
-anchor positioning, so 3 keeps only what they leave out. 2.x stays on npm as `popoff@2`.
+anchor positioning, so 3 keeps only what they leave out. 2.x stays on npm as `popoff@2`, its demo at
+[dy.github.io/popoff/v2](https://dy.github.io/popoff/v2/).
 
 ## See also
 
