@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>popoff</title>
+  <meta name="description" content="Tooltips, dropdowns, hover cards and modals, on the platform's own popover and dialog.">
+  <style>
+    :root { --ink: #1d1d1f; --soft: #6e6e73; --rule: #e5e5ea; --bg: #fbfbfd; --card: #fff; color-scheme: light; }
+    @media (prefers-color-scheme: dark) { :root { --ink: #f5f5f7; --soft: #a1a1a6; --rule: #2c2c2e; --bg: #111; --card: #1c1c1e; color-scheme: dark; } }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, sans-serif; }
+    main { max-width: 680px; margin: 0 auto; padding: 48px 16px 80px; }
+    header img { display: block; width: 160px; margin: 0 auto 12px; }
+    h1 { margin: 0; text-align: center; font-size: 32px; letter-spacing: -.02em; }
+    .lead { margin: 4px 0 40px; color: var(--soft); text-align: center; }
+    section { margin: 0 0 36px; }
+    h2 { margin: 0 0 4px; font-size: 15px; }
+    p { margin: 0 0 12px; color: var(--soft); }
+    .stage { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 20px; border: 1px solid var(--rule); border-radius: 12px; background: var(--card); }
+    button, a.who { min-height: 32px; padding: 0 12px; border: 1px solid var(--rule); border-radius: 8px; background: var(--bg); color: inherit; font: inherit; text-decoration: none; display: inline-flex; align-items: center; cursor: pointer; }
+    button.icon { width: 32px; padding: 0; justify-content: center; }
+    button:hover, a.who:hover { border-color: var(--soft); }
+    [popover] { padding: 6px; border: 1px solid var(--rule); border-radius: 10px; background: var(--card); color: var(--ink); box-shadow: 0 8px 28px #0002; }
+    [role=menu] { display: grid; min-width: 180px; }
+    [role=menu]:not(:popover-open) { display: none; }
+    [role=menuitem] { justify-content: flex-start; border: 0; background: none; }
+    [role=menuitem]:hover { background: var(--bg); }
+    .card { width: 240px; padding: 14px; }
+    .card strong { display: block; }
+    dialog { width: min(360px, calc(100vw - 32px)); padding: 20px; border: 0; border-radius: 14px; background: var(--card); color: var(--ink); }
+    dialog::backdrop { background: #0006; }
+    code { font: 13px ui-monospace, monospace; }
+    pre { margin: 10px 0 0; padding: 12px 14px; overflow: auto; border-radius: 10px; background: var(--card); border: 1px solid var(--rule); font: 13px/1.5 ui-monospace, monospace; }
+    footer { color: var(--soft); text-align: center; }
+    footer a { color: inherit; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="https://raw.githubusercontent.com/dy/popoff/gh-pages/popoff.png" alt="Alexander Popov">
+    <h1>popoff</h1>
+    <p class="lead">Tooltips, dropdowns, hover cards and modals, on the platform's own popover and dialog.</p>
+  </header>
+
+  <section>
+    <h2>Tooltips</h2>
+    <p>Any <code>title</code>: the name, the keys, a line of what it does. The next waits as the first did.</p>
+    <div class="stage">
+      <button class="icon" title="Undo (⌘Z)">↶</button>
+      <button class="icon" title="Redo (⇧⌘Z)">↷</button>
+      <button class="icon" title="Play (Space)&#10;Hold and drag to rewind">▶</button>
+      <button class="icon" title="Loop (L)">⟲</button>
+    </div>
+    <pre>&lt;button title="Play (Space)&amp;#10;Hold and drag to rewind"&gt;▶&lt;/button&gt;</pre>
+  </section>
+
+  <section>
+    <h2>Dropdowns</h2>
+    <p><code>data-place</code> puts a popover by what opened it, with CSS anchor positioning.</p>
+    <div class="stage">
+      <button popovertarget="file" title="File">File ▾</button>
+      <div id="file" popover role="menu" data-place="bottom start">
+        <button role="menuitem" title="An empty tab (⌘N)">New</button>
+        <button role="menuitem" title="Audio or video (⌘O)">Open…</button>
+        <button role="menuitem">Close</button>
+      </div>
+    </div>
+    <pre>&lt;button popovertarget="file"&gt;File&lt;/button&gt;
+&lt;div id="file" popover data-place="bottom start"&gt;…&lt;/div&gt;</pre>
+  </section>
+
+  <section>
+    <h2>Hover cards</h2>
+    <p><code>interestfor</code>: shown while the pointer or the focus rests on it.</p>
+    <div class="stage">
+      <a class="who" href="https://github.com/dy" interestfor="dy">@dy</a>
+      <div id="dy" popover="hint" class="card" data-place="top">
+        <strong>Dmitry Iv.</strong>
+        <span>sprae, popoff, audio, and other small tools.</span>
+      </div>
+    </div>
+    <pre>&lt;a href="/dy" interestfor="dy"&gt;@dy&lt;/a&gt;
+&lt;div id="dy" popover="hint" data-place="top"&gt;…&lt;/div&gt;</pre>
+  </section>
+
+  <section>
+    <h2>Modals</h2>
+    <p><code>&lt;dialog closedby="any"&gt;</code>: a click on the backdrop closes it.</p>
+    <div class="stage">
+      <button onclick="hello.showModal()">Open a modal</button>
+      <dialog id="hello" closedby="any">
+        <strong>Hello</strong>
+        <p>Esc or a click outside closes it.</p>
+        <button onclick="hello.close()">Close</button>
+      </dialog>
+    </div>
+    <pre>&lt;dialog closedby="any"&gt;…&lt;/dialog&gt;</pre>
+  </section>
+
+  <footer><a href="https://github.com/dy/popoff">github.com/dy/popoff</a> · <a href="https://krishnized.github.io/license">ॐ</a></footer>
+</main>
+<script type="module" src="./start.js"></script>
+</body>
+</html>

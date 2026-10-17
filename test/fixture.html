@@ -1,0 +1,20 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>popoff fixture</title>
+<style>body { margin: 40px; font: 14px system-ui; } button { margin: 4px; } .far { position: fixed; bottom: 4px; left: 4px; }</style>
+<button id="undo" title="Undo (⌘Z)">↶</button>
+<button id="redo" title="Redo (⇧⌘Z)">↷</button>
+<button id="play" title="Play (Space)&#10;Hold and drag to rewind">▶</button>
+<button id="opener" popovertarget="menu" title="More">⋯</button>
+<div id="menu" popover data-place="bottom start" role="menu" style="width: 160px">
+  <button role="menuitem" id="row" title="Says more" onpointerenter="this.focus()">A row</button>
+</div>
+<button id="hover" interestfor="card">Hover me</button>
+<div id="card" popover="hint" data-place="top">A hover card</div>
+<button id="modal" onclick="dlg.showModal()">Modal</button>
+<dialog id="dlg" closedby="any" style="width: 200px; height: 100px">Hi</dialog>
+<button class="far" id="foot" title="At the foot">Foot</button>
+<script type="module">
+  import popoff from '../popoff.js'
+  window.stop = popoff(document, { delay: 300 })
+</script>
