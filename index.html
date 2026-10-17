@@ -19,7 +19,17 @@
     /* popups: white, square; the modals over a dimmed page, a ✕ in the corner */
     [popover], dialog { box-sizing: border-box; margin: 0; padding: 0; border: 0; background: #fff; color: #000; box-shadow: 0 1px 4px rgba(0, 0, 0, .15); }
     [popover] p, dialog p { margin: 0; }
-    .drop, .card { padding: 1rem; }
+    .card { padding: 1rem; }
+    /* a dropdown: a short list, a row lit under the pointer, a line between groups, its keys softer at the right */
+    .drop { min-width: 13rem; padding: .375rem; border: 1px solid rgba(0, 0, 0, .08); border-radius: 6px; box-shadow: 0 4px 16px rgba(0, 0, 0, .12); }
+    .drop button { display: flex; justify-content: space-between; gap: 2rem; width: 100%; padding: .4rem .75rem; border: 0; border-radius: 4px; background: none; color: inherit; font: inherit; font-size: .875rem; text-align: left; cursor: pointer; }
+    .drop button:hover, .drop button:focus-visible { outline: none; background: #000; color: #fff; }
+    .drop kbd { color: rgba(0, 0, 0, .4); font: inherit; }
+    .drop button:hover kbd, .drop button:focus-visible kbd { color: rgba(255, 255, 255, .6); }
+    .drop hr { margin: .375rem .25rem; border: 0; border-top: 1px solid rgba(0, 0, 0, .08); }
+    .drop { transition: opacity .15s, translate .15s ease-out, display .15s allow-discrete, overlay .15s allow-discrete; }
+    .drop:not(:popover-open) { opacity: 0; translate: 0 -4px; }
+    @starting-style { .drop:popover-open { opacity: 0; translate: 0 -4px; } }
     .card { max-width: 240px; border-radius: 15px; }
     dialog { position: fixed; inset: 0; width: min(560px, calc(100% - 2rem)); max-height: calc(100% - 2rem); margin: auto; padding: 1.5rem 2rem 2rem; overflow: auto; }
     dialog h2 { margin: 1rem 0; text-align: left; }
@@ -28,8 +38,10 @@
     .close { position: absolute; top: 0; right: 0; width: 3.333rem; height: 3.333rem; border: 0; background: none; color: rgb(120, 120, 120); font-size: 1.333rem; cursor: pointer; }
     .close:hover { color: #000; }
 
-    /* a tall modal scrolls itself, the page under it held */
-    dialog.tall { max-height: calc(100% - 4rem); }
+    /* a tall modal: the whole window scrolls it, as the page did, the page under it held; a click on the dimmed
+       part around its sheet closes it */
+    dialog.tall { width: 100%; height: 100%; max-width: none; max-height: none; padding: 2rem 1rem; overflow: auto; background: none; box-shadow: none; }
+    dialog.tall .sheet { position: relative; max-width: 560px; margin: 0 auto; padding: 1.5rem 2rem 2rem; background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, .15); }
     html:has(dialog.tall[open]) { overflow: hidden; }
 
     /* a sidebar: a modal at an edge */
@@ -48,9 +60,8 @@
     dialog, dialog::backdrop { transition: opacity .333s, transform .25s ease-out, display .333s allow-discrete, overlay .333s allow-discrete; }
     dialog:not([open]), dialog:not([open])::backdrop { opacity: 0; }
     @starting-style { dialog[open], dialog[open]::backdrop { opacity: 0; } }
-    dialog[data-effect] { --from: none; }
-    dialog[data-effect]:not([open]) { transform: var(--from); }
-    @starting-style { dialog[data-effect][open] { transform: var(--from); } }
+    dialog[data-effect]:not([open]) { transform: var(--from, none); }
+    @starting-style { dialog[data-effect][open] { transform: var(--from, none); } }
     [data-effect=scale] { --from: scale(.7); }
     [data-effect=slide-right] { --from: translateX(20%); }
     [data-effect=slide-left] { --from: translateX(-20%); }
@@ -93,7 +104,13 @@
     <p class="center" id="effects"></p>
   </section>
 
-  <div id="drop" class="drop" popover data-place="bottom start"><p>Dropdown content</p></div>
+  <div id="drop" class="drop" popover data-place="bottom start" role="menu">
+    <button role="menuitem" title="An empty one">New <kbd>⌘N</kbd></button>
+    <button role="menuitem">Open… <kbd>⌘O</kbd></button>
+    <button role="menuitem">Save <kbd>⌘S</kbd></button>
+    <hr>
+    <button role="menuitem" title="Leaves this page">Close <kbd>⌘W</kbd></button>
+  </div>
   <div id="card" class="card" popover="hint" data-place="top"><p>A hover card: shown while the pointer or the focus rests on what it's for.</p></div>
 
   <dialog id="modal" closedby="any" data-effect="scale">
@@ -115,9 +132,10 @@
   </dialog>
 
   <dialog id="tall" class="tall" closedby="any" data-effect="slide-bottom">
+    <div class="sheet">
     <form method="dialog"><button class="close" title="Close (Esc)">✕</button></form>
     <h2>Tall modal</h2>
-    <p>When there is too much content in a modal, it's comfortable to have the page's scroll replaced with the modal's own. That is what you see here: the page under it holds still.</p>
+    <p>When there is too much content in a modal, it's comfortable to have the page's scroll go to the modal. That is what you see here: the window scrolls the modal, the page under it holds still.</p>
     <p>Alexander Popov showed his receiver of electromagnetic waves to the Russian Physical and Chemical Society in Saint Petersburg on 7 May 1895, a coherer that caught the waves of distant lightning and rang a bell. Russia keeps that day as Radio Day.</p>
     <p>The coherer, a glass tube of metal filings between two electrodes, conducts once a wave passes through it, and stays so till it's shaken. Popov's receiver tapped it back with the same bell that rang, so it was ready for the next wave.</p>
     <p>With an antenna raised on a mast and the far end of the coherer earthed, the receiver heard distant storms. Turned to a sender's sparks, it took telegraph messages, and in 1900 its stations relayed the messages that brought the rescue of fishermen carried away on an ice floe in the Gulf of Finland.</p>
@@ -126,6 +144,7 @@
     <p>Scroll down: the page behind stays where it was.</p>
     <p style="height: 40vh"></p>
     <p>The end.</p>
+    </div>
   </dialog>
 
   <footer><a href="https://github.com/dy/popoff" title="popoff on GitHub"><svg style="width: 3rem; height: 3rem" viewBox="0 0 784 1024" aria-label="GitHub"><path d="M4.168 480.005q0 107.053 52.114 194.314 52.114 90.085 141.399 141.799t194.314 51.714q105.441 0 195.126-51.714 89.685-52.114 141.199-141.599t51.514-194.514q0-106.652-51.714-195.126-52.114-89.685-141.599-141.199T392.007 92.166q-107.053 0-194.314 52.114-90.085 52.114-141.799 141.399T4.18 479.993zm64.634 0q0-64.634 25.451-124.832t69.482-103.828q44.031-44.031 103.828-69.282t124.432-25.251 124.832 25.251 104.229 69.282q43.631 43.631 68.882 103.828t25.251 124.832q0 69.482-28.487 132.504t-79.989 108.876-117.76 66.458V673.919q0-42.419-34.747-66.257 85.238-7.672 124.632-43.23t39.383-112.712q0-59.786-36.759-100.593 7.272-21.815 7.272-42.018 0-29.899-13.732-54.939-27.063 0-48.478 8.884t-52.515 30.699q-37.571-8.484-77.565-8.484-45.654 0-85.238 9.295-30.299-22.216-52.314-31.311t-49.891-9.084q-13.332 25.451-13.332 54.939 0 21.004 6.871 42.419-36.759 39.594-36.759 100.192 0 77.165 39.183 112.312t125.644 43.23q-23.027 15.355-31.911 44.843-19.792 6.871-41.207 6.871-16.156 0-27.875-7.272-3.636-2.024-6.66-4.236t-6.26-5.448-5.248-5.048-5.248-6.26-4.236-5.659-4.848-6.46-4.236-5.659q-18.991-25.051-45.243-25.051-14.143 0-14.143 6.06 0 2.424 6.871 8.083 12.931 11.308 13.732 12.12 9.696 7.672 10.908 9.696 11.719 14.544 17.779 31.911 22.627 50.502 77.565 50.502 8.884 0 34.747-4.036v85.649q-66.257-20.603-117.76-66.458T97.346 612.533 68.859 480.029z"/></svg></a>
@@ -151,6 +170,11 @@
       d.setAttribute('closedby', 'any')
       effects.append(Object.assign(document.createElement('button'), { className: 'target', textContent: name, onclick: () => d.showModal() }))
     }
+
+    // the tall modal fills the window: a click on it around its sheet, the dimmed part, closes it
+    tall.addEventListener('click', e => { if (e.target === tall) tall.close() })
+    // a dropdown's row, chosen, closes it
+    drop.addEventListener('click', e => { if (e.target.closest('button')) drop.hidePopover() })
 
     // the loose dialog's head, dragged
     loose.querySelector('h2').addEventListener('pointerdown', e => {
