@@ -90,6 +90,9 @@ browser has them.
 
 `<dialog closedby="any">`, opened with `showModal()`, closes on a click on its backdrop.
 
+Sidebars, tall modals and opening effects need no code: they are CSS on the same `<dialog>` (an edge's `inset`, the
+dialog's own scroll, a `transition` from `@starting-style`). The [demo](https://dy.github.io/popoff/) has each.
+
 ## API
 
 ### `popoff(root = document, options) → stop`
